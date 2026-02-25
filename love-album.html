@@ -1,0 +1,1064 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Love Album - أنشئ ألبوم حب لا يُنسى</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,500;1,600;1,700&family=Tajawal:wght@200;300;400;500;700;800;900&family=Cairo:wght@200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+--bg:#110810;--card:#1a0f15;--border:#2a1520;--input:#1e1218;
+--primary:#c9455a;--primary-fg:#fef2f0;--accent:#d4a843;--accent-fg:#110810;
+--fg:#f5e6d3;--muted:#8a7080;--destructive:#e74c3c;
+--radius:12px;
+}
+body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--fg);min-height:100vh;overflow-x:hidden;direction:rtl}
+h1,h2,h3,h4,h5,h6,.font-display{font-family:'Playfair Display',serif}
+input,textarea,select,button{font-family:'Tajawal',sans-serif}
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:rgba(201,69,90,.4);border-radius:3px}
+
+/* Utilities */
+.container{max-width:800px;margin:0 auto;padding:0 16px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:14px 28px;border-radius:var(--radius);font-size:16px;font-weight:500;border:none;cursor:pointer;transition:all .3s}
+.btn-primary{background:linear-gradient(135deg,#c9455a,#e05a6f);color:var(--primary-fg);box-shadow:0 0 30px rgba(201,69,90,.3)}
+.btn-primary:hover{opacity:.9;transform:translateY(-1px)}
+.btn-accent{background:linear-gradient(135deg,#d4a843,#e0be5a);color:var(--accent-fg)}
+.btn-accent:hover{opacity:.9}
+.btn-ghost{background:transparent;color:var(--muted);border:1px solid var(--border)}
+.btn-ghost:hover{border-color:var(--primary);color:var(--fg)}
+.btn-sm{padding:8px 16px;font-size:14px}
+.btn-full{width:100%}
+.input{width:100%;background:var(--input);border:1px solid var(--border);border-radius:var(--radius);padding:14px 18px;color:var(--fg);font-size:16px;transition:border-color .3s;outline:none}
+.input:focus{border-color:rgba(201,69,90,.5);box-shadow:0 0 0 3px rgba(201,69,90,.1)}
+.input::placeholder{color:var(--muted);opacity:.6}
+textarea.input{resize:none}
+.card{background:rgba(26,15,21,.6);backdrop-filter:blur(20px);border:1px solid rgba(201,69,90,.15);border-radius:16px;padding:24px}
+.text-gradient-gold{background:linear-gradient(135deg,#d4a843,#e8d48a,#d4a843);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.text-gradient-rose{background:linear-gradient(135deg,#c9455a,#e88a9a,#c9455a);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.glow-rose{box-shadow:0 0 30px rgba(201,69,90,.3),0 0 60px rgba(201,69,90,.1)}
+.glow-gold{box-shadow:0 0 30px rgba(212,168,67,.3),0 0 60px rgba(212,168,67,.1)}
+
+/* Animations */
+@keyframes fadeUp{0%{opacity:0;transform:translateY(30px)}100%{opacity:1;transform:translateY(0)}}
+@keyframes cinematic{0%{opacity:0;transform:scale(.95) translateY(20px);filter:blur(10px)}100%{opacity:1;transform:scale(1) translateY(0);filter:blur(0)}}
+@keyframes floatHeart{0%{transform:translateY(100vh) scale(0) rotate(0);opacity:0}10%{opacity:.8}90%{opacity:.3}100%{transform:translateY(-10vh) scale(1) rotate(720deg);opacity:0}}
+@keyframes pulseGlow{0%,100%{opacity:.5}50%{opacity:1}}
+@keyframes spin{to{transform:rotate(360deg)}}
+.animate-fade-up{animation:fadeUp .8s ease-out forwards}
+.animate-cinematic{animation:cinematic 1.2s cubic-bezier(.16,1,.3,1) forwards}
+.animate-pulse-glow{animation:pulseGlow 3s ease-in-out infinite}
+
+/* Floating Hearts Container */
+.hearts-container{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:0}
+.floating-heart{position:absolute;animation:floatHeart linear infinite;color:rgba(201,69,90,.15)}
+.floating-heart svg{fill:currentColor}
+
+/* Pages */
+.page{display:none;min-height:100vh}
+.page.active{display:block}
+
+/* Code Entry */
+.code-entry{display:flex;align-items:center;justify-content:center;min-height:100vh;position:relative}
+.code-entry .ambient{position:absolute;top:25%;left:50%;transform:translateX(-50%);width:600px;height:600px;border-radius:50%;background:rgba(201,69,90,.05);filter:blur(120px)}
+.code-entry .content{position:relative;z-index:10;width:100%;max-width:420px;padding:0 16px}
+.code-entry .logo{text-align:center;margin-bottom:40px}
+.code-entry .logo-icon{display:inline-flex;align-items:center;justify-content:center;width:80px;height:80px;border-radius:50%;background:rgba(201,69,90,.1);border:1px solid rgba(201,69,90,.2);margin-bottom:24px}
+.code-entry .logo-icon svg{width:40px;height:40px;color:var(--primary);fill:rgba(201,69,90,.3)}
+.code-entry h1{font-size:clamp(32px,6vw,48px);font-style:italic;margin-bottom:12px}
+.code-entry .subtitle{color:var(--muted);font-size:18px}
+.code-input{text-align:center;font-size:22px;letter-spacing:.3em;text-transform:uppercase;direction:ltr}
+.code-error{color:var(--destructive);font-size:14px;text-align:center;margin-top:8px}
+.code-footer{text-align:center;color:rgba(138,112,128,.5);font-size:14px;margin-top:32px}
+.spinner{width:20px;height:20px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;display:inline-block}
+
+/* Builder */
+.builder-header{position:sticky;top:0;z-index:50;background:rgba(26,15,21,.8);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:12px 0}
+.builder-header .inner{display:flex;align-items:center;justify-content:space-between}
+.builder-header .brand{display:flex;align-items:center;gap:12px}
+.builder-header .brand svg{width:20px;height:20px;color:var(--primary);fill:rgba(201,69,90,.3)}
+.builder-header .brand span{font-family:'Playfair Display',serif;font-size:18px;font-style:italic}
+.builder-header .code-badge{font-size:12px;color:var(--muted);background:var(--input);padding:4px 10px;border-radius:6px;font-family:monospace}
+.tabs{display:flex;gap:4px;background:rgba(26,15,21,.5);border-radius:var(--radius);padding:4px;margin-bottom:24px}
+.tab{flex:1;display:flex;align-items:center;justify-content:center;gap:8px;padding:12px;border-radius:8px;font-size:14px;cursor:pointer;transition:all .3s;border:none;background:transparent;color:var(--muted)}
+.tab.active{background:var(--primary);color:var(--primary-fg)}
+.tab:hover:not(.active){color:var(--fg)}
+.tab svg{width:16px;height:16px}
+.form-group{margin-bottom:16px}
+.form-group label{display:block;font-size:14px;color:var(--muted);margin-bottom:6px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:600px){.form-grid{grid-template-columns:1fr}}
+
+/* Block Editor */
+.block{background:rgba(26,15,21,.6);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:12px;transition:border-color .3s}
+.block:hover{border-color:rgba(201,69,90,.3)}
+.block-header{display:flex;align-items:center;gap:8px;padding:10px 14px;background:rgba(0,0,0,.2);border-bottom:1px solid var(--border)}
+.block-header .grip{color:var(--muted);cursor:grab}
+.block-header .type-label{flex:1;font-size:14px}
+.block-actions{display:flex;gap:2px;opacity:0;transition:opacity .3s}
+.block:hover .block-actions{opacity:1}
+.block-actions button{padding:4px;border-radius:4px;border:none;background:transparent;cursor:pointer;color:var(--muted);transition:all .2s}
+.block-actions button:hover{background:rgba(201,69,90,.1);color:var(--primary)}
+.block-actions button.del:hover{background:rgba(231,76,60,.15);color:var(--destructive)}
+.block-actions button:disabled{opacity:.3;cursor:default}
+.block-actions svg{width:16px;height:16px}
+.block-body{padding:14px}
+.block-colors{display:flex;gap:16px;padding-top:10px;border-top:1px solid rgba(255,255,255,.05);margin-top:10px}
+.block-colors label{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)}
+.block-colors input[type=color]{width:24px;height:24px;border-radius:4px;border:none;cursor:pointer;background:transparent}
+.file-upload{width:100%;border:2px dashed var(--border);border-radius:var(--radius);padding:32px;text-align:center;cursor:pointer;transition:all .3s;background:transparent;color:var(--muted)}
+.file-upload:hover{border-color:rgba(201,69,90,.4);color:var(--primary)}
+.file-upload .icon{font-size:32px;margin-bottom:8px}
+.file-preview img{width:100%;max-height:240px;object-fit:cover;border-radius:8px}
+.file-preview video{width:100%;max-height:240px;border-radius:8px}
+.file-preview .audio-info{display:flex;align-items:center;gap:12px;background:rgba(0,0,0,.2);border-radius:8px;padding:12px}
+
+/* Add Block */
+.add-block-btn{width:100%;border:2px dashed rgba(201,69,90,.3);border-radius:var(--radius);padding:24px;display:flex;align-items:center;justify-content:center;gap:12px;background:transparent;color:rgba(201,69,90,.7);font-size:18px;cursor:pointer;transition:all .3s}
+.add-block-btn:hover{border-color:rgba(201,69,90,.6);color:var(--primary)}
+.add-block-btn:hover svg{transform:rotate(90deg)}
+.add-block-btn svg{width:24px;height:24px;transition:transform .3s}
+.block-types{position:absolute;top:100%;left:0;right:0;margin-top:8px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:12px;display:grid;grid-template-columns:repeat(3,1fr);gap:8px;z-index:50;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+@media(max-width:500px){.block-types{grid-template-columns:repeat(2,1fr)}}
+.block-type-btn{display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px 8px;border-radius:8px;background:rgba(0,0,0,.2);border:1px solid transparent;cursor:pointer;transition:all .2s;color:var(--fg);font-size:13px}
+.block-type-btn:hover{background:rgba(201,69,90,.1);border-color:rgba(201,69,90,.3)}
+.block-type-btn .icon{color:var(--primary);font-size:20px}
+
+/* Color presets */
+.color-presets{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+@media(min-width:600px){.color-presets{grid-template-columns:repeat(6,1fr)}}
+.color-preset{display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px;border-radius:8px;border:1px solid var(--border);cursor:pointer;transition:all .2s;background:transparent}
+.color-preset:hover{border-color:rgba(201,69,90,.5)}
+.color-preset .dots{display:flex;gap:4px}
+.color-preset .dot{width:16px;height:16px;border-radius:50%;border:1px solid var(--border)}
+.color-preset .name{font-size:12px;color:var(--muted)}
+.custom-colors{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;text-align:center}
+.custom-colors label{display:flex;flex-direction:column;align-items:center;gap:8px;font-size:14px;color:var(--muted)}
+.custom-colors .color-preview{display:flex;align-items:center;gap:6px}
+.custom-colors .swatch{width:24px;height:24px;border-radius:4px;border:1px solid var(--border)}
+.custom-colors input[type=color]{width:40px;height:32px;border-radius:4px;cursor:pointer;border:none}
+.toggle{width:48px;height:24px;border-radius:12px;border:none;cursor:pointer;position:relative;transition:background .3s}
+.toggle.on{background:var(--primary)}
+.toggle.off{background:var(--input)}
+.toggle .knob{width:20px;height:20px;border-radius:50%;background:var(--fg);position:absolute;top:2px;transition:all .3s}
+.toggle.on .knob{right:2px;left:auto}
+.toggle.off .knob{left:2px;right:auto}
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0}
+
+/* Publish */
+.publish-area{margin-top:32px;padding-bottom:40px}
+.publish-success{text-align:center}
+.publish-success .check-icon{display:inline-flex;align-items:center;justify-content:center;width:64px;height:64px;border-radius:50%;background:rgba(201,69,90,.2);margin-bottom:16px}
+.publish-success .check-icon svg{width:32px;height:32px;color:var(--primary)}
+.publish-success h3{font-size:28px;margin-bottom:12px}
+.publish-success .link{font-size:13px;color:var(--muted);word-break:break-all;direction:ltr;margin-bottom:20px}
+.publish-success .actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+
+/* Album View */
+.album-view{position:relative;overflow:hidden}
+.album-view .ambient-glow{position:absolute;top:33%;left:50%;transform:translateX(-50%);width:500px;height:500px;border-radius:50%;filter:blur(150px)}
+.album-view .content{position:relative;z-index:10;max-width:640px;margin:0 auto;padding:48px 16px}
+.album-header{text-align:center;padding:32px 0}
+.album-header h1{font-size:clamp(28px,6vw,44px);font-style:italic;margin-bottom:8px}
+.album-header .from{font-size:14px;opacity:.6}
+.album-message{text-align:center;padding:32px 0;font-size:20px;line-height:1.8}
+.album-counter{text-align:center;padding:16px 0}
+.album-counter .label{font-size:14px;opacity:.6;margin-bottom:8px}
+.album-counter .value{font-family:'Playfair Display',serif;font-size:22px;direction:ltr}
+.album-block{border-radius:16px;padding:24px;margin-bottom:16px}
+.album-block.text-block p{font-size:18px;line-height:1.8;white-space:pre-wrap}
+.album-block img{width:100%;border-radius:12px}
+.album-block video{width:100%;border-radius:12px}
+.album-block .caption{font-size:14px;text-align:center;opacity:.8;margin-top:12px}
+.album-block .play-btn{width:56px;height:56px;border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform .2s}
+.album-block .play-btn:hover{transform:scale(1.1)}
+.album-block .play-btn svg{width:24px;height:24px}
+.album-block .audio-row{display:flex;align-items:center;gap:16px}
+.album-block .audio-name{font-size:14px}
+.reveal-btn{display:inline-flex;align-items:center;gap:8px;padding:12px 24px;border-radius:var(--radius);border:1px solid;cursor:pointer;transition:all .2s;background:transparent;font-size:16px}
+.reveal-btn:hover{transform:scale(1.05)}
+.album-footer{text-align:center;padding:48px 0;opacity:.4}
+.album-footer svg{width:24px;height:24px;margin:0 auto 8px}
+.album-footer p{font-size:12px}
+
+/* Password Screen */
+.password-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;position:relative}
+.password-screen .content{position:relative;z-index:10;width:100%;max-width:380px;padding:0 16px;text-align:center}
+.password-screen .lock-icon{margin-bottom:24px}
+.password-screen .lock-icon svg{width:48px;height:48px}
+.password-screen .hint{font-size:18px;margin-bottom:24px}
+.password-screen .pass-input{text-align:center;font-size:20px;direction:ltr}
+
+/* Admin */
+.admin-header{position:sticky;top:0;z-index:50;background:rgba(26,15,21,.8);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:12px 0}
+.admin-header .inner{display:flex;align-items:center;justify-content:space-between}
+.admin-header .brand{display:flex;align-items:center;gap:12px}
+.admin-header .brand svg{width:20px;height:20px;color:var(--accent)}
+.admin-header .brand span{font-family:'Playfair Display',serif;font-size:18px;font-style:italic}
+.code-row{display:flex;align-items:center;gap:12px;background:rgba(0,0,0,.2);border-radius:8px;padding:12px;margin-bottom:8px}
+.code-row .code-text{flex:1;font-family:monospace;font-size:14px;direction:ltr}
+.badge{font-size:12px;padding:4px 10px;border-radius:6px}
+.badge-new{background:rgba(201,69,90,.2);color:var(--primary)}
+.badge-used{background:rgba(212,168,67,.2);color:var(--accent)}
+.badge-expired{background:rgba(231,76,60,.2);color:var(--destructive)}
+.badge-published{background:rgba(201,69,90,.2);color:var(--primary)}
+.badge-draft{background:rgba(0,0,0,.3);color:var(--muted)}
+.icon-btn{padding:6px;border-radius:4px;border:none;background:transparent;cursor:pointer;color:var(--muted);transition:all .2s}
+.icon-btn:hover{background:rgba(201,69,90,.1);color:var(--primary)}
+.icon-btn.del:hover{background:rgba(231,76,60,.15);color:var(--destructive)}
+.icon-btn svg{width:16px;height:16px}
+.empty-state{text-align:center;color:var(--muted);padding:32px}
+.add-code-row{display:flex;gap:12px}
+.add-code-row input{flex:1}
+.album-row{display:flex;align-items:center;gap:12px;background:rgba(0,0,0,.2);border-radius:8px;padding:12px;margin-bottom:8px}
+.album-row .info{flex:1;font-size:13px;color:var(--muted)}
+
+/* Toast */
+.toast-container{position:fixed;bottom:20px;right:20px;z-index:9999}
+.toast{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:14px 20px;font-size:14px;color:var(--fg);box-shadow:0 10px 40px rgba(0,0,0,.5);animation:fadeUp .4s ease-out}
+.toast.error{border-color:var(--destructive)}
+
+/* SVG icons inline */
+.svg-heart{display:inline-block}
+</style>
+</head>
+<body>
+
+<!-- Floating Hearts -->
+<div class="hearts-container" id="heartsContainer"></div>
+
+<!-- Toast -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- PAGE: Code Entry -->
+<div class="page active" id="pageCodeEntry">
+  <div class="code-entry">
+    <div class="ambient"></div>
+    <div class="content">
+      <div class="logo animate-fade-up">
+        <div class="logo-icon glow-rose">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" fill="rgba(201,69,90,0.3)"/></svg>
+        </div>
+        <h1 class="text-gradient-gold">Love Album</h1>
+        <p class="subtitle">أنشئ ألبوم حب لا يُنسى</p>
+      </div>
+      <form onsubmit="handleCodeSubmit(event)" class="animate-fade-up" style="animation-delay:.2s">
+        <div class="card">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#d4a843" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            <span style="font-size:18px">أدخل كود الشراء</span>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:12px">
+            <input type="text" id="codeInput" class="input code-input" placeholder="مثال: LOVE2025" autocomplete="off" autofocus>
+            <div id="codeError" class="code-error" style="display:none"></div>
+            <button type="submit" class="btn btn-primary btn-full" id="codeSubmitBtn">
+              <span>دخول</span>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="transform:scaleX(-1)"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </button>
+          </div>
+        </div>
+      </form>
+      <p class="code-footer animate-fade-up" style="animation-delay:.4s">تحتاج كود شراء للبدء في إنشاء ألبومك</p>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE: Builder -->
+<div class="page" id="pageBuilder">
+  <div class="builder-header">
+    <div class="container inner">
+      <div class="brand">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" fill="rgba(201,69,90,0.3)"/></svg>
+        <span class="text-gradient-gold">Love Album</span>
+        <span class="code-badge" id="builderCodeBadge"></span>
+      </div>
+      <button class="icon-btn" onclick="handleLogout()" title="خروج">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      </button>
+    </div>
+  </div>
+  <div class="container" style="padding-top:24px;padding-bottom:40px">
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab('content',this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        المحتوى
+      </button>
+      <button class="tab" onclick="switchTab('design',this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="13.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="10.5" r="2.5"/><circle cx="8.5" cy="7.5" r="2.5"/><circle cx="6.5" cy="12.5" r="2.5"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.9 0 1.7-.8 1.7-1.7 0-.5-.2-.9-.5-1.2-.3-.3-.5-.7-.5-1.2 0-.9.8-1.7 1.7-1.7H16c3.3 0 6-2.7 6-6 0-5.5-4.5-9.8-10-9.8z"/></svg>
+        التصميم
+      </button>
+      <button class="tab" onclick="switchTab('settings',this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        الإعدادات
+      </button>
+    </div>
+
+    <!-- Tab: Content -->
+    <div id="tabContent" class="animate-fade-up">
+      <div class="card" style="margin-bottom:24px">
+        <h3 class="font-display" style="font-size:20px;margin-bottom:16px">المعلومات الأساسية</h3>
+        <div class="form-grid">
+          <div class="form-group"><label>اسمك</label><input class="input" id="senderName" placeholder="اسمك..." oninput="updateAlbumField('senderName',this.value)"></div>
+          <div class="form-group"><label>اسم الشخص</label><input class="input" id="receiverName" placeholder="اسم حبيبك/حبيبتك..." oninput="updateAlbumField('receiverName',this.value)"></div>
+        </div>
+        <div class="form-group"><label>كلمة المرور (اختياري)</label><input class="input" id="password" placeholder="كلمة مرور للألبوم..." oninput="updateAlbumField('password',this.value)"></div>
+        <div class="form-group"><label>جملة فوق كلمة المرور</label><input class="input" id="passwordHint" placeholder="مثال: أول يوم عرفنا بعض..." oninput="updateAlbumField('passwordHint',this.value)"></div>
+        <div class="form-group"><label>الرسالة الرئيسية</label><textarea class="input" id="loveMessage" rows="4" placeholder="اكتب رسالة حب جميلة..." oninput="updateAlbumField('loveMessage',this.value)"></textarea></div>
+      </div>
+
+      <h3 class="font-display" style="font-size:20px;margin-bottom:16px;display:flex;align-items:center;gap:8px">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#d4a843" stroke-width="2"><path d="M12 3l1.5 4.5H18l-3.5 2.5L16 14.5 12 11.5 8 14.5l1.5-4.5L6 7.5h4.5z"/></svg>
+        أقسام الألبوم
+      </h3>
+      <div id="blocksContainer"></div>
+      <div style="position:relative;margin-top:12px">
+        <button class="add-block-btn" onclick="toggleAddMenu()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          إضافة قسم جديد
+        </button>
+        <div class="block-types" id="addBlockMenu" style="display:none">
+          <button class="block-type-btn" onclick="addBlock('text')"><span class="icon">📝</span>نص / مقالة</button>
+          <button class="block-type-btn" onclick="addBlock('image')"><span class="icon">🖼️</span>صورة</button>
+          <button class="block-type-btn" onclick="addBlock('music')"><span class="icon">🎵</span>موسيقى</button>
+          <button class="block-type-btn" onclick="addBlock('video')"><span class="icon">🎬</span>فيديو</button>
+          <button class="block-type-btn" onclick="addBlock('hidden-message')"><span class="icon">👁️</span>رسالة مخفية</button>
+          <button class="block-type-btn" onclick="addBlock('counter')"><span class="icon">⏱️</span>عداد العلاقة</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab: Design -->
+    <div id="tabDesign" style="display:none" class="animate-fade-up">
+      <div class="card" style="margin-bottom:24px">
+        <h3 class="font-display" style="font-size:20px;margin-bottom:16px">الألوان</h3>
+        <label style="font-size:14px;color:var(--muted);margin-bottom:8px;display:block">ألوان جاهزة</label>
+        <div class="color-presets" id="colorPresets" style="margin-bottom:20px"></div>
+        <div class="custom-colors">
+          <label><div class="color-preview"><span class="swatch" id="swatchBg"></span>خلفية</div><input type="color" id="colorBg" oninput="updateColor('bgColor',this.value)"></label>
+          <label><div class="color-preview"><span class="swatch" id="swatchText"></span>نص</div><input type="color" id="colorText" oninput="updateColor('textColor',this.value)"></label>
+          <label><div class="color-preview"><span class="swatch" id="swatchBorder"></span>إطار</div><input type="color" id="colorBorder" oninput="updateColor('borderColor',this.value)"></label>
+        </div>
+      </div>
+      <div class="card">
+        <h3 class="font-display" style="font-size:20px;margin-bottom:16px">الأنيميشن</h3>
+        <div class="form-grid" style="margin-bottom:16px">
+          <div class="form-group"><label>سرعة ظهور النص</label><select class="input" id="textSpeed" onchange="updateAlbumField('textSpeed',this.value)"><option value="slow">بطيء</option><option value="normal" selected>عادي</option><option value="fast">سريع</option></select></div>
+          <div class="form-group"><label>سرعة الأنيميشن</label><select class="input" id="animationSpeed" onchange="updateAlbumField('animationSpeed',this.value)"><option value="slow">بطيء</option><option value="normal" selected>عادي</option><option value="fast">سريع</option></select></div>
+        </div>
+        <div class="toggle-row"><span>القلوب الطائرة ❤️</span><button class="toggle on" id="toggleHearts" onclick="toggleOption('floatingHearts')"><span class="knob"></span></button></div>
+        <div class="toggle-row"><span>تأثير الإضاءة ✨</span><button class="toggle on" id="toggleGlow" onclick="toggleOption('glowEffect')"><span class="knob"></span></button></div>
+      </div>
+    </div>
+
+    <!-- Tab: Settings -->
+    <div id="tabSettings" style="display:none" class="animate-fade-up">
+      <div class="card">
+        <h3 class="font-display" style="font-size:20px;margin-bottom:16px">تاريخ العلاقة</h3>
+        <input type="date" class="input" id="relationshipDate" dir="ltr" oninput="updateAlbumField('relationshipDate',this.value)">
+      </div>
+    </div>
+
+    <!-- Publish -->
+    <div class="publish-area" id="publishArea">
+      <button class="btn btn-primary btn-full" style="font-size:18px;padding:18px" onclick="publishAlbum()" id="publishBtn">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        إنشاء الألبوم
+      </button>
+    </div>
+    <div id="publishSuccess" style="display:none" class="card publish-success animate-fade-up">
+      <div class="check-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div>
+      <h3 class="text-gradient-gold font-display">تم إنشاء الألبوم! 🎉</h3>
+      <p class="link" id="albumLink"></p>
+      <div class="actions">
+        <button class="btn btn-primary" onclick="copyAlbumLink()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          نسخ الرابط
+        </button>
+        <button class="btn btn-accent" onclick="openAlbum()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          فتح الألبوم
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE: Album View -->
+<div class="page" id="pageAlbum">
+  <!-- Password Screen -->
+  <div id="albumPasswordScreen" class="password-screen" style="display:none">
+    <div class="content animate-cinematic">
+      <div class="lock-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+      <p class="hint" id="albumHint"></p>
+      <form onsubmit="handleAlbumUnlock(event)">
+        <input type="password" class="input pass-input" id="albumPassInput" placeholder="أدخل كلمة المرور...">
+        <div id="albumPassError" class="code-error" style="display:none;margin-top:8px"></div>
+        <button type="submit" class="btn btn-primary btn-full" style="margin-top:12px">فتح الألبوم</button>
+      </form>
+    </div>
+  </div>
+  <!-- Album Content -->
+  <div id="albumContent" class="album-view" style="display:none">
+    <div class="ambient-glow" id="albumAmbientGlow"></div>
+    <div class="content" id="albumSections"></div>
+  </div>
+  <!-- Not Found -->
+  <div id="albumNotFound" style="display:none;min-height:100vh;display:none;align-items:center;justify-content:center;text-align:center;padding:40px">
+    <div class="animate-fade-up">
+      <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="rgba(201,69,90,.3)" stroke-width="2" style="margin:0 auto 16px;display:block"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+      <h1 class="font-display" style="font-size:28px;margin-bottom:8px">الألبوم غير موجود</h1>
+      <p style="color:var(--muted)">تأكد من الرابط وحاول مجدداً</p>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE: Admin -->
+<div class="page" id="pageAdmin">
+  <div id="adminLogin" style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:16px">
+    <form onsubmit="handleAdminLogin(event)" style="width:100%;max-width:380px" class="animate-fade-up">
+      <div style="text-align:center;margin-bottom:24px">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#d4a843" stroke-width="2" style="margin:0 auto 12px;display:block"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        <h1 class="font-display" style="font-size:24px">لوحة التحكم</h1>
+      </div>
+      <input type="password" class="input" id="adminPassInput" placeholder="كلمة مرور الأدمن" style="text-align:center;margin-bottom:12px">
+      <button type="submit" class="btn btn-primary btn-full glow-rose">دخول</button>
+    </form>
+  </div>
+  <div id="adminPanel" style="display:none">
+    <div class="admin-header">
+      <div class="container inner">
+        <div class="brand">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          <span class="text-gradient-gold">لوحة التحكم</span>
+        </div>
+        <button class="icon-btn" onclick="goHome()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></button>
+      </div>
+    </div>
+    <div class="container" style="padding-top:24px;padding-bottom:40px">
+      <div class="card" style="margin-bottom:24px">
+        <h3 class="font-display" style="font-size:20px;margin-bottom:16px">إنشاء كود جديد</h3>
+        <div class="add-code-row">
+          <input class="input" id="newCodeInput" placeholder="اكتب الكود..." dir="ltr" style="text-transform:uppercase">
+          <button class="btn btn-primary" onclick="adminAddCode()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            إضافة
+          </button>
+        </div>
+      </div>
+      <div class="card" style="margin-bottom:24px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+          <h3 class="font-display" style="font-size:20px">الأكواد</h3>
+          <button class="icon-btn" onclick="refreshAdmin()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg></button>
+        </div>
+        <div id="adminCodesList"></div>
+      </div>
+      <div class="card">
+        <h3 class="font-display" style="font-size:20px;margin-bottom:16px">الألبومات</h3>
+        <div id="adminAlbumsList"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyAEpVTV2bAzIal7FkEl3JadPvn0fkqpAF4",
+  authDomain: "love-site-e2cb7.firebaseapp.com",
+  databaseURL: "https://love-site-e2cb7-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "love-site-e2cb7",
+  storageBucket: "love-site-e2cb7.appspot.com",
+  messagingSenderId: "861816430901",
+  appId: "1:861816430901:web:144adb8ebbc2ad966d6c7c"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+db.ref("test").set({
+  msg:"hello",
+  time:Date.now()
+});
+</script>
+
+
+<script>
+// ==================== DATA STORE ====================
+const CODES_KEY='love_codes',ALBUMS_KEY='love_albums',ACTIVE_KEY='love_active';
+const DEFAULT_CODES=[
+  {code:'LOVE2025',isUsed:false,firstUsedAt:null,expiresAt:null},
+  {code:'HEART001',isUsed:false,firstUsedAt:null,expiresAt:null},
+  {code:'ROSE7777',isUsed:false,firstUsedAt:null,expiresAt:null}
+];
+
+function getCodes(){const s=localStorage.getItem(CODES_KEY);if(!s){localStorage.setItem(CODES_KEY,JSON.stringify(DEFAULT_CODES));return JSON.parse(JSON.stringify(DEFAULT_CODES))}return JSON.parse(s)}
+function saveCodes(c){localStorage.setItem(CODES_KEY,JSON.stringify(c))}
+function getActive(){return localStorage.getItem(ACTIVE_KEY)}
+function setActive(c){localStorage.setItem(ACTIVE_KEY,c.toUpperCase())}
+function clearActive(){localStorage.removeItem(ACTIVE_KEY)}
+function getAlbums(){
+  const s = localStorage.getItem(ALBUMS_KEY);
+  return s ? JSON.parse(s) : {};
+}
+
+function saveAlbums(a){
+  localStorage.setItem(ALBUMS_KEY, JSON.stringify(a));
+}
+// ===== FIREBASE SAVE =====
+function saveAlbum(album){
+  // حفظ محلي احتياطي
+  const a=getAlbums();
+  a[album.code]=album;
+  saveAlbums(a);
+
+  // حفظ في فايربيز
+  db.ref("albums/"+album.code).set(album);
+}
+
+// ===== FIREBASE LOAD =====
+async function getAlbum(code){
+  code = code.toUpperCase();
+
+  // حاول من فايربيز
+  const snap = await db.ref("albums/"+code).once("value");
+  if(snap.exists()) return snap.val();
+
+  // fallback لو مش موجود
+  const local = getAlbums()[code];
+  return local || null;
+}
+
+
+function validateCode(code){
+  const codes=getCodes();const f=codes.find(c=>c.code===code.toUpperCase());
+  if(!f)return{valid:false,reason:'الكود غير صحيح'};
+  if(f.isUsed&&f.expiresAt&&new Date()>new Date(f.expiresAt))return{valid:false,reason:'انتهت صلاحية الكود'};
+  if(!f.isUsed){f.isUsed=true;f.firstUsedAt=new Date().toISOString();f.expiresAt=new Date(Date.now()+24*3600000).toISOString();saveCodes(codes)}
+  return{valid:true}
+}
+function isEditable(code){const codes=getCodes();const f=codes.find(c=>c.code===code.toUpperCase());if(!f||!f.expiresAt)return true;return new Date()<new Date(f.expiresAt)}
+function createEmpty(code){return{code:code.toUpperCase(),senderName:'',receiverName:'',password:'',passwordHint:'',loveMessage:'',blocks:[],bgColor:'#1a0a10',textColor:'#f5e6d3',borderColor:'#c9455a',animationSpeed:'normal',textSpeed:'normal',floatingHearts:true,glowEffect:true,relationshipDate:'',isPublished:false,createdAt:new Date().toISOString()}}
+function genId(){return Math.random().toString(36).substr(2,9)}
+
+// ==================== TOAST ====================
+function showToast(msg,isError){
+  const t=document.createElement('div');t.className='toast'+(isError?' error':'');t.textContent=msg;
+  document.getElementById('toastContainer').appendChild(t);
+  setTimeout(()=>t.remove(),3000);
+}
+
+// ==================== FLOATING HEARTS ====================
+function createHearts(){
+  const c=document.getElementById('heartsContainer');c.innerHTML='';
+  for(let i=0;i<15;i++){
+    const h=document.createElement('div');h.className='floating-heart';
+    h.style.left=Math.random()*100+'%';
+    h.style.animationDuration=(Math.random()*8+6)+'s';
+    h.style.animationDelay=Math.random()*10+'s';
+    const size=Math.random()*16+8;
+    h.innerHTML=`<svg width="${size}" height="${size}" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>`;
+    c.appendChild(h);
+  }
+}
+createHearts();
+
+// ==================== ROUTING ====================
+let currentAlbum=null;
+let currentAudio=null;
+let audioPlaying=false;
+
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function route(){
+  const params=new URLSearchParams(window.location.search);
+  const page=params.get('page');
+  const albumId=params.get('id');
+  
+  if(page==='admin'){showPage('pageAdmin');return}
+  if(albumId){showPage('pageAlbum');loadAlbumView(albumId);return}
+  
+  // Check active code
+  const active=getActive();
+  if(active&&isEditable(active)){
+    showPage('pageBuilder');loadBuilder(active);return
+  }
+  if(active)clearActive();
+  showPage('pageCodeEntry');
+}
+
+// ==================== CODE ENTRY ====================
+function handleCodeSubmit(e){
+  e.preventDefault();
+  const code=document.getElementById('codeInput').value.trim();
+  const errEl=document.getElementById('codeError');
+  errEl.style.display='none';
+  if(!code){errEl.textContent='يرجى إدخال الكود';errEl.style.display='block';return}
+  
+  const btn=document.getElementById('codeSubmitBtn');
+  btn.innerHTML='<span class="spinner"></span>';btn.disabled=true;
+  
+  setTimeout(()=>{
+    const r=validateCode(code);
+    if(r.valid){setActive(code.toUpperCase());showPage('pageBuilder');loadBuilder(code.toUpperCase())}
+    else{errEl.textContent=r.reason;errEl.style.display='block'}
+    btn.innerHTML='<span>دخول</span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="transform:scaleX(-1)"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';btn.disabled=false;
+  },800);
+}
+
+// ==================== BUILDER ====================
+async function loadBuilder(code){
+
+let data = await getAlbum(code);
+
+// لو مفيش ألبوم
+if(!data){
+currentAlbum = createEmpty(code);
+saveAlbum(currentAlbum);
+}else{
+currentAlbum = data;
+}
+
+// 🔥 أهم إصلاح
+if(!currentAlbum.blocks) currentAlbum.blocks = [];
+if(!currentAlbum.bgColor) currentAlbum.bgColor = "#1a0a10";
+if(!currentAlbum.textColor) currentAlbum.textColor = "#f5e6d3";
+if(!currentAlbum.borderColor) currentAlbum.borderColor = "#c9455a";
+
+// عرض البيانات
+document.getElementById('builderCodeBadge').textContent=code;
+document.getElementById('senderName').value=currentAlbum.senderName||"";
+document.getElementById('receiverName').value=currentAlbum.receiverName||"";
+document.getElementById('password').value=currentAlbum.password||"";
+document.getElementById('passwordHint').value=currentAlbum.passwordHint||"";
+document.getElementById('loveMessage').value=currentAlbum.loveMessage||"";
+
+renderBlocks();
+renderPresets();
+updateColorInputs();
+}
+
+function updateAlbumField(field,value){if(!currentAlbum)return;currentAlbum[field]=value;saveAlbum(currentAlbum)}
+function updateColor(field,value){if(!currentAlbum)return;currentAlbum[field]=value;saveAlbum(currentAlbum);updateColorInputs()}
+
+function updateColorInputs(){
+  document.getElementById('colorBg').value=currentAlbum.bgColor;
+  document.getElementById('colorText').value=currentAlbum.textColor;
+  document.getElementById('colorBorder').value=currentAlbum.borderColor;
+  document.getElementById('swatchBg').style.backgroundColor=currentAlbum.bgColor;
+  document.getElementById('swatchText').style.backgroundColor=currentAlbum.textColor;
+  document.getElementById('swatchBorder').style.backgroundColor=currentAlbum.borderColor;
+}
+
+function updateToggle(id,val){
+  const el=document.getElementById(id);
+  el.className='toggle '+(val?'on':'off');
+}
+
+function toggleOption(field){
+  if(!currentAlbum)return;
+  currentAlbum[field]=!currentAlbum[field];
+  saveAlbum(currentAlbum);
+  if(field==='floatingHearts')updateToggle('toggleHearts',currentAlbum.floatingHearts);
+  if(field==='glowEffect')updateToggle('toggleGlow',currentAlbum.glowEffect);
+}
+
+function switchTab(tab,btn){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('tabContent').style.display=tab==='content'?'block':'none';
+  document.getElementById('tabDesign').style.display=tab==='design'?'block':'none';
+  document.getElementById('tabSettings').style.display=tab==='settings'?'block':'none';
+}
+
+const PRESETS=[
+  {name:'أحمر داكن',bg:'#1a0a10',text:'#f5e6d3',border:'#c9455a'},
+  {name:'وردي',bg:'#1a0a14',text:'#ffe4e9',border:'#e91e63'},
+  {name:'ذهبي',bg:'#12100a',text:'#f5e6c8',border:'#d4a843'},
+  {name:'أزرق',bg:'#0a0e1a',text:'#e0e8f5',border:'#4a7fc9'},
+  {name:'بنفسجي',bg:'#120a1a',text:'#e8e0f5',border:'#9c45c9'},
+  {name:'أخضر',bg:'#0a1a10',text:'#e0f5e6',border:'#45c96a'}
+];
+
+function renderPresets(){
+  const c=document.getElementById('colorPresets');c.innerHTML='';
+  PRESETS.forEach(p=>{
+    c.innerHTML+=`<button class="color-preset" onclick="applyPreset('${p.bg}','${p.text}','${p.border}')"><div class="dots"><div class="dot" style="background:${p.bg}"></div><div class="dot" style="background:${p.border}"></div></div><span class="name">${p.name}</span></button>`;
+  });
+}
+
+function applyPreset(bg,text,border){
+  currentAlbum.bgColor=bg;currentAlbum.textColor=text;currentAlbum.borderColor=border;
+  saveAlbum(currentAlbum);updateColorInputs();
+}
+
+function loadBuilderData(){
+  document.getElementById('builderCodeBadge').textContent=currentAlbum.code;
+  document.getElementById('senderName').value=currentAlbum.senderName||"";
+  document.getElementById('receiverName').value=currentAlbum.receiverName||"";
+  document.getElementById('password').value=currentAlbum.password||"";
+  document.getElementById('passwordHint').value=currentAlbum.passwordHint||"";
+  document.getElementById('loveMessage').value=currentAlbum.loveMessage||"";
+  document.getElementById('relationshipDate').value=currentAlbum.relationshipDate||"";
+  renderBlocks();
+}
+
+// Blocks
+function renderBlocks(){
+  const c=document.getElementById('blocksContainer');c.innerHTML='';
+  const labels={text:'📝 نص / مقالة',image:'🖼️ صورة',music:'🎵 موسيقى',video:'🎬 فيديو','hidden-message':'👁️ رسالة مخفية',counter:'⏱️ عداد العلاقة'};
+  currentAlbum.blocks.forEach((b,i)=>{
+    let bodyHTML='';
+    if(b.type==='text'||b.type==='hidden-message'){
+      bodyHTML=`<textarea class="input" rows="4" placeholder="${b.type==='hidden-message'?'اكتب الرسالة المخفية...':'اكتب النص هنا...'}" oninput="updateBlockContent(${i},this.value)">${b.content||''}</textarea>`;
+    }else if(b.type==='image'||b.type==='music'||b.type==='video'){
+      const accept=b.type==='image'?'image/*':b.type==='music'?'audio/*':'video/*';
+      const icon=b.type==='image'?'🖼️':b.type==='music'?'🎵':'🎬';
+      if(b.fileData){
+        let preview='';
+        if(b.type==='image')preview=`<div class="file-preview"><img src="${b.fileData}"></div>`;
+        else if(b.type==='music')preview=`<div class="file-preview"><div class="audio-info"><span style="font-size:24px">🎵</span><span style="flex:1;font-size:14px;overflow:hidden;text-overflow:ellipsis">${b.fileName||'موسيقى'}</span></div></div>`;
+        else preview=`<div class="file-preview"><video src="${b.fileData}" controls></video></div>`;
+        bodyHTML=preview+`<button class="btn btn-ghost btn-sm" style="margin-top:8px" onclick="triggerFile(${i},'${accept}')">تغيير الملف</button>`;
+      }else{
+        bodyHTML=`<button class="file-upload" onclick="triggerFile(${i},'${accept}')"><div class="icon">${icon}</div><div>اختر ملف من جهازك</div></button>`;
+      }
+      if(b.type==='image'||b.type==='video'){
+        bodyHTML+=`<input class="input" style="margin-top:8px" placeholder="وصف (اختياري)..." value="${b.content||''}" oninput="updateBlockContent(${i},this.value)">`;
+      }
+    }else if(b.type==='counter'){
+      bodyHTML=`<label style="font-size:14px;color:var(--muted);margin-bottom:4px;display:block">تاريخ بداية العلاقة</label><input type="date" class="input" dir="ltr" value="${b.content||''}" oninput="updateBlockContent(${i},this.value)">`;
+    }
+
+    const blockHTML=`
+    <div class="block" style="border-color:${b.borderColor||'var(--border)'};${b.bgColor?'background:'+b.bgColor:''}">
+      <div class="block-header">
+        <span class="grip"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="5" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="19" r="1"/></svg></span>
+        <span class="type-label">${labels[b.type]||b.type}</span>
+        <div class="block-actions">
+          <button onclick="moveBlock(${i},-1)" ${i===0?'disabled':''}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"/></svg></button>
+          <button onclick="moveBlock(${i},1)" ${i===currentAlbum.blocks.length-1?'disabled':''}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></button>
+          <button onclick="dupBlock(${i})"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>
+          <button class="del" onclick="delBlock(${i})"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+        </div>
+      </div>
+      <div class="block-body">
+        ${bodyHTML}
+        <div class="block-colors">
+          <label>خلفية <input type="color" value="${b.bgColor||currentAlbum.bgColor}" oninput="updateBlockColor(${i},'bgColor',this.value)"></label>
+          <label>نص <input type="color" value="${b.textColor||currentAlbum.textColor}" oninput="updateBlockColor(${i},'textColor',this.value)"></label>
+          <label>إطار <input type="color" value="${b.borderColor||currentAlbum.borderColor}" oninput="updateBlockColor(${i},'borderColor',this.value)"></label>
+        </div>
+      </div>
+    </div>`;
+    c.innerHTML+=blockHTML;
+  });
+}
+
+function toggleAddMenu(){const m=document.getElementById('addBlockMenu');m.style.display=m.style.display==='none'?'grid':'none'}
+function addBlock(type){
+  const b={id:genId(),type:type,content:'',bgColor:currentAlbum.bgColor,textColor:currentAlbum.textColor,borderColor:currentAlbum.borderColor};
+  currentAlbum.blocks.push(b);saveAlbum(currentAlbum);renderBlocks();
+  document.getElementById('addBlockMenu').style.display='none';
+}
+function updateBlockContent(i,val){currentAlbum.blocks[i].content=val;saveAlbum(currentAlbum)}
+function updateBlockColor(i,field,val){currentAlbum.blocks[i][field]=val;saveAlbum(currentAlbum);renderBlocks()}
+function moveBlock(i,dir){
+  const t=i+dir;if(t<0||t>=currentAlbum.blocks.length)return;
+  [currentAlbum.blocks[i],currentAlbum.blocks[t]]=[currentAlbum.blocks[t],currentAlbum.blocks[i]];
+  saveAlbum(currentAlbum);renderBlocks();
+}
+function dupBlock(i){const b={...currentAlbum.blocks[i],id:genId()};currentAlbum.blocks.splice(i+1,0,b);saveAlbum(currentAlbum);renderBlocks()}
+function delBlock(i){currentAlbum.blocks.splice(i,1);saveAlbum(currentAlbum);renderBlocks()}
+
+// File handling
+async function triggerFile(blockIndex, accept) {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = accept;
+
+  input.onchange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    showToast("جاري رفع الملف... ⏳");
+
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", "lovealbum");
+
+    try {
+      const response = await fetch(
+        "https://api.cloudinary.com/v1_1/dvcl9qjpt/auto/upload",
+        {
+          method: "POST",
+          body: formData
+        }
+      );
+
+      const data = await response.json();
+
+      if (!data.secure_url) {
+        showToast("فشل الرفع ❌", true);
+        return;
+      }
+
+      currentAlbum.blocks[blockIndex].fileData = data.secure_url;
+      currentAlbum.blocks[blockIndex].fileName = file.name;
+
+      saveAlbum(currentAlbum);
+      renderBlocks();
+
+      showToast("تم رفع الملف بنجاح ✨");
+
+    } catch (err) {
+      showToast("حدث خطأ أثناء الرفع ❌", true);
+    }
+  };
+
+  input.click();
+}
+
+function handleLogout(){clearActive();showPage('pageCodeEntry');document.getElementById('codeInput').value=''}
+
+// Publish
+function publishAlbum(){
+  if(!currentAlbum)return;
+  currentAlbum.isPublished=true;saveAlbum(currentAlbum);
+  showPublishSuccess();
+}
+
+function showPublishSuccess(){
+  document.getElementById('publishArea').style.display='none';
+  const s=document.getElementById('publishSuccess');s.style.display='block';
+  const url=location.origin+location.pathname+'?id='+currentAlbum.code;
+  document.getElementById('albumLink').textContent=url;
+}
+
+function copyAlbumLink(){
+  const url=location.origin+location.pathname+'?id='+currentAlbum.code;
+  navigator.clipboard.writeText(url).then(()=>showToast('تم نسخ الرابط! ✨'));
+}
+
+function openAlbum(){
+  const url=location.origin+location.pathname+'?id='+currentAlbum.code;
+  window.open(url,'_blank');
+}
+
+// ==================== ALBUM VIEW ====================
+let viewAlbum=null;
+
+async function loadAlbumView(id){
+  const album = await getAlbum(id);
+  if(!album){
+    document.getElementById('albumPasswordScreen').style.display='none';
+    document.getElementById('albumContent').style.display='none';
+    const nf=document.getElementById('albumNotFound');nf.style.display='flex';
+    return;
+  }
+  viewAlbum=album;
+  document.getElementById('albumNotFound').style.display='none';
+  
+  if(album.password){
+    document.getElementById('albumPasswordScreen').style.display='flex';
+    document.getElementById('albumPasswordScreen').style.background=album.bgColor;
+    document.getElementById('albumPasswordScreen').querySelector('.lock-icon svg').style.stroke=album.borderColor;
+    document.getElementById('albumHint').textContent=album.passwordHint||'';
+    document.getElementById('albumHint').style.color=album.textColor;
+    document.getElementById('albumPassInput').style.borderColor=album.borderColor;
+    document.getElementById('albumPassInput').style.color=album.textColor;
+    document.getElementById('albumContent').style.display='none';
+  }else{
+    document.getElementById('albumPasswordScreen').style.display='none';
+    renderAlbumContent();
+  }
+  
+  // Hearts
+  if(album.floatingHearts)createHearts();
+  else document.getElementById('heartsContainer').innerHTML='';
+}
+
+function handleAlbumUnlock(e){
+  e.preventDefault();
+  const val=document.getElementById('albumPassInput').value;
+  if(val===viewAlbum.password){
+    document.getElementById('albumPasswordScreen').style.display='none';
+    renderAlbumContent();
+  }else{
+    const err=document.getElementById('albumPassError');err.textContent='كلمة المرور غير صحيحة';err.style.display='block';
+  }
+}
+
+function renderAlbumContent(){
+  const a=viewAlbum;
+  const container=document.getElementById('albumContent');
+  container.style.display='block';
+  container.style.background=a.bgColor;
+  container.style.color=a.textColor;
+  
+  const glow=document.getElementById('albumAmbientGlow');
+  if(a.glowEffect){glow.style.background=a.borderColor+'15';glow.style.display='block'}
+  else glow.style.display='none';
+  
+  const sections=document.getElementById('albumSections');
+  sections.innerHTML='';
+  
+  const speedMap={slow:800,normal:500,fast:200};
+  const delay=speedMap[a.animationSpeed]||500;
+  
+  // Header
+  let html=`<div class="album-header" style="opacity:0"><svg width="40" height="40" viewBox="0 0 24 24" fill="${a.borderColor}40" stroke="${a.borderColor}" stroke-width="2" style="margin:0 auto 16px;display:block" class="animate-pulse-glow"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg><h1 style="font-style:italic">إلى ${a.receiverName||'...'}</h1><p class="from">من ${a.senderName||'...'} 💕</p></div>`;
+  
+  // Love message
+  if(a.loveMessage){
+    html+=`<div class="album-message" style="opacity:0"><p style="white-space:pre-wrap">${a.loveMessage}</p></div>`;
+  }
+  
+  // Counter
+  if(a.relationshipDate){
+    html+=`<div class="album-counter" style="opacity:0"><p class="label">معاً منذ</p><p class="value" id="viewCounter"></p></div>`;
+  }
+  
+  // Blocks
+  a.blocks.forEach((b,i)=>{
+    const style=`background:${b.bgColor||'transparent'};color:${b.textColor||a.textColor};border:1px solid ${b.borderColor||a.borderColor};${a.glowEffect?'box-shadow:0 4px 30px '+b.borderColor+'20':''}`;
+    let content='';
+    
+    if(b.type==='text')content=`<p style="font-size:18px;line-height:1.8;white-space:pre-wrap">${b.content}</p>`;
+    else if(b.type==='image'&&b.fileData){content=`<img src="${b.fileData}" style="width:100%;border-radius:12px">${b.content?'<p class="caption">'+b.content+'</p>':''}`}
+    else if(b.type==='video'&&b.fileData){content=`<video src="${b.fileData}" controls style="width:100%;border-radius:12px"></video>${b.content?'<p class="caption">'+b.content+'</p>':''}`}
+    else if(b.type==='music'&&b.fileData){
+      content=`<div class="audio-row"><button class="play-btn" style="background:${b.borderColor||a.borderColor}" onclick="toggleAudioView(this,'${b.id}')"><svg viewBox="0 0 24 24" fill="${a.bgColor}" stroke="none"><polygon points="5 3 19 12 5 21 5 3"/></svg></button><span class="audio-name">🎵 ${b.fileName||'موسيقى'}</span></div><audio id="audio_${b.id}" src="${b.fileData}"></audio>`;
+    }
+    else if(b.type==='hidden-message'){
+      content=`<div style="text-align:center" id="hidden_${b.id}"><button class="reveal-btn" style="color:${b.textColor||a.textColor};border-color:${b.borderColor||a.borderColor};background:${b.borderColor||a.borderColor}20" onclick="revealHidden('${b.id}','${(b.content||'').replace(/'/g,"\\'")}')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> اضغط لكشف الرسالة</button></div>`;
+    }
+    else if(b.type==='counter'){
+      const date=b.content;
+      let val='—';
+      if(date){const diff=Date.now()-new Date(date).getTime();if(diff>0)val=Math.floor(diff/(1000*3600*24))+' يوم';else val='لم يبدأ بعد'}
+      content=`<div style="text-align:center"><p style="font-size:14px;opacity:.7">معاً منذ</p><p class="font-display" style="font-size:22px;direction:ltr;margin-top:8px">${val}</p></div>`;
+    }
+    
+    if(content)html+=`<div class="album-block" style="${style};opacity:0;border-radius:16px;padding:24px;margin-bottom:16px">${content}</div>`;
+  });
+  
+  // Footer
+  html+=`<div class="album-footer" style="opacity:0"><svg viewBox="0 0 24 24" fill="none" stroke="${a.borderColor}" stroke-width="2" style="margin:0 auto 8px;display:block;width:24px;height:24px"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg><p>صنع بكل حب 💕</p></div>`;
+  
+  sections.innerHTML=html;
+  
+  // Progressive reveal
+  const items=sections.children;
+  for(let i=0;i<items.length;i++){
+    setTimeout(()=>{items[i].style.opacity='1';items[i].style.animation='cinematic 1.2s cubic-bezier(.16,1,.3,1) forwards'},i*delay);
+  }
+  
+  // Live counter
+  if(a.relationshipDate){
+    setInterval(()=>{
+      const el=document.getElementById('viewCounter');if(!el)return;
+      const start=new Date(a.relationshipDate).getTime();
+      const diff=Date.now()-start;
+      if(diff<0){el.textContent='لم يبدأ بعد';return}
+      const d=Math.floor(diff/(1000*3600*24));
+      const h=Math.floor((diff%(1000*3600*24))/(1000*3600));
+      const m=Math.floor((diff%(1000*3600))/(1000*60));
+      const s=Math.floor((diff%(1000*60))/1000);
+      el.textContent=d+' يوم · '+h+' ساعة · '+m+' دقيقة · '+s+' ثانية';
+    },1000);
+  }
+}
+
+function toggleAudioView(btn,id){
+  const audio=document.getElementById('audio_'+id);
+  if(!audio)return;
+  if(audio.paused){
+    audio.play();
+    btn.innerHTML=`<svg viewBox="0 0 24 24" fill="${viewAlbum.bgColor}" stroke="none"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>`;
+  }else{
+    audio.pause();
+    btn.innerHTML=`<svg viewBox="0 0 24 24" fill="${viewAlbum.bgColor}" stroke="none"><polygon points="5 3 19 12 5 21 5 3"/></svg>`;
+  }
+}
+
+function revealHidden(id,content){
+  const el=document.getElementById('hidden_'+id);
+  if(el)el.innerHTML=`<p style="font-size:18px;animation:cinematic 1.2s cubic-bezier(.16,1,.3,1) forwards">${content}</p>`;
+}
+
+// ==================== ADMIN ====================
+function handleAdminLogin(e){
+  e.preventDefault();
+  const pass=document.getElementById('adminPassInput').value;
+  if(pass==='admin123'){
+    document.getElementById('adminLogin').style.display='none';
+    document.getElementById('adminPanel').style.display='block';
+    refreshAdmin();
+  }else showToast('كلمة المرور خاطئة',true);
+}
+
+function refreshAdmin(){
+  const codes=getCodes();const albums=getAlbums();
+  
+  // Codes
+  const cl=document.getElementById('adminCodesList');
+  if(codes.length===0){cl.innerHTML='<div class="empty-state">لا توجد أكواد</div>';return}
+  cl.innerHTML='';
+  codes.forEach(c=>{
+    const expired=c.expiresAt&&new Date()>new Date(c.expiresAt);
+    const badge=c.isUsed?(expired?'<span class="badge badge-expired">منتهي</span>':'<span class="badge badge-used">مستخدم</span>'):'<span class="badge badge-new">جديد</span>';
+    const hasAlbum=!!albums[c.code];
+    cl.innerHTML+=`<div class="code-row"><span class="code-text">${c.code}</span>${badge}${c.isUsed?`<button class="icon-btn" onclick="adminExtend('${c.code}')" title="تمديد 24 ساعة"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#d4a843" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></button>`:''}${hasAlbum?`<button class="icon-btn" onclick="window.open('${location.pathname}?id=${c.code}','_blank')" title="عرض الألبوم"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>`:''}<button class="icon-btn del" onclick="adminDelCode('${c.code}')" title="حذف"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button></div>`;
+  });
+  
+  // Albums
+  const al=document.getElementById('adminAlbumsList');
+  const albumKeys=Object.keys(albums);
+  if(albumKeys.length===0){al.innerHTML='<div class="empty-state">لا توجد ألبومات</div>';return}
+  al.innerHTML='';
+  albumKeys.forEach(code=>{
+    const a=albums[code];
+    al.innerHTML+=`<div class="album-row"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg><span style="font-family:monospace;font-size:14px" dir="ltr">${code}</span><span class="info">${a.senderName?'من '+a.senderName:''} ${a.receiverName?'إلى '+a.receiverName:''}</span>${a.isPublished?'<span class="badge badge-published">منشور</span>':'<span class="badge badge-draft">مسودة</span>'}<button class="icon-btn" onclick="window.open('${location.pathname}?id=${code}','_blank')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button><button class="icon-btn del" onclick="adminDelAlbum('${code}')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button></div>`;
+  });
+}
+
+function adminAddCode(){
+  const input=document.getElementById('newCodeInput');
+  const code=input.value.trim().toUpperCase();
+  if(!code){showToast('اكتب الكود',true);return}
+  const codes=getCodes();
+  if(codes.find(c=>c.code===code)){showToast('الكود موجود بالفعل',true);return}
+  codes.push({code,isUsed:false,firstUsedAt:null,expiresAt:null});
+  saveCodes(codes);input.value='';refreshAdmin();showToast('تم إضافة الكود ✨');
+}
+
+function adminDelCode(code){
+  let codes=getCodes();codes=codes.filter(c=>c.code!==code);saveCodes(codes);refreshAdmin();showToast('تم حذف الكود');
+}
+
+function adminExtend(code){
+  const codes=getCodes();const f=codes.find(c=>c.code===code);
+  if(f){f.expiresAt=new Date(Date.now()+24*3600000).toISOString();saveCodes(codes);refreshAdmin();showToast('تم تمديد 24 ساعة ✨')}
+}
+
+function adminDelAlbum(code){
+  const a=getAlbums();delete a[code];saveAlbums(a);refreshAdmin();showToast('تم حذف الألبوم');
+}
+
+function goHome(){location.href=location.pathname}
+
+// ==================== INIT ====================
+route();
+</script>
+
+
+</body>
+</html>
