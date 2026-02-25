@@ -200,13 +200,61 @@ box-shadow:0 0 20px rgba(245,197,66,.25);
 /* Publish */
 .publish-area{margin-top:32px;padding-bottom:40px}
 .publish-success{
+position:fixed;
+inset:0;
+display:flex;
+align-items:center;
+justify-content:center;
+z-index:9999;
+background:rgba(0,0,0,.65);
+backdrop-filter:blur(12px);
+}
+
+.publish-success .inner{
 background: linear-gradient(145deg,#14090f,#1b0c12);
 border:1px solid #d4a84355;
-box-shadow:0 0 0 1px #d4a84333 inset,
-0 0 40px #d4a84322;
-border-radius:18px;
-padding:28px;
+box-shadow:0 0 40px #d4a84333;
+border-radius:20px;
+padding:35px;
+width:420px;
+text-align:center;
+animation: cinematic 1s ease;
 }
+
+  .big-btn{
+padding:16px 30px;
+border-radius:14px;
+font-size:17px;
+cursor:pointer;
+border:none;
+transition:.35s;
+font-weight:bold;
+}
+
+.btn-gold{
+background:linear-gradient(135deg,#f5c542,#e0a21a);
+color:#000;
+box-shadow:0 0 25px rgba(245,197,66,.4);
+}
+
+.btn-gold:hover{
+transform:translateY(-2px) scale(1.05);
+box-shadow:0 0 35px rgba(245,197,66,.8);
+}
+
+.btn-dark{
+background:#111;
+border:1px solid #f5c542;
+color:#f5c542;
+}
+
+.btn-dark:hover{
+background:#f5c542;
+color:#000;
+transform:scale(1.05);
+}
+
+  
 .publish-success .check-icon{display:inline-flex;align-items:center;justify-content:center;width:64px;height:64px;border-radius:50%;background:rgba(201,69,90,.2);margin-bottom:16px}
 .publish-success .check-icon svg{width:32px;height:32px;color:var(--primary)}
 .publish-success h3{font-size:28px;margin-bottom:12px}
@@ -550,16 +598,23 @@ onclick="toggleOption('glowEffect')">
       <div class="check-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div>
       <h3 class="text-gradient-gold font-display">تم إنشاء الألبوم! 🎉</h3>
       <p class="link" id="albumLink"></p>
-      <div class="actions">
-        <button class="btn btn-primary" onclick="copyAlbumLink()">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-          نسخ الرابط
-        </button>
-        <button class="btn btn-accent" onclick="openAlbum()">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-          فتح الألبوم
-        </button>
-      </div>
+     <div class="actions">
+
+<button class="big-btn btn-gold" onclick="copyAlbumLink()">
+نسخ الرابط
+</button>
+
+<button class="big-btn btn-dark" onclick="openAlbum()">
+فتح الألبوم
+</button>
+
+<br><br>
+
+<button class="btn-ghost" onclick="location.reload()">
+← الرجوع للتعديل
+</button>
+
+</div>
     </div>
   </div>
 </div>
@@ -692,17 +747,24 @@ if(!currentAlbum) return;
 
 currentAlbum.isPublished = true;
 
-db.ref("albums/"+currentAlbum.code).set(currentAlbum).then(()=>{
+db.ref("albums/"+currentAlbum.code).set(currentAlbum)
+.then(()=>{
 
 const url = location.origin + location.pathname + "?id=" + currentAlbum.code;
 
-document.getElementById("publishPopup").style.display="flex";
-document.getElementById("finalLinkBox").innerText=url;
+// عرض الكارت في النص
+document.getElementById("publishSuccess").style.display="block";
+document.getElementById("albumLink").innerText = url;
 
-window.finalAlbumUrl=url;
-
+// scroll
+window.scrollTo({
+top:document.body.scrollHeight,
+behavior:"smooth"
 });
 
+showToast("تم إنشاء الألبوم بنجاح ✨");
+
+});
 }
 
 
@@ -1169,32 +1231,34 @@ let viewAlbum=null;
 
 async function loadAlbumView(id){
 
-const snap = await db.ref("albums/"+id).once("value");
+const album = await getAlbum(id);
 
-if(!snap.exists()){
-document.body.innerHTML="<h2 style='color:white;text-align:center;margin-top:80px'>الألبوم غير موجود</h2>";
+if(!album){
+document.getElementById('albumNotFound').style.display='flex';
 return;
 }
 
-viewAlbum = snap.val();
+viewAlbum = album;
 
 // لو فيه باسورد
-if(viewAlbum.password){
+if(album.password){
 
 document.getElementById('albumPasswordScreen').style.display='flex';
 document.getElementById('albumContent').style.display='none';
 
-let hint=viewAlbum.passwordHint;
-if(!hint) hint="أدخل كلمة السر للدخول ❤️";
-
-document.getElementById('albumHint').textContent=hint;
+let hint = album.passwordHint || "ادخل كلمة السر ❤️";
+document.getElementById('albumHint').innerText = hint;
 
 }else{
 
 document.getElementById('albumPasswordScreen').style.display='none';
-renderAlbumContent(); // 🔥 أهم سطر
+renderAlbumContent();
+
 }
 
+// hearts
+if(album.floatingHearts) createHearts();
+else document.getElementById('heartsContainer').innerHTML="";
 }
 
 function handleAlbumUnlock(e){
@@ -1428,13 +1492,18 @@ route();
 
 if(!currentAlbum) return;
 
-db.ref("albums/"+currentAlbum.code).set(currentAlbum).then(()=>{
+// حفظ قبل المعاينة
+db.ref("albums/"+currentAlbum.code).set(currentAlbum)
+.then(()=>{
 
-window.open(location.origin+location.pathname+
-"?id="+currentAlbum.code+"&preview=1","_blank");
+const url = location.origin + location.pathname + "?id=" + currentAlbum.code + "&preview=1";
+
+// فتح المعاينة
+window.open(url,"_blank");
+
+showToast("تم فتح المعاينة 👁");
 
 });
-
 }
 
   function showPublishCard(id){
