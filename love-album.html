@@ -674,19 +674,21 @@ return localStorage.getItem("albumId") || "LOVE"+Math.floor(Math.random()*99999)
 
 function saveAlbum(){
 
-const params = new URLSearchParams(location.search);
-let albumId = params.get("id");
+if(!currentAlbum) return;
 
-if(!albumId){
-albumId = "LOVE"+Math.floor(Math.random()*999999);
-}
-localStorage.setItem("albumId",id);
+let albumId = currentAlbum.code;
 
-const data = collectData();
+const data = currentAlbum;
 
-firebase.database().ref("albums/"+albumId)
+// حفظ في فايربيز
+firebase.database().ref("albums/"+albumId).set(data)
+.then(()=>{
+console.log("saved");
+})
+.catch(err=>{
+console.log(err);
+});
 
-alert("تم الحفظ");
 }
   
 function showPublishCard(id){
@@ -710,14 +712,22 @@ alert("تم نسخ الرابط");
 
 function publishAlbum(){
 
-const id = localStorage.getItem("albumId") || "LOVE"+Math.floor(Math.random()*99999);
-localStorage.setItem("albumId",id);
+if(!currentAlbum) return;
 
-const data = collectData();
+currentAlbum.isPublished = true;
 
-firebase.database().ref("albums/"+id).set(data).then(()=>{
-showPublishCard(id);
+firebase.database().ref("albums/"+currentAlbum.code).set(currentAlbum)
+.then(()=>{
+
+const url = location.origin + location.pathname + "?id=" + currentAlbum.code;
+
+document.getElementById("publishSuccess").style.display="block";
+document.getElementById("albumLink").innerText = url;
+
+window.scrollTo({top:document.body.scrollHeight,behavior:"smooth"});
+
 });
+
 }
 
 function loadAlbum(){
@@ -741,46 +751,7 @@ renderAlbum(data);
 });
 }
 
-  function renderAlbum(data, preview){
-
-// اسم
-document.querySelector(".album-title").innerText = data.name1 + " ❤ " + data.name2;
-
-// رسالة
-document.querySelector(".album-message").innerText = data.message || "";
-
-// الأقسام
-const container = document.querySelector(".album-blocks");
-container.innerHTML="";
-
-if(data.blocks){
-data.blocks.forEach(b=>{
-if(b.type==="text"){
-container.innerHTML+=`<div class="album-block text-block">${b.text}</div>`;
-}
-if(b.type==="image"){
-container.innerHTML+=`<div class="album-block"><img src="${b.url}"></div>`;
-}
-if(b.type==="audio"){
-container.innerHTML+=`
-<div class="album-block">
-<audio controls autoplay src="${b.url}"></audio>
-</div>`;
-}
-});
-}
-
-// زر الرجوع لو معاينة
-if(preview){
-document.body.innerHTML += `
-<div style="position:fixed;top:20px;left:20px;z-index:999">
-<button onclick="history.back()" style="padding:12px 20px;border-radius:10px;background:#d4a843;border:none">
-⬅ الرجوع للتعديل
-</button>
-</div>`;
-}
-
-}
+  
   
   function updatePasswordField(val){
 currentAlbum.password = val;
@@ -1188,24 +1159,7 @@ async function triggerFile(blockIndex, accept) {
 
 function handleLogout(){clearActive();showPage('pageCodeEntry');document.getElementById('codeInput').value=''}
 
-// Publish
-function publishAlbum(){
-  if(!currentAlbum) return;
 
-  currentAlbum.isPublished = true;
-  saveAlbum(currentAlbum);
-
-  // اظهار شاشة النجاح
-  document.getElementById("publishSuccess").style.display = "block";
-
-  const url = location.origin + location.pathname + "?id=" + currentAlbum.code;
-  document.getElementById("albumLink").textContent = url;
-
-  // اسكرول للنص
-  document.getElementById("publishSuccess").scrollIntoView({
-    behavior:"smooth"
-  });
-}
 
 function showPublishSuccess(){
   document.getElementById('publishArea').style.display='none';
@@ -1487,17 +1441,16 @@ route();
   showToast("تم الحفظ بنجاح 💾");
 }
 
-  function previewAlbum(){
-  if(!currentAlbum) return;
+ function previewAlbum(){
 
-  // نحفظ الأول
-  saveAlbum(currentAlbum);
+if(!currentAlbum) return;
 
-  // نفتح الألبوم مع وضع المعاينة
-  const url = location.origin + location.pathname + "?id=" + currentAlbum.code + "&preview=1";
-  window.open(url,"_blank");
+firebase.database().ref("albums/"+currentAlbum.code).set(currentAlbum)
+.then(()=>{
+window.open(location.origin+location.pathname+"?id="+currentAlbum.code+"&preview=1","_blank");
+});
+
 }
-
   
 
   function showPublishCard(id){
@@ -1532,41 +1485,7 @@ navigator.clipboard.writeText(link);
 alert("تم نسخ الرابط");
 }
 
-  function renderAlbum(data){
-
-document.querySelector(".album-view .content").innerHTML = `
-<div class="album-header">
-<h1>${data.title || "Love Album"}</h1>
-<div class="from">${data.from || ""}</div>
-</div>
-
-<div class="album-message">
-${data.message || ""}
-</div>
-`;
-
-if(data.blocks){
-data.blocks.forEach(b=>{
-if(b.type==="image"){
-document.querySelector(".album-view .content").innerHTML +=
-`<div class="album-block"><img src="${b.url}"></div>`;
-}
-
-if(b.type==="music"){
-document.querySelector(".album-view .content").innerHTML +=
-`<div class="album-block">
-<audio controls autoplay src="${b.url}"></audio>
-</div>`;
-}
-
-if(b.type==="text"){
-document.querySelector(".album-view .content").innerHTML +=
-`<div class="album-block text-block"><p>${b.text}</p></div>`;
-}
-});
-}
-
-}
+  
 
   loadAlbum();
 </script>
