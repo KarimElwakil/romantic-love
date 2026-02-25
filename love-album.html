@@ -934,9 +934,28 @@ function renderAlbumContent(){
     if(b.type==='text')content=`<p style="font-size:18px;line-height:1.8;white-space:pre-wrap">${b.content}</p>`;
     else if(b.type==='image'&&b.fileData){content=`<img src="${b.fileData}" style="width:100%;border-radius:12px">${b.content?'<p class="caption">'+b.content+'</p>':''}`}
     else if(b.type==='video'&&b.fileData){content=`<video src="${b.fileData}" controls style="width:100%;border-radius:12px"></video>${b.content?'<p class="caption">'+b.content+'</p>':''}`}
-    else if(b.type==='music'&&b.fileData){
-      content=`<div class="audio-row"><button class="play-btn" style="background:${b.borderColor||a.borderColor}" onclick="toggleAudioView(this,'${b.id}')"><svg viewBox="0 0 24 24" fill="${a.bgColor}" stroke="none"><polygon points="5 3 19 12 5 21 5 3"/></svg></button><span class="audio-name">🎵 ${b.fileName||'موسيقى'}</span></div><audio id="audio_${b.id}" src="${b.fileData}"></audio>`;
+   else if(b.type==='music' && b.fileData){
+
+  // مش هنعرض اي زرار او اسم
+  content = `<audio id="audio_${b.id}" src="${b.fileData}" preload="auto"></audio>`;
+
+  // تشغيل تلقائي في الخلفية
+  setTimeout(()=>{
+    const audio = document.getElementById("audio_"+b.id);
+    if(audio){
+      audio.volume = 0.9;
+      audio.loop = true;
+
+      // autoplay قوي
+      audio.play().catch(()=>{
+        // لو المتصفح منع التشغيل
+        document.body.addEventListener("click",()=>{
+          audio.play();
+        },{once:true});
+      });
     }
+  },1500);
+}
     else if(b.type==='hidden-message'){
       content=`<div style="text-align:center" id="hidden_${b.id}"><button class="reveal-btn" style="color:${b.textColor||a.textColor};border-color:${b.borderColor||a.borderColor};background:${b.borderColor||a.borderColor}20" onclick="revealHidden('${b.id}','${(b.content||'').replace(/'/g,"\\'")}')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> اضغط لكشف الرسالة</button></div>`;
     }
