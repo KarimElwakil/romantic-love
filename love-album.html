@@ -775,12 +775,10 @@ function saveAlbums(a){
 }
 // ===== FIREBASE SAVE =====
 function saveAlbum(album){
-  // حفظ محلي احتياطي
   const a=getAlbums();
   a[album.code]=album;
   saveAlbums(a);
 
-  // حفظ في فايربيز
   db.ref("albums/"+album.code).set(album);
 }
 
