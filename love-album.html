@@ -673,9 +673,16 @@ function toggleOption(field){
 function switchTab(tab,btn){
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   btn.classList.add('active');
-  document.getElementById('tabContent').style.display=tab==='content'?'block':'none';
-  document.getElementById('tabDesign').style.display=tab==='design'?'block':'none';
-  document.getElementById('tabSettings').style.display=tab==='settings'?'block':'none';
+
+  document.getElementById('tabContent').style.display = tab==='content' ? 'block':'none';
+  document.getElementById('tabDesign').style.display = tab==='design' ? 'block':'none';
+  document.getElementById('tabSettings').style.display = tab==='settings' ? 'block':'none';
+
+  // 🔥 أهم جزء: اخفاء شاشة تم الإنشاء عند الرجوع للأقسام
+  if(tab === 'content'){
+    document.getElementById('publishSuccess').style.display = 'none';
+    document.getElementById('publishArea').style.display = 'block';
+  }
 }
 
 const PRESETS=[
