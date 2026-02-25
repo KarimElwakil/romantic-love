@@ -477,16 +477,54 @@ const urlParams = new URLSearchParams(window.location.search);
 const albumCode = urlParams.get("id");
 
 if(!albumCode){
- document.body.innerHTML="❌ لا يوجد كود";
- throw new Error("no code");
+document.body.innerHTML = `
+<div style="
+height:100vh;
+display:flex;
+justify-content:center;
+align-items:center;
+background:#070203;
+color:white;
+font-size:28px;
+font-family:Tajawal;
+flex-direction:column;
+text-align:center">
+
+❌ هذا الرابط غير صالح
+<br><br>
+<span style="font-size:16px;color:#ff8fb1">
+يجب استخدام الرابط المرسل لك
+</span>
+
+</div>`;
+throw new Error("NO ID");
 }
 
 db.ref("albums/"+albumCode).once("value").then(snapshot=>{
 
- if(!snapshot.exists()){
-   document.body.innerHTML="❌ الكود غير صحيح";
-   throw new Error("invalid");
- }
+if(!snapshot.exists()){
+document.body.innerHTML = `
+<div style="
+height:100vh;
+display:flex;
+justify-content:center;
+align-items:center;
+background:#070203;
+color:white;
+font-size:28px;
+font-family:Tajawal;
+flex-direction:column;
+text-align:center">
+
+❌ هذا الكود غير موجود
+<br><br>
+<span style="font-size:16px;color:#ff8fb1">
+تأكد من الرابط
+</span>
+
+</div>`;
+throw new Error("INVALID");
+}
 
  albumData = snapshot.val();
  initAlbum();
