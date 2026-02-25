@@ -667,6 +667,19 @@ db.ref("test").set({
 
 <script>
 
+function closePublishPopup(){
+document.getElementById("publishPopup").style.display="none";
+}
+
+function copyFinalLink(){
+navigator.clipboard.writeText(window.finalAlbumUrl);
+showToast("تم نسخ الرابط ✨");
+}
+
+function openFinalAlbum(){
+window.open(window.finalAlbumUrl,"_blank");
+}
+  
   function getAlbumId(){
 return localStorage.getItem("albumId") || "LOVE"+Math.floor(Math.random()*99999);
 }
@@ -679,20 +692,14 @@ if(!currentAlbum) return;
 
 currentAlbum.isPublished = true;
 
-db.ref("albums/"+currentAlbum.code).set(currentAlbum)
-.then(()=>{
+db.ref("albums/"+currentAlbum.code).set(currentAlbum).then(()=>{
 
 const url = location.origin + location.pathname + "?id=" + currentAlbum.code;
 
-document.getElementById("publishSuccess").style.display="block";
-document.getElementById("albumLink").innerText = url;
+document.getElementById("publishPopup").style.display="flex";
+document.getElementById("finalLinkBox").innerText=url;
 
-// 🔥 الكارت اللي انت عايزه
-showPublishCard(currentAlbum.code);
-
-window.scrollTo({top:document.body.scrollHeight,behavior:"smooth"});
-
-showToast("تم إنشاء الألبوم بنجاح 🎉");
+window.finalAlbumUrl=url;
 
 });
 
@@ -1161,37 +1168,33 @@ function openAlbum(){
 let viewAlbum=null;
 
 async function loadAlbumView(id){
-  const album = await getAlbum(id);
-  if(!album){
-    document.getElementById('albumPasswordScreen').style.display='none';
-    document.getElementById('albumContent').style.display='none';
-    const nf=document.getElementById('albumNotFound');nf.style.display='flex';
-    return;
-  }
-  viewAlbum=album;
-  document.getElementById('albumNotFound').style.display='none';
-  
-  if(album.password){
-    document.getElementById('albumPasswordScreen').style.display='flex';
-    document.getElementById('albumPasswordScreen').style.background=album.bgColor;
-    document.getElementById('albumPasswordScreen').querySelector('.lock-icon svg').style.stroke=album.borderColor;
-   let hint = album.passwordHint;
-if(!hint && album.password){
-hint = "أدخل كلمة السر للدخول ❤️";
+
+const snap = await db.ref("albums/"+id).once("value");
+
+if(!snap.exists()){
+document.body.innerHTML="<h2 style='color:white;text-align:center;margin-top:80px'>الألبوم غير موجود</h2>";
+return;
 }
-document.getElementById('albumHint').textContent = hint || "";
-    document.getElementById('albumHint').style.color=album.textColor;
-    document.getElementById('albumPassInput').style.borderColor=album.borderColor;
-    document.getElementById('albumPassInput').style.color=album.textColor;
-    document.getElementById('albumContent').style.display='none';
-  }else{
-    document.getElementById('albumPasswordScreen').style.display='none';
-    renderAlbumContent();
-  }
-  
-  // Hearts
-  if(album.floatingHearts)createHearts();
-  else document.getElementById('heartsContainer').innerHTML='';
+
+viewAlbum = snap.val();
+
+// لو فيه باسورد
+if(viewAlbum.password){
+
+document.getElementById('albumPasswordScreen').style.display='flex';
+document.getElementById('albumContent').style.display='none';
+
+let hint=viewAlbum.passwordHint;
+if(!hint) hint="أدخل كلمة السر للدخول ❤️";
+
+document.getElementById('albumHint').textContent=hint;
+
+}else{
+
+document.getElementById('albumPasswordScreen').style.display='none';
+renderAlbumContent(); // 🔥 أهم سطر
+}
+
 }
 
 function handleAlbumUnlock(e){
@@ -1421,13 +1424,15 @@ route();
 }
 
 
-  function previewAlbum(){
+ function previewAlbum(){
 
 if(!currentAlbum) return;
 
-db.ref("albums/"+currentAlbum.code).set(currentAlbum)
-.then(()=>{
-window.open(location.origin+location.pathname+"?id="+currentAlbum.code+"&preview=1","_blank");
+db.ref("albums/"+currentAlbum.code).set(currentAlbum).then(()=>{
+
+window.open(location.origin+location.pathname+
+"?id="+currentAlbum.code+"&preview=1","_blank");
+
 });
 
 }
@@ -1468,7 +1473,64 @@ alert("تم نسخ الرابط");
 
   loadAlbum();
 </script>
-<div id="publishCard" style="display:none"></div>
+<div id="publishPopup" style="
+position:fixed;
+inset:0;
+display:none;
+align-items:center;
+justify-content:center;
+background:rgba(0,0,0,.75);
+backdrop-filter:blur(14px);
+z-index:9999;
+">
+
+<div class="card glow-gold" style="
+max-width:420px;
+width:90%;
+text-align:center;
+padding:35px;
+">
+
+<div style="
+width:70px;
+height:70px;
+border-radius:50%;
+background:#d4a84322;
+display:flex;
+align-items:center;
+justify-content:center;
+margin:auto;
+margin-bottom:15px;
+font-size:28px;
+">❤️</div>
+
+<h2 class="text-gradient-gold">تم إنشاء الألبوم 🎉</h2>
+
+<p style="opacity:.7;margin:10px 0">شارك الرابط</p>
+
+<div id="finalLinkBox" class="input" style="direction:ltr;margin-bottom:18px"></div>
+
+<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+
+<button class="btn-accent" onclick="copyFinalLink()">نسخ الرابط</button>
+
+<button class="btn-ghost" onclick="openFinalAlbum()">فتح الألبوم</button>
+
+</div>
+
+<button onclick="closePublishPopup()" style="
+margin-top:18px;
+background:transparent;
+border:none;
+color:#aaa;
+cursor:pointer;
+font-size:14px;
+">
+⬅ الرجوع للتعديل
+</button>
+
+</div>
+</div>
 
 </body>
 </html>
