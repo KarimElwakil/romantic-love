@@ -792,6 +792,8 @@ db.ref("test").set({
 
 
 <script>
+  let currentAlbum = null;
+let viewAlbum = null;
 
 function closePublishPopup(){
 document.getElementById("publishPopup").style.display="none";
@@ -823,22 +825,13 @@ db.ref("albums/"+currentAlbum.code).set(currentAlbum)
 
 const url = location.origin + location.pathname + "?id=" + currentAlbum.code;
 
-// عرض الكارت في النص
 document.getElementById("publishSuccess").style.display="block";
 document.getElementById("albumLink").innerText = url;
 
-// scroll
-window.scrollTo({
-top:document.body.scrollHeight,
-behavior:"smooth"
-});
-
 showToast("تم إنشاء الألبوم بنجاح ✨");
-  showSuccessScreen(albumLink)
 
 });
 }
-
 
 async function loadAlbum(){
 
@@ -921,7 +914,7 @@ function saveAlbum(album){
 
   db.ref("albums/"+album.code).set(album);
 }
-  showSuccessScreen(albumLink)
+ 
 
 // ===== FIREBASE LOAD =====
 async function getAlbum(code){
@@ -1579,46 +1572,16 @@ showToast("تم فتح المعاينة 👁");
 });
 }
 
-  function showPublishCard(id){
-
-document.getElementById("publishCard").style.display="block";
-
-document.getElementById("publishCard").innerHTML=`
-<div class="card glow-gold" style="text-align:center;margin-top:40px">
-
-<h2 class="text-gradient-gold">تم إنشاء الألبوم 🎉</h2>
-
-<p style="opacity:.7">شارك الرابط</p>
-
-<div class="input" style="direction:ltr;margin:15px 0">
-${location.origin+location.pathname+"?id="+id}
-</div>
-
-<button class="btn-accent" onclick="copyLink('${location.origin+location.pathname+"?id="+id}')">
-نسخ الرابط
-</button>
-
-<button class="btn-ghost" onclick="window.open('love-album.html?id=${id}','_blank')">
-فتح الألبوم
-</button>
-
-</div>
-`;
-}
+  
 
 function copyLink(link){
 navigator.clipboard.writeText(link);
 alert("تم نسخ الرابط");
 }
 
-  function showSuccessScreen(link){
-document.getElementById("albumSuccessScreen").style.display="flex";
-document.getElementById("finalLink").innerText = link;
-}
+ 
 
-function closeSuccess(){
-document.getElementById("albumSuccessScreen").style.display="none";
-}
+
 
 function openAlbum(){
 let link = document.getElementById("finalLink").innerText;
@@ -1634,28 +1597,6 @@ alert("تم نسخ الرابط");
 
   loadAlbum();
 </script>
-<!-- SUCCESS FULL SCREEN -->
-<div id="albumSuccessScreen" class="success-screen">
 
-  <div class="success-card">
-
-    <div class="heart">❤️</div>
-
-    <h2>تم إنشاء الألبوم</h2>
-    <p>شارك الرابط مع من تحب</p>
-
-    <div id="finalLink" class="link-box"></div>
-
-    <div class="btns">
-      <button class="gold-btn" onclick="copyAlbumLink()">نسخ الرابط</button>
-      <button class="dark-btn" onclick="openAlbum()">فتح الألبوم</button>
-    </div>
-
-    <div class="back-edit" onclick="closeSuccess()">
-      ← الرجوع للتعديل
-    </div>
-
-  </div>
-</div>
 </body>
 </html>
