@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>إنشاء ألبوم</title>
+</head>
+<body style="font-family:Arial;padding:40px">
+
+<h2>إنشاء ألبوم حب</h2>
+
+<input id="name" placeholder="اسم الحبيب"><br><br>
+<input id="from" placeholder="اسمك"><br><br>
+<input id="pass" placeholder="باسورد الألبوم"><br><br>
+<textarea id="msg" placeholder="اكتب الرسالة"></textarea><br><br>
+
+<button onclick="createAlbum()">إنشاء الألبوم</button>
+
+<h3 id="result"></h3>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+<script>
+var firebaseConfig = {
+  apiKey: "AIzaSyAEpVTV2bAzIal7FkEl3JadPvn0fkqpAF4",
+  authDomain: "love-site-e2cb7.firebaseapp.com",
+  databaseURL: "https://love-site-e2cb7-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "love-site-e2cb7",
+  storageBucket: "love-site-e2cb7.appspot.com",
+  messagingSenderId: "861816430901",
+  appId: "1:861816430901:web:144adb8ebbc2ad966d6c7c"
+};
+
+firebase.initializeApp(firebaseConfig);
+var db = firebase.database();
+</script>
+function randomId(){
+ return Math.random().toString(36).substring(2,8);
+}
+
+function createAlbum(){
+
+ const id = randomId();
+
+ const data = {
+   recipientName: document.getElementById("name").value,
+   senderName: document.getElementById("from").value,
+   password: document.getElementById("pass").value,
+   sections:[
+    {
+     id:"s1",
+     type:"message",
+     order:1,
+     data:{
+      title:"رسالة حب",
+      text:document.getElementById("msg").value
+     }
+    }
+   ]
+ };
+
+ db.ref("albums/"+id).set(data).then(()=>{
+   document.getElementById("result").innerHTML =
+   "لينك الألبوم 👇<br><br>"+
+   "<b>album.html?id="+id+"</b>";
+ });
+
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>💝 رسالة حب</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #070203;
+  --bg2: #120309;
+
+  --red: #ff2d55;
+  --red-light: #ff4d73;
+  --red-glow: #ff1f4a;
+
+  --pink: #ff8fb1;
+  --rose: #ff6f91;
+
+  --cream: #ffe4ec;
+  --gold: #ffc46b;
+
+  --text: #ffeef3;
+  --text-muted: #c08a96;
+
+  --border: #2a0d15;
+  --card: rgba(25, 6, 12, 0.65);
+}
+
+html {
+  scroll-behavior: smooth;
+  overflow-x: hidden;
+}
+
+body {
+  background:
+radial-gradient(circle at 20% 20%, rgba(255,40,90,0.15), transparent 40%),
+radial-gradient(circle at 80% 70%, rgba(255,120,160,0.12), transparent 40%),
+linear-gradient(180deg,#14030a,#070203);
+  color: var(--text);
+  font-family: 'Tajawal', sans-serif;
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+h1, h2, h3, h4 { font-family: 'Playfair Display', serif; }
+
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--red); border-radius: 2px; }
+
+/* ===== HEARTS ANIMATION ===== */
+.hearts-container {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+.heart {
+  position: absolute;
+  bottom: -50px;
+  opacity: 0;
+  animation: floatHeart linear infinite;
+  font-size: 20px;
+  filter: drop-shadow(0 0 6px rgba(255, 45, 85, 0.4));
+}
+@keyframes floatHeart {
+  0% { opacity: 0; transform: translateY(0) rotate(0deg) scale(0.5); }
+  10% { opacity: 0.8; }
+  50% { opacity: 0.6; }
+  90% { opacity: 0.2; }
+  100% { opacity: 0; transform: translateY(-100vh) rotate(45deg) scale(1.2); }
+}
+
+/* ===== AMBIENT GLOW ===== */
+.glow-orb {
+  position: fixed;
+  border-radius: 50%;
+filter: blur(20px);
+  pointer-events: none;
+  z-index: 0;
+}
+.glow-1 { width: 400px; height: 400px; background: rgba(192, 57, 79, 0.08); top: 20%; left: 30%; }
+.glow-2 { width: 300px; height: 300px; background: rgba(224, 86, 112, 0.06); bottom: 30%; right: 20%; }
+
+/* ===== LOCK SCREEN ===== */
+#lockScreen {
+  position: fixed; inset: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: center;
+  background:
+radial-gradient(circle at 20% 20%, rgba(255,40,90,0.18), transparent 40%),
+radial-gradient(circle at 80% 70%, rgba(255,120,160,0.14), transparent 40%),
+linear-gradient(180deg,#14030a,#070203);
+  transition: opacity 0.8s, visibility 0.8s;
+}
+#lockScreen.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+
+.lock-content { text-align: center; max-width: 340px; padding: 20px; }
+.lock-emoji {
+  font-size: 56px;
+  animation: pulse 3s ease-in-out infinite;
+}
+@keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.15); } }
+
+.lock-title { font-size: 28px; margin: 16px 0 8px; color: var(--cream); }
+.lock-subtitle { font-size: 18px; color: var(--text-muted); margin-bottom: 30px; }
+
+.lock-input {
+  width: 100%; padding: 14px; text-align: center;
+  background: rgba(255,255,255,0.05); border: 1px solid var(--border);
+  border-radius: 12px; color: var(--text); font-size: 18px;
+  font-family: 'Tajawal', sans-serif;
+  outline: none; transition: border-color 0.3s;
+}
+.lock-input:focus { border-color: var(--red); }
+.lock-input::placeholder { color: var(--text-muted); }
+
+.lock-btn {
+  width: 100%; padding: 14px; margin-top: 14px;
+  background: linear-gradient(135deg, var(--red), var(--red-light));
+  border: none; border-radius: 12px;
+  color: white; font-size: 16px; font-family: 'Tajawal', sans-serif;
+  cursor: pointer; transition: transform 0.2s, box-shadow 0.3s;
+}
+.lock-btn:hover { transform: scale(1.02); box-shadow: 0 0 30px rgba(255,45,85,0.3); }
+.lock-btn:active { transform: scale(0.98); }
+
+.lock-error {
+  color: var(--red-glow); font-size: 14px; margin-top: 10px;
+  opacity: 0; transition: opacity 0.3s;
+}
+.lock-error.show { opacity: 1; }
+
+@keyframes shake { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-10px); } 75% { transform: translateX(10px); } }
+.shake { animation: shake 0.4s ease-in-out; }
+
+/* ===== LOADING SCREEN ===== */
+#loadingScreen {
+  position: fixed; inset: 0; z-index: 90;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  background: var(--bg);
+  transition: opacity 0.8s, visibility 0.8s;
+}
+#loadingScreen.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+
+.loading-text {
+  font-family: 'Playfair Display', serif;
+  font-size: 22px; color: var(--cream);
+  animation: fadeInOut 2s ease-in-out infinite;
+}
+@keyframes fadeInOut { 0%,100% { opacity: 0.5; } 50% { opacity: 1; } }
+
+.loading-sub { font-size: 16px; color: var(--text-muted); margin-top: 8px; }
+
+.progress-bar {
+  width: 200px; height: 2px; background: var(--border);
+  border-radius: 2px; margin-top: 30px; overflow: hidden;
+}
+.progress-fill {
+  height: 100%; width: 0%;
+  background: linear-gradient(90deg, var(--red), var(--pink));
+  border-radius: 2px; transition: width 0.1s;
+}
+
+/* ===== MAIN ALBUM ===== */
+#albumContent {
+  opacity: 0; transition: opacity 1s;
+  position: relative; z-index: 1;
+}
+#albumContent.visible { opacity: 1; }
+
+/* ===== HEADER ===== */
+.album-header {
+  min-height: 100vh; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  text-align: center; padding: 20px; position: relative;
+}
+.header-label { font-size: 16px; color: var(--text-muted); margin-bottom: 12px; opacity: 0; animation: fadeUp 1s 0.5s forwards; }
+.header-name {
+  font-size: clamp(40px, 10vw, 72px);
+  background: linear-gradient(135deg, var(--red-light), var(--pink), var(--red));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text; opacity: 0; animation: fadeUp 1s 0.8s forwards;
+}
+.header-divider {
+  width: 80px; height: 1px; margin: 20px auto;
+  background: linear-gradient(90deg, transparent, var(--red), transparent);
+  opacity: 0; animation: fadeUp 0.8s 1.2s forwards;
+}
+.header-from { font-size: 18px; color: var(--text-muted); opacity: 0; animation: fadeUp 0.8s 1.5s forwards; }
+
+.scroll-indicator {
+  margin-top: 50px; opacity: 0; animation: fadeUp 0.8s 2.5s forwards;
+}
+.scroll-text { font-size: 12px; color: rgba(138,107,115,0.5); margin-bottom: 8px; }
+.scroll-line {
+  width: 1px; height: 30px; margin: 0 auto;
+  background: linear-gradient(to bottom, rgba(192,57,79,0.4), transparent);
+  animation: scrollBounce 2s ease-in-out infinite;
+}
+@keyframes scrollBounce { 0%,100% { transform: translateY(0); } 50% { transform: translateY(8px); } }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ===== SECTIONS ===== */
+.section {
+  padding: 60px 20px; max-width: 600px; margin: 0 auto;
+  opacity: 0; transform: translateY(30px);
+  transition: opacity 0.8s, transform 0.8s;
+}
+.section.visible { opacity: 1; transform: translateY(0); }
+
+.section-divider {
+  width: 100px; height: 1px; margin: 40px auto 0;
+  background: linear-gradient(90deg, transparent, rgba(192,57,79,0.3), transparent);
+}
+
+/* Message */
+.msg-title {
+  font-size: clamp(22px, 5vw, 32px); text-align: center; margin-bottom: 20px;
+  background: linear-gradient(135deg, var(--red-light), var(--pink));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.msg-text {
+  font-size: 19px;
+  line-height: 1.9;
+  text-align: center;
+  color: rgba(240,221,226,0.85);
+  min-height: 120px;
+}
+/* ===== Romantic Message Frame ===== */
+.message-frame {
+  position: relative;
+  background: rgba(255, 20, 80, 0.06);
+  border: 1px solid rgba(255, 80, 120, 0.25);
+  border-radius: 20px;
+  padding: 30px 25px;
+  margin-top: 20px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 0 40px -15px rgba(255, 45, 85, 0.25);
+  overflow: hidden;
+  transition: all 0.4s ease;
+}
+
+.message-frame:hover {
+  box-shadow: 0 0 60px -10px rgba(255, 45, 85, 0.35);
+  transform: translateY(-3px);
+}
+
+.message-frame::before,
+.message-frame::after {
+  content: "♥";
+  position: absolute;
+  font-size: 14px;
+  color: rgba(255, 120, 160, 0.4);
+}
+
+.message-frame::before {
+  top: 12px;
+  right: 15px;
+}
+
+.message-frame::after {
+  bottom: 12px;
+  left: 15px;
+}
+.typing-cursor {
+  display: inline-block; width: 2px; height: 1em;
+  background: var(--red); margin-right: 2px;
+  animation: blink 0.8s step-end infinite;
+}
+@keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0; } }
+
+/* Photos */
+.photos-caption {
+  font-size: 24px; text-align: center; margin-bottom: 24px;
+  background: linear-gradient(135deg, var(--gold), var(--pink));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.photo-main {
+  position: relative; width: 100%; aspect-ratio: 4/5; border-radius: 16px;
+  overflow: hidden; margin-bottom: 12px;
+  box-shadow: 0 0 40px -10px rgba(255,45,85,0.2);
+}
+.photo-main img {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  object-fit: cover; transition: opacity 0.6s; opacity: 0;
+}
+.photo-main img.active { opacity: 1; }
+.photo-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(to top, rgba(10,5,8,0.5), transparent 50%, rgba(10,5,8,0.15));
+}
+.photo-thumbs { display: flex; justify-content: center; gap: 8px; }
+.photo-thumb {
+  width: 56px; height: 56px; border-radius: 10px; overflow: hidden;
+  border: 2px solid var(--border); cursor: pointer; transition: all 0.3s;
+  opacity: 0.5;
+}
+.photo-thumb.active { border-color: var(--red); opacity: 1; transform: scale(1.05); }
+.photo-thumb img { width: 100%; height: 100%; object-fit: cover; }
+
+/* Counter */
+.counter-label { font-size: 18px; color: var(--text-muted); text-align: center; margin-bottom: 24px; }
+.counter-units { display: flex; justify-content: center; gap: 24px; flex-wrap: wrap; }
+.counter-unit { text-align: center; }
+.counter-value {
+  font-family: 'Playfair Display', serif; font-size: clamp(32px, 8vw, 52px);
+  background: linear-gradient(135deg, var(--red-light), var(--pink));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  font-variant-numeric: tabular-nums;
+}
+.counter-name { font-size: 14px; color: var(--text-muted); margin-top: 4px; }
+.counter-clock {
+  text-align: center; margin-top: 24px; font-size: 16px;
+  color: rgba(138,107,115,0.5); font-variant-numeric: tabular-nums;
+  letter-spacing: 2px;
+}
+.clock-blink { animation: blink 1s step-end infinite; }
+
+/* Music */
+.music-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 20px; padding: 30px; text-align: center;
+  backdrop-filter: blur(10px); max-width: 320px; margin: 0 auto;
+}
+.vinyl {
+  width: 90px; height: 90px; border-radius: 50%; margin: 0 auto 16px;
+  border: 4px solid rgba(192,57,79,0.2);
+  background: radial-gradient(circle, var(--bg2), var(--bg));
+  display: flex; align-items: center; justify-content: center;
+  transition: transform 0.3s;
+}
+.vinyl.spinning { animation: spin 3s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.vinyl-inner { width: 30px; height: 30px; border-radius: 50%; background: rgba(192,57,79,0.3); }
+.music-title { font-family: 'Playfair Display', serif; font-size: 18px; margin-bottom: 4px; }
+.music-artist { font-size: 14px; color: var(--text-muted); margin-bottom: 16px; }
+.play-btn {
+  width: 48px; height: 48px; border-radius: 50%;
+  background: rgba(192,57,79,0.2); border: 1px solid rgba(192,57,79,0.3);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; margin: 0 auto; transition: all 0.3s;
+}
+.play-btn:hover { background: rgba(192,57,79,0.35); }
+.play-icon { width: 0; height: 0; border-top: 7px solid transparent; border-bottom: 7px solid transparent; border-left: 12px solid var(--text); margin-left: 3px; }
+.pause-icon { display: flex; gap: 3px; }
+.pause-icon span { width: 3px; height: 16px; background: var(--text); border-radius: 2px; }
+.music-note { font-size: 12px; color: rgba(138,107,115,0.4); margin-top: 12px; }
+
+/* Surprise */
+.surprise-emoji { font-size: 40px; margin-bottom: 16px; text-align: center; animation: wiggle 2s ease-in-out infinite 3s; }
+@keyframes wiggle { 0%,100% { transform: rotate(0); } 25% { transform: rotate(-10deg); } 75% { transform: rotate(10deg); } }
+.surprise-btn {
+  display: block; margin: 0 auto; padding: 16px 32px;
+  background: rgba(192,57,79,0.15); border: 1px solid rgba(192,57,79,0.3);
+  border-radius: 14px; color: var(--text); font-size: 16px;
+  font-family: 'Tajawal', sans-serif; cursor: pointer;
+  transition: all 0.3s; box-shadow: 0 0 30px -10px rgba(255,45,85,0.15);
+}
+.surprise-btn:hover { background: rgba(192,57,79,0.25); box-shadow: 0 0 40px -10px rgba(255,45,85,0.3); transform: scale(1.03); }
+.surprise-content {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 16px; padding: 28px; text-align: center;
+  box-shadow: 0 0 40px -10px rgba(255,45,85,0.15);
+  animation: revealSurprise 0.6s ease-out;
+}
+@keyframes revealSurprise { from { opacity: 0; transform: scale(0.9) translateY(10px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+.surprise-text { font-size: 19px; line-height: 1.9; color: rgba(240,221,226,0.85); }
+
+/* Video */
+.video-wrap {
+  aspect-ratio: 16/9; border-radius: 16px; overflow: hidden;
+  background: var(--card); border: 1px solid var(--border);
+  box-shadow: 0 0 30px -10px rgba(255,45,85,0.1);
+  display: flex; align-items: center; justify-content: center;
+}
+.video-placeholder { text-align: center; }
+.video-placeholder-icon { font-size: 36px; margin-bottom: 8px; }
+.video-placeholder-text { color: var(--text-muted); }
+.video-caption { text-align: center; font-size: 16px; color: var(--text-muted); margin-top: 12px; }
+
+/* Footer */
+.album-footer { padding: 60px 20px; text-align: center; }
+.footer-divider { width: 50px; height: 1px; margin: 0 auto 24px; background: linear-gradient(90deg, transparent, rgba(192,57,79,0.3), transparent); }
+.footer-heart { font-size: 28px; margin-bottom: 12px; animation: pulse 2.5s ease-in-out infinite; }
+.footer-label { font-size: 20px; color: rgba(240,221,226,0.6); margin-bottom: 6px; font-family: 'Playfair Display', serif; }
+.footer-name {
+  font-size: 18px;
+  background: linear-gradient(135deg, var(--red-light), var(--pink));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.footer-credit { font-size: 12px; color: rgba(138,107,115,0.25); margin-top: 40px; }
+</style>
+</head>
+<body>
+
+<!-- Floating Hearts -->
+<div class="hearts-container" id="heartsContainer"></div>
+
+<!-- Ambient Glows -->
+<div class="glow-orb glow-1"></div>
+<div class="glow-orb glow-2"></div>
+
+<!-- Lock Screen -->
+<div id="lockScreen">
+  <div class="lock-content">
+    <div class="lock-emoji">💌</div>
+    <h1 class="lock-title">رسالة خاصة</h1>
+    <p class="lock-subtitle">إلى <span id="lockName"></span></p>
+    <form id="lockForm">
+      <input type="password" class="lock-input" id="lockInput" placeholder="أدخل كلمة المرور" autocomplete="off">
+      <button type="submit" class="lock-btn">افتح الرسالة</button>
+      <p class="lock-error" id="lockError">كلمة المرور غير صحيحة</p>
+    </form>
+  </div>
+</div>
+
+<!-- Loading Screen -->
+<div id="loadingScreen" class="hidden">
+  <p class="loading-text">نحضّر شيئًا مميزًا</p>
+  <p class="loading-sub">لـ <span id="loadingName"></span></p>
+  <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+</div>
+
+<!-- Album Content -->
+<div id="albumContent">
+  <!-- Header -->
+  <header class="album-header">
+    <p class="header-label">رسالة حب إلى</p>
+    <h1 class="header-name" id="headerName"></h1>
+    <div class="header-divider"></div>
+    <p class="header-from">من <span id="headerFrom"></span></p>
+    <div class="scroll-indicator">
+      <p class="scroll-text">اسحب للأسفل</p>
+      <div class="scroll-line"></div>
+    </div>
+  </header>
+
+  <!-- Sections will be injected here -->
+  <main id="sectionsContainer"></main>
+
+  <!-- Footer -->
+  <footer class="album-footer">
+    <div class="footer-divider"></div>
+    <div class="footer-heart">❤️</div>
+    <p class="footer-label">بكل حب</p>
+    <p class="footer-name" id="footerName"></p>
+    <p class="footer-credit">صُنع بحب 💝</p>
+  </footer>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js"></script>
+
+<script>
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAEpVTV2bAzIal7FkEl3JadPvn0fkqpAF4",
+  authDomain: "love-site-e2cb7.firebaseapp.com",
+  databaseURL: "https://love-site-e2cb7-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "love-site-e2cb7",
+  storageBucket: "love-site-e2cb7.appspot.com",
+  messagingSenderId: "861816430901",
+  appId: "1:861816430901:web:144adb8ebbc2ad966d6c7c"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+let albumData = {};
+
+const urlParams = new URLSearchParams(window.location.search);
+const albumCode = urlParams.get("id");
+
+if(!albumCode){
+ document.body.innerHTML="❌ لا يوجد كود";
+ throw new Error("no code");
+}
+
+db.ref("albums/"+albumCode).once("value").then(snapshot=>{
+
+ if(!snapshot.exists()){
+   document.body.innerHTML="❌ الكود غير صحيح";
+   throw new Error("invalid");
+ }
+
+ albumData = snapshot.val();
+ initAlbum();
+});
+
+
+
+// ===== FLOATING HEARTS =====
+function spawnHearts() {
+  const container = document.getElementById('heartsContainer');
+  const hearts = ['❤️', '💕', '💗', '💖', '🤍', '♥️'];
+  setInterval(() => {
+    const heart = document.createElement('span');
+    heart.className = 'heart';
+    heart.textContent = hearts[Math.floor(Math.random() * hearts.length)];
+    heart.style.left = Math.random() * 100 + '%';
+    heart.style.fontSize = (14 + Math.random() * 18) + 'px';
+    heart.style.animationDuration = (6 + Math.random() * 8) + 's';
+    heart.style.animationDelay = Math.random() * 2 + 's';
+    container.appendChild(heart);
+    setTimeout(() => heart.remove(), 16000);
+  }, 3500);
+}
+spawnHearts();
+
+// ===== LOCK SCREEN =====
+const lockScreen = document.getElementById('lockScreen');
+const loadingScreen = document.getElementById('loadingScreen');
+const albumContent = document.getElementById('albumContent');
+
+
+
+function initAlbum(){
+ if (!albumData.password){
+   lockScreen.classList.add('hidden');
+   startLoading();
+ }
+}
+
+document.getElementById('lockForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+  const input = document.getElementById('lockInput');
+  if (input.value === albumData.password) {
+    lockScreen.classList.add('hidden');
+    startLoading();
+  } else {
+    const error = document.getElementById('lockError');
+    error.classList.add('show');
+    input.parentElement.classList.add('shake');
+    setTimeout(() => { error.classList.remove('show'); input.parentElement.classList.remove('shake'); }, 2000);
+  }
+});
+
+// ===== LOADING =====
+function startLoading() {
+  loadingScreen.classList.remove('hidden');
+  const fill = document.getElementById('progressFill');
+  let progress = 0;
+  const interval = setInterval(() => {
+    progress += 2;
+    fill.style.width = progress + '%';
+    if (progress >= 100) {
+      clearInterval(interval);
+      setTimeout(() => {
+        loadingScreen.classList.add('hidden');
+        showAlbum();
+      }, 400);
+    }
+  }, 40);
+}
+
+// ===== BUILD SECTIONS =====
+function showAlbum() {
+  const container = document.getElementById('sectionsContainer');
+  const sorted = [...albumData.sections].sort((a, b) => a.order - b.order);
+
+  sorted.forEach(section => {
+    const el = document.createElement('div');
+    el.className = 'section';
+
+    switch (section.type) {
+      case 'message': el.innerHTML = buildMessage(section.data); break;
+      case 'photos': el.innerHTML = buildPhotos(section.data, section.id); break;
+      case 'counter': el.innerHTML = buildCounter(section.data, section.id); break;
+      case 'music': el.innerHTML = buildMusic(section.data, section.id); break;
+      case 'surprise': el.innerHTML = buildSurprise(section.data, section.id); break;
+      case 'video': el.innerHTML = buildVideo(section.data); break;
+    }
+
+    container.appendChild(el);
+  });
+
+  albumContent.classList.add('visible');
+
+  // Observe sections
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        // Trigger typing for messages
+        const typingEl = entry.target.querySelector('.typing-target');
+        if (typingEl && !typingEl.dataset.done) {
+  typingEl.dataset.done = "1";
+  typeText(typingEl, typingEl.dataset.fulltext);
+}
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15 });
+
+  document.querySelectorAll('.section').forEach(s => observer.observe(s));
+
+  // Start counters
+  sorted.filter(s => s.type === 'counter').forEach(s => startCounter(s.data, s.id));
+}
+
+// ===== SECTION BUILDERS =====
+function buildMessage(data) {
+  let html = '';
+  if (data.title) html += `<h2 class="msg-title">${data.title}</h2>`;
+  html += `
+<div class="message-frame">
+  <p class="msg-text">
+    <span class="typing-target" data-fulltext="${data.text}"></span>
+    <span class="typing-cursor"></span>
+  </p>
+</div>
+`;
+  html += '<div class="section-divider"></div>';
+  return html;
+}
+
+function typeText(el, text) {
+  let i = 0;
+  const cursor = el.parentElement.querySelector('.typing-cursor');
+  const interval = setInterval(() => {
+    el.textContent = text.slice(0, i + 1);
+    i++;
+    if (i >= text.length) {
+      clearInterval(interval);
+      if (cursor) setTimeout(() => cursor.style.display = 'none', 1500);
+    }
+  }, 30);
+}
+
+function buildPhotos(data, id) {
+  let html = '';
+  if (data.caption) html += `<h3 class="photos-caption">${data.caption}</h3>`;
+  html += '<div class="photo-main">';
+  data.images.forEach((img, i) => {
+    html += `<img src="${img}" alt="" class="${i === 0 ? 'active' : ''}" data-gallery="${id}">`;
+  });
+  html += '<div class="photo-overlay"></div></div>';
+  if (data.images.length > 1) {
+    html += '<div class="photo-thumbs">';
+    data.images.forEach((img, i) => {
+      html += `<div class="photo-thumb ${i === 0 ? 'active' : ''}" onclick="switchPhoto('${id}', ${i})"><img src="${img}" alt=""></div>`;
+    });
+    html += '</div>';
+  }
+  html += '<div class="section-divider"></div>';
+  return html;
+}
+
+window.switchPhoto = function(galleryId, index) {
+  document.querySelectorAll(`img[data-gallery="${galleryId}"]`).forEach((img, i) => {
+    img.classList.toggle('active', i === index);
+  });
+  const thumbs = document.querySelectorAll(`img[data-gallery="${galleryId}"]`)[0]
+    .closest('.section').querySelectorAll('.photo-thumb');
+  thumbs.forEach((t, i) => t.classList.toggle('active', i === index));
+};
+
+function buildCounter(data, id) {
+  let html = '';
+  if (data.label) html += `<p class="counter-label">${data.label}</p>`;
+  html += `<div class="counter-units" id="counter-${id}">
+    <div class="counter-unit"><div class="counter-value" id="cy-${id}">0</div><div class="counter-name">سنة</div></div>
+    <div class="counter-unit"><div class="counter-value" id="cm-${id}">0</div><div class="counter-name">شهر</div></div>
+    <div class="counter-unit"><div class="counter-value" id="cd-${id}">0</div><div class="counter-name">يوم</div></div>
+  </div>`;
+  html += `<div class="counter-clock" id="clock-${id}"></div>`;
+  html += '<div class="section-divider"></div>';
+  return html;
+}
+
+function startCounter(data, id) {
+  function update() {
+    const start = new Date(data.startDate);
+    const now = new Date();
+    let y = now.getFullYear() - start.getFullYear();
+    let m = now.getMonth() - start.getMonth();
+    if (m < 0) { y--; m += 12; }
+    const totalDays = Math.floor((now - start) / 86400000);
+    const el_y = document.getElementById('cy-' + id);
+    const el_m = document.getElementById('cm-' + id);
+    const el_d = document.getElementById('cd-' + id);
+    const el_c = document.getElementById('clock-' + id);
+    if (el_y) el_y.textContent = y;
+    if (el_m) el_m.textContent = m;
+    if (el_d) el_d.textContent = totalDays.toLocaleString();
+    if (el_c) {
+      const h = String(now.getHours()).padStart(2, '0');
+      const mi = String(now.getMinutes()).padStart(2, '0');
+      const s = String(now.getSeconds()).padStart(2, '0');
+      el_c.innerHTML = `${h}<span class="clock-blink">:</span>${mi}<span class="clock-blink">:</span>${s}`;
+    }
+  }
+  update();
+  setInterval(update, 1000);
+}
+
+function buildMusic(data, id) {
+  return `<div class="music-card">
+    <div class="vinyl" id="vinyl-${id}"><div class="vinyl-inner"></div></div>
+    <div class="music-title">${data.title}</div>
+    ${data.artist ? `<div class="music-artist">${data.artist}</div>` : '<div style="height:16px"></div>'}
+    <div class="play-btn" onclick="toggleMusic('${id}')">
+      <div class="play-icon" id="playicon-${id}"></div>
+    </div>
+    <p class="music-note">الموسيقى ستعمل عند ربط الملف الصوتي</p>
+  </div>`;
+}
+
+window.toggleMusic = function(id) {
+  const vinyl = document.getElementById('vinyl-' + id);
+  const icon = document.getElementById('playicon-' + id);
+  const playing = vinyl.classList.toggle('spinning');
+  if (playing) {
+    icon.className = 'pause-icon';
+    icon.innerHTML = '<span></span><span></span>';
+  } else {
+    icon.className = 'play-icon';
+    icon.innerHTML = '';
+  }
+};
+
+function buildSurprise(data, id) {
+  return `<div style="text-align:center">
+    ${data.emoji ? `<div class="surprise-emoji">${data.emoji}</div>` : ''}
+    <div id="surprise-wrap-${id}">
+      <button class="surprise-btn" onclick="revealSurprise('${id}', '${data.hiddenText.replace(/'/g, "\\'")}')">${data.buttonText}</button>
+    </div>
+    <div class="section-divider"></div>
+  </div>`;
+}
+
+window.revealSurprise = function(id, text) {
+  const wrap = document.getElementById('surprise-wrap-' + id);
+  wrap.innerHTML = `<div class="surprise-content"><p class="surprise-text">${text}</p></div>`;
+};
+
+function buildVideo(data) {
+  let html = '<div class="video-wrap">';
+  if (data.url) {
+    html += `<video src="${data.url}" controls playsinline style="width:100%;height:100%;object-fit:cover"></video>`;
+  } else {
+    html += '<div class="video-placeholder"><div class="video-placeholder-icon">🎬</div><p class="video-placeholder-text">الفيديو سيظهر هنا</p></div>';
+  }
+  html += '</div>';
+  if (data.caption) html += `<p class="video-caption">${data.caption}</p>`;
+  html += '<div class="section-divider"></div>';
+  return html;
+}
+
+function initAlbum(){
+  document.getElementById('lockName').textContent = albumData.recipientName;
+  document.getElementById('loadingName').textContent = albumData.recipientName;
+  document.getElementById('headerName').textContent = albumData.recipientName;
+  document.getElementById('headerFrom').textContent = albumData.senderName;
+  document.getElementById('footerName').textContent = albumData.senderName;
+
+  if (!albumData.password){
+    document.getElementById('lockScreen').classList.add('hidden');
+    startLoading();
+  }
+}
+
+function loadAlbumFromOutside(data){
+   window.albumData = data;
+   initAlbum();
+}
+
+</script>
+</body>
+</html>
