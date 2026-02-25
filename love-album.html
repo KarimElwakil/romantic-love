@@ -302,11 +302,32 @@ textarea.input{resize:none}
         <h3 class="font-display" style="font-size:20px;margin-bottom:16px">المعلومات الأساسية</h3>
         <div class="form-grid">
           <div class="form-group"><label>اسمك</label><input class="input" id="senderName" placeholder="اسمك..." oninput="updateAlbumField('senderName',this.value)"></div>
-          <div class="form-group"><label>اسم الشخص</label><input class="input" id="receiverName" placeholder="اسم حبيبك/حبيبتك..." oninput="updateAlbumField('receiverName',this.value)"></div>
+        <div class="form-group"><label>اسم الشخص</label><input class="input" id="receiverName" placeholder="اسم حبيبك/حبيبتك..." oninput="updateAlbumField('receiverName',this.value)"></div>
+          <div class="form-group">
+<label>تاريخ العلاقة</label>
+<input type="date" class="input" id="relationshipDate"
+oninput="updateAlbumField('relationshipDate',this.value)">
+</div>
         </div>
-        <div class="form-group"><label>كلمة المرور (اختياري)</label><input class="input" id="password" placeholder="كلمة مرور للألبوم..." oninput="updateAlbumField('password',this.value)"></div>
-        <div class="form-group"><label>جملة فوق كلمة المرور</label><input class="input" id="passwordHint" placeholder="مثال: أول يوم عرفنا بعض..." oninput="updateAlbumField('passwordHint',this.value)"></div>
-        <div class="form-group"><label>الرسالة الرئيسية</label><textarea class="input" id="loveMessage" rows="4" placeholder="اكتب رسالة حب جميلة..." oninput="updateAlbumField('loveMessage',this.value)"></textarea></div>
+        <div class="form-group">
+<label>الرسالة الرئيسية</label>
+<textarea class="input" id="loveMessage"
+rows="4"
+oninput="updateAlbumField('loveMessage',this.value)">
+</textarea>
+</div>
+
+<div class="form-group">
+<label>كلمة المرور (اختياري)</label>
+<input class="input" id="password"
+oninput="updatePasswordField(this.value)">
+</div>
+
+<div class="form-group">
+<label>جملة فوق كلمة المرور</label>
+<input class="input" id="passwordHint"
+oninput="updateAlbumField('passwordHint',this.value)">
+</div>
       </div>
 
       <h3 class="font-display" style="font-size:20px;margin-bottom:16px;display:flex;align-items:center;gap:8px">
@@ -343,7 +364,6 @@ textarea.input{resize:none}
         </div>
       </div>
       <div class="card">
-        <h3 class="font-display" style="font-size:20px;margin-bottom:16px">الأنيميشن</h3>
         <div class="form-grid" style="margin-bottom:16px">
           <div class="form-group"><label>سرعة ظهور النص</label><select class="input" id="textSpeed" onchange="updateAlbumField('textSpeed',this.value)"><option value="slow">بطيء</option><option value="normal" selected>عادي</option><option value="fast">سريع</option></select></div>
           <div class="form-group"><label>سرعة الأنيميشن</label><select class="input" id="animationSpeed" onchange="updateAlbumField('animationSpeed',this.value)"><option value="slow">بطيء</option><option value="normal" selected>عادي</option><option value="fast">سريع</option></select></div>
@@ -355,6 +375,48 @@ textarea.input{resize:none}
 
     <!-- Tab: Settings -->
     <div id="tabSettings" style="display:none" class="animate-fade-up">
+      <div class="card" style="margin-bottom:20px">
+<h3 class="font-display" style="font-size:20px;margin-bottom:16px">الأنيميشن</h3>
+
+<div class="form-grid" style="margin-bottom:16px">
+<div class="form-group">
+<label>سرعة ظهور النص</label>
+<select class="input" id="textSpeed"
+onchange="updateAlbumField('textSpeed',this.value)">
+<option value="slow">بطيء</option>
+<option value="normal" selected>عادي</option>
+<option value="fast">سريع</option>
+</select>
+</div>
+
+<div class="form-group">
+<label>سرعة الأنيميشن</label>
+<select class="input" id="animationSpeed"
+onchange="updateAlbumField('animationSpeed',this.value)">
+<option value="slow">بطيء</option>
+<option value="normal" selected>عادي</option>
+<option value="fast">سريع</option>
+</select>
+</div>
+</div>
+
+<div class="toggle-row">
+<span>القلوب الطائرة ❤️</span>
+<button class="toggle on" id="toggleHearts"
+onclick="toggleOption('floatingHearts')">
+<span class="knob"></span>
+</button>
+</div>
+
+<div class="toggle-row">
+<span>تأثير الإضاءة ✨</span>
+<button class="toggle on" id="toggleGlow"
+onclick="toggleOption('glowEffect')">
+<span class="knob"></span>
+</button>
+</div>
+
+</div>
       <div class="card">
         <h3 class="font-display" style="font-size:20px;margin-bottom:16px">تاريخ العلاقة</h3>
         <input type="date" class="input" id="relationshipDate" dir="ltr" oninput="updateAlbumField('relationshipDate',this.value)">
@@ -488,6 +550,22 @@ db.ref("test").set({
 
 
 <script>
+  function updatePasswordField(val){
+currentAlbum.password = val;
+saveAlbum(currentAlbum);
+
+const hint = document.getElementById("passwordHint");
+
+if(!val){
+hint.value="";
+hint.disabled=true;
+currentAlbum.passwordHint="";
+}else{
+hint.disabled=false;
+}
+
+saveAlbum(currentAlbum);
+}
 // ==================== DATA STORE ====================
 const CODES_KEY='love_codes',ALBUMS_KEY='love_albums',ACTIVE_KEY='love_active';
 const DEFAULT_CODES=[
@@ -920,7 +998,11 @@ async function loadAlbumView(id){
     document.getElementById('albumPasswordScreen').style.display='flex';
     document.getElementById('albumPasswordScreen').style.background=album.bgColor;
     document.getElementById('albumPasswordScreen').querySelector('.lock-icon svg').style.stroke=album.borderColor;
-    document.getElementById('albumHint').textContent=album.passwordHint||'';
+   let hint = album.passwordHint;
+if(!hint && album.password){
+hint = "أدخل كلمة السر للدخول ❤️";
+}
+document.getElementById('albumHint').textContent = hint || "";
     document.getElementById('albumHint').style.color=album.textColor;
     document.getElementById('albumPassInput').style.borderColor=album.borderColor;
     document.getElementById('albumPassInput').style.color=album.textColor;
