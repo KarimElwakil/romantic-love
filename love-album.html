@@ -704,22 +704,21 @@ showPublishCard(id);
 function loadAlbum(){
 
 const params = new URLSearchParams(location.search);
-const albumId = params.get("id");
-const isPreview = params.get("preview");
+const id = params.get("id");
 
-if(!albumId) return;
+if(!id) return;
 
-// تحميل من فايربيز
-firebase.database().ref("albums/"+albumId).once("value")
+firebase.database().ref("albums/"+id).once("value")
 .then(snap=>{
-const data = snap.val();
 
-if(!data){
+if(!snap.exists()){
 document.body.innerHTML="<h2 style='color:white;text-align:center;margin-top:50px'>الألبوم غير موجود</h2>";
 return;
 }
 
-renderAlbum(data, isPreview);
+const data = snap.val();
+renderAlbum(data);
+
 });
 }
 
@@ -1480,7 +1479,7 @@ route();
   window.open(url,"_blank");
 }
 
-  loadAlbum();
+  
 
   function showPublishCard(id){
 
@@ -1513,6 +1512,44 @@ function copyLink(link){
 navigator.clipboard.writeText(link);
 alert("تم نسخ الرابط");
 }
+
+  function renderAlbum(data){
+
+document.querySelector(".album-view .content").innerHTML = `
+<div class="album-header">
+<h1>${data.title || "Love Album"}</h1>
+<div class="from">${data.from || ""}</div>
+</div>
+
+<div class="album-message">
+${data.message || ""}
+</div>
+`;
+
+if(data.blocks){
+data.blocks.forEach(b=>{
+if(b.type==="image"){
+document.querySelector(".album-view .content").innerHTML +=
+`<div class="album-block"><img src="${b.url}"></div>`;
+}
+
+if(b.type==="music"){
+document.querySelector(".album-view .content").innerHTML +=
+`<div class="album-block">
+<audio controls autoplay src="${b.url}"></audio>
+</div>`;
+}
+
+if(b.type==="text"){
+document.querySelector(".album-view .content").innerHTML +=
+`<div class="album-block text-block"><p>${b.text}</p></div>`;
+}
+});
+}
+
+}
+
+  loadAlbum();
 </script>
 <div id="publishCard" style="display:none"></div>
 
