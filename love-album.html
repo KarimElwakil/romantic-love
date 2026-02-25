@@ -396,16 +396,16 @@ box-shadow:
         <span class="text-gradient-gold">Love Album</span>
         <span class="code-badge" id="builderCodeBadge"></span>
       </div>
-    <!-- 🔥 هنا الأزرار -->
-    <div style="display:flex;gap:10px;align-items:center">
-      <button class="btn btn-accent" onclick="publishAlbum()">إنشاء الألبوم</button>
-    <button class="btn btn-ghost" onclick="previewAlbum()" style="padding:10px 18px">
-👁️ معاينة
-</button>
-      <button class="btn btn-ghost" onclick="manualSave()" style="padding:10px 18px">
-💾 حفظ
-</button>
-    </div>
+      
+  <div class="top-actions">
+
+<button onclick="saveAlbum()" class="btn-ghost">💾 حفظ</button>
+
+<button onclick="previewAlbum()" class="btn-ghost">👁 معاينة</button>
+
+<button onclick="publishAlbum()" class="btn-accent">✨ إنشاء الألبوم</button>
+
+</div>
 
       
       <button class="icon-btn" onclick="handleLogout()" title="خروج">
@@ -667,6 +667,103 @@ db.ref("test").set({
 
 
 <script>
+
+  function getAlbumId(){
+return localStorage.getItem("albumId") || "LOVE"+Math.floor(Math.random()*99999);
+}
+
+function saveAlbum(){
+
+const id = getAlbumId();
+localStorage.setItem("albumId",id);
+
+const data = collectData();
+
+firebase.database().ref("albums/"+id).set(data);
+
+alert("تم الحفظ");
+}
+
+function previewAlbum(){
+const id = getAlbumId();
+window.open("love-album.html?id="+id+"&preview=1","_blank");
+}
+
+function publishAlbum(){
+
+const id = localStorage.getItem("albumId") || "LOVE"+Math.floor(Math.random()*99999);
+localStorage.setItem("albumId",id);
+
+const data = collectData();
+
+firebase.database().ref("albums/"+id).set(data).then(()=>{
+showPublishCard(id);
+});
+}
+
+function loadAlbum(){
+
+const params = new URLSearchParams(location.search);
+const albumId = params.get("id");
+const isPreview = params.get("preview");
+
+if(!albumId) return;
+
+// تحميل من فايربيز
+firebase.database().ref("albums/"+albumId).once("value")
+.then(snap=>{
+const data = snap.val();
+
+if(!data){
+document.body.innerHTML="<h2 style='color:white;text-align:center;margin-top:50px'>الألبوم غير موجود</h2>";
+return;
+}
+
+renderAlbum(data, isPreview);
+});
+}
+
+  function renderAlbum(data, preview){
+
+// اسم
+document.querySelector(".album-title").innerText = data.name1 + " ❤ " + data.name2;
+
+// رسالة
+document.querySelector(".album-message").innerText = data.message || "";
+
+// الأقسام
+const container = document.querySelector(".album-blocks");
+container.innerHTML="";
+
+if(data.blocks){
+data.blocks.forEach(b=>{
+if(b.type==="text"){
+container.innerHTML+=`<div class="album-block text-block">${b.text}</div>`;
+}
+if(b.type==="image"){
+container.innerHTML+=`<div class="album-block"><img src="${b.url}"></div>`;
+}
+if(b.type==="audio"){
+container.innerHTML+=`
+<div class="album-block">
+<audio controls autoplay src="${b.url}"></audio>
+</div>`;
+}
+});
+}
+
+// زر الرجوع لو معاينة
+if(preview){
+document.body.innerHTML += `
+<div style="position:fixed;top:20px;left:20px;z-index:999">
+<button onclick="history.back()" style="padding:12px 20px;border-radius:10px;background:#d4a843;border:none">
+⬅ الرجوع للتعديل
+</button>
+</div>`;
+}
+
+}
+  
   function updatePasswordField(val){
 currentAlbum.password = val;
 saveAlbum(currentAlbum);
@@ -1382,8 +1479,42 @@ route();
   const url = location.origin + location.pathname + "?id=" + currentAlbum.code + "&preview=1";
   window.open(url,"_blank");
 }
-</script>
 
+  loadAlbum();
+
+  function showPublishCard(id){
+
+document.getElementById("publishCard").style.display="block";
+
+document.getElementById("publishCard").innerHTML=`
+<div class="card glow-gold" style="text-align:center;margin-top:40px">
+
+<h2 class="text-gradient-gold">تم إنشاء الألبوم 🎉</h2>
+
+<p style="opacity:.7">شارك الرابط</p>
+
+<div class="input" style="direction:ltr;margin:15px 0">
+${location.origin+location.pathname+"?id="+id}
+</div>
+
+<button class="btn-accent" onclick="copyLink('${location.origin+location.pathname+"?id="+id}')">
+نسخ الرابط
+</button>
+
+<button class="btn-ghost" onclick="window.open('love-album.html?id=${id}','_blank')">
+فتح الألبوم
+</button>
+
+</div>
+`;
+}
+
+function copyLink(link){
+navigator.clipboard.writeText(link);
+alert("تم نسخ الرابط");
+}
+</script>
+<div id="publishCard" style="display:none"></div>
 
 </body>
 </html>
