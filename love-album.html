@@ -643,6 +643,7 @@ document.getElementById('loveMessage').value=currentAlbum.loveMessage||"";
 renderBlocks();
 renderPresets();
 updateColorInputs();
+  updateMusicButton();
 }
 
 function updateAlbumField(field,value){if(!currentAlbum)return;currentAlbum[field]=value;saveAlbum(currentAlbum)}
@@ -771,8 +772,30 @@ function renderBlocks(){
 
 function toggleAddMenu(){const m=document.getElementById('addBlockMenu');m.style.display=m.style.display==='none'?'grid':'none'}
 function addBlock(type){
-  const b={id:genId(),type:type,content:'',bgColor:currentAlbum.bgColor,textColor:currentAlbum.textColor,borderColor:currentAlbum.borderColor};
-  currentAlbum.blocks.push(b);saveAlbum(currentAlbum);renderBlocks();
+
+  // 🔥 منع إضافة أكتر من أغنية
+  if(type === "music"){
+    const hasMusic = currentAlbum.blocks.some(b => b.type === "music");
+    if(hasMusic){
+      showToast("مسموح أغنية واحدة فقط ⚠️", true);
+      return;
+    }
+  }
+
+  const b={
+    id:genId(),
+    type:type,
+    content:'',
+    bgColor:currentAlbum.bgColor,
+    textColor:currentAlbum.textColor,
+    borderColor:currentAlbum.borderColor
+  };
+
+  currentAlbum.blocks.push(b);
+  saveAlbum(currentAlbum);
+  renderBlocks();
+  updateMusicButton();
+
   document.getElementById('addBlockMenu').style.display='none';
 }
 function updateBlockContent(i,val){currentAlbum.blocks[i].content=val;saveAlbum(currentAlbum)}
@@ -783,8 +806,28 @@ function moveBlock(i,dir){
   saveAlbum(currentAlbum);renderBlocks();
 }
 function dupBlock(i){const b={...currentAlbum.blocks[i],id:genId()};currentAlbum.blocks.splice(i+1,0,b);saveAlbum(currentAlbum);renderBlocks()}
-function delBlock(i){currentAlbum.blocks.splice(i,1);saveAlbum(currentAlbum);renderBlocks()}
+function delBlock(i){
+  currentAlbum.blocks.splice(i,1);
+  saveAlbum(currentAlbum);
+  renderBlocks();
+  updateMusicButton(); // يرجع الزرار لو اتمسحت
+}
+  function updateMusicButton(){
+  const musicBtn = document.querySelector('[onclick="addBlock(\'music\')"]');
+  if(!musicBtn) return;
 
+  const hasMusic = currentAlbum.blocks.some(b => b.type === "music");
+
+  if(hasMusic){
+    musicBtn.style.opacity = "0.4";
+    musicBtn.style.pointerEvents = "none";
+    musicBtn.innerHTML = "🎵 تمت إضافة أغنية";
+  }else{
+    musicBtn.style.opacity = "1";
+    musicBtn.style.pointerEvents = "auto";
+    musicBtn.innerHTML = "<span class='icon'>🎵</span>موسيقى";
+  }
+}
 // File handling
 async function triggerFile(blockIndex, accept) {
   const input = document.createElement('input');
