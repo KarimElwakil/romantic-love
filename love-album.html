@@ -674,19 +674,38 @@ return localStorage.getItem("albumId") || "LOVE"+Math.floor(Math.random()*99999)
 
 function saveAlbum(){
 
-const id = getAlbumId();
+const params = new URLSearchParams(location.search);
+let albumId = params.get("id");
+
+if(!albumId){
+albumId = "LOVE"+Math.floor(Math.random()*999999);
+}
 localStorage.setItem("albumId",id);
 
 const data = collectData();
 
-firebase.database().ref("albums/"+id).set(data);
+firebase.database().ref("albums/"+albumId)
 
 alert("تم الحفظ");
 }
+  
+function showPublishCard(id){
 
-function previewAlbum(){
-const id = getAlbumId();
-window.open("love-album.html?id="+id+"&preview=1","_blank");
+document.querySelector(".publish-success").style.display="block";
+
+const link = location.origin + location.pathname + "?id=" + id;
+
+document.querySelector(".publish-success .link").innerText = link;
+
+document.querySelector(".open-album-btn").onclick=()=>{
+window.open(link,"_blank");
+}
+
+document.querySelector(".copy-link-btn").onclick=()=>{
+navigator.clipboard.writeText(link);
+alert("تم نسخ الرابط");
+}
+
 }
 
 function publishAlbum(){
