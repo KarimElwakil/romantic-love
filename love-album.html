@@ -399,12 +399,11 @@ box-shadow:
       
   <div class="top-actions">
 
-<button onclick="saveAlbum()" class="btn-ghost">💾 حفظ</button>
+<button onclick="manualSave()" class="btn-ghost">💾 حفظ</button>
 
 <button onclick="previewAlbum()" class="btn-ghost">👁 معاينة</button>
 
 <button onclick="publishAlbum()" class="btn-accent">✨ إنشاء الألبوم</button>
-
 </div>
 
       
@@ -674,24 +673,7 @@ return localStorage.getItem("albumId") || "LOVE"+Math.floor(Math.random()*99999)
 
 
   
-function showPublishCard(id){
 
-document.querySelector(".publish-success").style.display="block";
-
-const link = location.origin + location.pathname + "?id=" + id;
-
-document.querySelector(".publish-success .link").innerText = link;
-
-document.querySelector(".open-album-btn").onclick=()=>{
-window.open(link,"_blank");
-}
-
-document.querySelector(".copy-link-btn").onclick=()=>{
-navigator.clipboard.writeText(link);
-alert("تم نسخ الرابط");
-}
-
-}
 
 function publishAlbum(){
 
@@ -944,7 +926,7 @@ function switchTab(tab,btn){
   // 🔥 أهم جزء: اخفاء شاشة تم الإنشاء عند الرجوع للأقسام
   if(tab === 'content'){
     document.getElementById('publishSuccess').style.display = 'none';
-    document.getElementById('publishArea').style.display = 'block';
+   
   }
 }
 
@@ -1143,7 +1125,6 @@ function handleLogout(){clearActive();showPage('pageCodeEntry');document.getElem
 
 
 function showPublishSuccess(){
-  document.getElementById('publishArea').style.display='none';
   const s=document.getElementById('publishSuccess');s.style.display='block';
   const url=location.origin+location.pathname+'?id='+currentAlbum.code;
   document.getElementById('albumLink').textContent=url;
