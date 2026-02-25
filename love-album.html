@@ -390,6 +390,77 @@ box-shadow:
 }
 
 
+  /* success fullscreen */
+.success-screen{
+position:fixed;
+inset:0;
+background:rgba(0,0,0,.75);
+backdrop-filter:blur(12px);
+display:none;
+align-items:center;
+justify-content:center;
+z-index:999999;
+}
+
+.success-card{
+width:420px;
+max-width:90%;
+background:linear-gradient(145deg,#1a0f15,#2a111a);
+border:1px solid rgba(212,168,67,.5);
+border-radius:20px;
+padding:40px 25px;
+text-align:center;
+box-shadow:0 0 80px rgba(212,168,67,.25);
+animation:pop .4s ease;
+}
+
+@keyframes pop{
+from{transform:scale(.8);opacity:0}
+to{transform:scale(1);opacity:1}
+}
+
+.success-card h2{
+color:#e7c46a;
+margin:10px 0;
+}
+
+.link-box{
+background:#111;
+padding:12px;
+border-radius:12px;
+margin:15px 0;
+font-size:13px;
+word-break:break-all;
+border:1px solid rgba(212,168,67,.4);
+}
+
+.gold-btn{
+background:linear-gradient(45deg,#d4a843,#f1d07a);
+border:none;
+padding:12px 20px;
+border-radius:12px;
+margin:5px;
+font-weight:bold;
+cursor:pointer;
+}
+
+.dark-btn{
+background:transparent;
+border:1px solid #d4a843;
+color:#d4a843;
+padding:12px 20px;
+border-radius:12px;
+margin:5px;
+cursor:pointer;
+}
+
+.back-edit{
+margin-top:15px;
+opacity:.7;
+cursor:pointer;
+}
+
+
   <!-- ---------------------------------------------------------------------------------------- -->
 </style>
 </head>
@@ -763,6 +834,7 @@ behavior:"smooth"
 });
 
 showToast("تم إنشاء الألبوم بنجاح ✨");
+  showSuccessScreen(albumLink)
 
 });
 }
@@ -849,6 +921,7 @@ function saveAlbum(album){
 
   db.ref("albums/"+album.code).set(album);
 }
+  showSuccessScreen(albumLink)
 
 // ===== FIREBASE LOAD =====
 async function getAlbum(code){
@@ -1538,68 +1611,51 @@ navigator.clipboard.writeText(link);
 alert("تم نسخ الرابط");
 }
 
+  function showSuccessScreen(link){
+document.getElementById("albumSuccessScreen").style.display="flex";
+document.getElementById("finalLink").innerText = link;
+}
+
+function closeSuccess(){
+document.getElementById("albumSuccessScreen").style.display="none";
+}
+
+function openAlbum(){
+let link = document.getElementById("finalLink").innerText;
+window.open(link,"_blank");
+}
+
+function copyAlbumLink(){
+let link = document.getElementById("finalLink").innerText;
+navigator.clipboard.writeText(link);
+alert("تم نسخ الرابط");
+}
   
 
   loadAlbum();
 </script>
-<div id="publishPopup" style="
-position:fixed;
-inset:0;
-display:none;
-align-items:center;
-justify-content:center;
-background:rgba(0,0,0,.75);
-backdrop-filter:blur(14px);
-z-index:9999;
-">
+<!-- SUCCESS FULL SCREEN -->
+<div id="albumSuccessScreen" class="success-screen">
 
-<div class="card glow-gold" style="
-max-width:420px;
-width:90%;
-text-align:center;
-padding:35px;
-">
+  <div class="success-card">
 
-<div style="
-width:70px;
-height:70px;
-border-radius:50%;
-background:#d4a84322;
-display:flex;
-align-items:center;
-justify-content:center;
-margin:auto;
-margin-bottom:15px;
-font-size:28px;
-">❤️</div>
+    <div class="heart">❤️</div>
 
-<h2 class="text-gradient-gold">تم إنشاء الألبوم 🎉</h2>
+    <h2>تم إنشاء الألبوم</h2>
+    <p>شارك الرابط مع من تحب</p>
 
-<p style="opacity:.7;margin:10px 0">شارك الرابط</p>
+    <div id="finalLink" class="link-box"></div>
 
-<div id="finalLinkBox" class="input" style="direction:ltr;margin-bottom:18px"></div>
+    <div class="btns">
+      <button class="gold-btn" onclick="copyAlbumLink()">نسخ الرابط</button>
+      <button class="dark-btn" onclick="openAlbum()">فتح الألبوم</button>
+    </div>
 
-<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+    <div class="back-edit" onclick="closeSuccess()">
+      ← الرجوع للتعديل
+    </div>
 
-<button class="btn-accent" onclick="copyFinalLink()">نسخ الرابط</button>
-
-<button class="btn-ghost" onclick="openFinalAlbum()">فتح الألبوم</button>
-
+  </div>
 </div>
-
-<button onclick="closePublishPopup()" style="
-margin-top:18px;
-background:transparent;
-border:none;
-color:#aaa;
-cursor:pointer;
-font-size:14px;
-">
-⬅ الرجوع للتعديل
-</button>
-
-</div>
-</div>
-
 </body>
 </html>
