@@ -57,12 +57,15 @@ box-shadow:0 0 0 2px rgba(245,197,66,.2);
 textarea.input{resize:none}
 .card{
 background:linear-gradient(180deg,#140b0f,#1a0f15);
-border:1px solid rgba(245,197,66,.35);
-box-shadow:
-0 0 0 1px rgba(255,215,120,.15) inset,
-0 0 35px rgba(245,197,66,.15),
-0 10px 60px rgba(0,0,0,.6);
+border:none;
+border-radius:16px;
+padding:24px;
 position:relative;
+
+/* glow خفيف بس */
+box-shadow:
+0 10px 60px rgba(0,0,0,.6),
+0 0 40px rgba(255,180,60,.08) inset;
 }
 
 .card::before{
