@@ -57,8 +57,21 @@ box-shadow:0 0 0 2px rgba(245,197,66,.2);
 textarea.input{resize:none}
 .card{
 background:linear-gradient(180deg,#140b0f,#1a0f15);
-border:1px solid rgba(245,197,66,.25);
-box-shadow:0 0 40px rgba(245,197,66,.08);
+border:1px solid rgba(245,197,66,.35);
+box-shadow:
+0 0 0 1px rgba(255,215,120,.15) inset,
+0 0 35px rgba(245,197,66,.15),
+0 10px 60px rgba(0,0,0,.6);
+position:relative;
+}
+
+.card::before{
+content:"";
+position:absolute;
+inset:0;
+border-radius:16px;
+pointer-events:none;
+box-shadow:0 0 40px rgba(245,197,66,.15) inset;
 }
 .text-gradient-gold{
 background:linear-gradient(135deg,#FFD166,#fff0b3,#FFD166);
@@ -260,6 +273,66 @@ box-shadow:0 0 20px rgba(245,197,66,.25);
   h1,h2,h3,.font-display{
 color:#f5c542;
 }
+
+  /* glow indicator للتاب */
+.tab{
+position:relative;
+overflow:hidden;
+transition:.35s;
+}
+
+.tab::after{
+content:"";
+position:absolute;
+inset:0;
+border-radius:10px;
+opacity:0;
+transition:.35s;
+box-shadow:0 0 25px rgba(255,200,80,.0);
+}
+
+.tab:hover::after{
+opacity:1;
+box-shadow:0 0 25px rgba(255,200,80,.25);
+}
+
+.tab.active{
+background:#0b0b0b;
+color:#f5c542;
+border:1px solid #f5c542;
+box-shadow:0 0 30px rgba(245,197,66,.35);
+transform:translateY(-1px) scale(1.02);
+}
+
+  .tabs{
+position:relative;
+}
+
+.tabs::before{
+content:"";
+position:absolute;
+bottom:-2px;
+height:2px;
+width:100%;
+background:linear-gradient(90deg,transparent,#f5c542,transparent);
+opacity:.4;
+}
+
+  .input{
+background:#0b0b0f;
+border:1px solid rgba(245,197,66,.35);
+box-shadow:0 0 0 1px rgba(255,215,120,.08) inset;
+}
+
+.input:focus{
+border-color:#f5c542;
+box-shadow:
+0 0 0 1px rgba(255,215,120,.25) inset,
+0 0 18px rgba(245,197,66,.25);
+}
+
+
+  <!-- ---------------------------------------------------------------------------------------- -->
 </style>
 </head>
 <body>
