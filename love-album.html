@@ -672,24 +672,7 @@ db.ref("test").set({
 return localStorage.getItem("albumId") || "LOVE"+Math.floor(Math.random()*99999);
 }
 
-function saveAlbum(){
 
-if(!currentAlbum) return;
-
-let albumId = currentAlbum.code;
-
-const data = currentAlbum;
-
-// حفظ في فايربيز
-firebase.database().ref("albums/"+albumId).set(data)
-.then(()=>{
-console.log("saved");
-})
-.catch(err=>{
-console.log(err);
-});
-
-}
   
 function showPublishCard(id){
 
