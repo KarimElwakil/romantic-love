@@ -411,7 +411,7 @@ linear-gradient(180deg,#14030a,#070203);
     <div class="lock-emoji">💌</div>
     <h1 class="lock-title">رسالة خاصة</h1>
     <p class="lock-subtitle">إلى <span id="lockName"></span></p>
-    <form id="lockForm">
+    <form id="lockForm" onsubmit="return false;">
       <input type="password" class="lock-input" id="lockInput" placeholder="أدخل كلمة المرور" autocomplete="off">
       <button type="submit" class="lock-btn">افتح الرسالة</button>
       <p class="lock-error" id="lockError">كلمة المرور غير صحيحة</p>
