@@ -673,15 +673,13 @@ return localStorage.getItem("albumId") || "LOVE"+Math.floor(Math.random()*99999)
 
 
   
-
-
 function publishAlbum(){
 
 if(!currentAlbum) return;
 
 currentAlbum.isPublished = true;
 
-firebase.database().ref("albums/"+currentAlbum.code).set(currentAlbum)
+db.ref("albums/"+currentAlbum.code).set(currentAlbum)
 .then(()=>{
 
 const url = location.origin + location.pathname + "?id=" + currentAlbum.code;
@@ -689,21 +687,26 @@ const url = location.origin + location.pathname + "?id=" + currentAlbum.code;
 document.getElementById("publishSuccess").style.display="block";
 document.getElementById("albumLink").innerText = url;
 
+// 🔥 الكارت اللي انت عايزه
+showPublishCard(currentAlbum.code);
+
 window.scrollTo({top:document.body.scrollHeight,behavior:"smooth"});
+
+showToast("تم إنشاء الألبوم بنجاح 🎉");
 
 });
 
 }
 
-function loadAlbum(){
+
+async function loadAlbum(){
 
 const params = new URLSearchParams(location.search);
 const id = params.get("id");
 
 if(!id) return;
 
-firebase.database().ref("albums/"+id).once("value")
-.then(snap=>{
+const snap = await db.ref("albums/"+id).once("value");
 
 if(!snap.exists()){
 document.body.innerHTML="<h2 style='color:white;text-align:center;margin-top:50px'>الألبوم غير موجود</h2>";
@@ -711,11 +714,25 @@ return;
 }
 
 const data = snap.val();
-renderAlbum(data);
 
-});
+// لو مش منشور ولسه مش preview
+if(!data.isPublished && !params.get("preview")){
+document.body.innerHTML="<h2 style='color:white;text-align:center;margin-top:50px'>الألبوم غير منشور</h2>";
+return;
 }
 
+// 🔥 عرض الألبوم الحقيقي
+showPage("pageAlbum");
+viewAlbum = data;
+
+if(data.password){
+document.getElementById("albumPasswordScreen").style.display="flex";
+document.getElementById("albumHint").innerText = data.passwordHint || "ادخل كلمة السر";
+}else{
+renderAlbumContent();
+}
+
+}
   
   
   function updatePasswordField(val){
@@ -1403,17 +1420,17 @@ route();
   showToast("تم الحفظ بنجاح 💾");
 }
 
- function previewAlbum(){
+
+  function previewAlbum(){
 
 if(!currentAlbum) return;
 
-firebase.database().ref("albums/"+currentAlbum.code).set(currentAlbum)
+db.ref("albums/"+currentAlbum.code).set(currentAlbum)
 .then(()=>{
 window.open(location.origin+location.pathname+"?id="+currentAlbum.code+"&preview=1","_blank");
 });
 
 }
-  
 
   function showPublishCard(id){
 
