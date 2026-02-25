@@ -13,14 +13,12 @@
 --border:#3a2d0f;
 --input:#0d0d12;
 
---primary:#FFD166;          /* اللون الرئيسي كله أصفر */
---primary-fg:#000000;
-
---accent:#FFD166;           /* الذهبي */
+--primary:#e0a21a;        /* اللون الأساسي أصفر */
+--primary-fg:#000;        /* لون النص جوه الزر */
+--accent:#f5c542;         /* أصفر فاتح */
 --accent-fg:#000;
-
---fg:#ffffff;               /* النص أبيض */
---muted:#b7b7b7;
+--fg:#ffffff;             /* النص أبيض */
+--muted:#cbbd9a;          /* نص فرعي دهبي هادي */
 --destructive:#e74c3c;
 --radius:12px;
 }
@@ -35,11 +33,15 @@ input,textarea,select,button{font-family:'Tajawal',sans-serif}
 .container{max-width:800px;margin:0 auto;padding:0 16px}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:14px 28px;border-radius:var(--radius);font-size:16px;font-weight:500;border:none;cursor:pointer;transition:all .3s}
 .btn-primary{
-background:linear-gradient(135deg,#FFD166,#ffb800);
+background:linear-gradient(135deg,#f5c542,#e0a21a);
 color:#000;
-box-shadow:0 0 25px rgba(255,209,102,.4);
+box-shadow:0 0 25px rgba(245,197,66,.4);
 }
-.btn-primary:hover{opacity:.9;transform:translateY(-1px)}
+
+.btn-primary:hover{
+opacity:.9;
+transform:translateY(-1px);
+}
 .btn-accent{background:linear-gradient(135deg,#d4a843,#e0be5a);color:var(--accent-fg)}
 .btn-accent:hover{opacity:.9}
 .btn-ghost{background:transparent;color:var(--muted);border:1px solid var(--border)}
@@ -47,10 +49,17 @@ box-shadow:0 0 25px rgba(255,209,102,.4);
 .btn-sm{padding:8px 16px;font-size:14px}
 .btn-full{width:100%}
 .input{width:100%;background:var(--input);border:1px solid var(--border);border-radius:var(--radius);padding:14px 18px;color:var(--fg);font-size:16px;transition:border-color .3s;outline:none}
-.input:focus{border-color:rgba(201,69,90,.5);box-shadow:0 0 0 3px rgba(201,69,90,.1)}
+.input:focus{
+border-color:#f5c542;
+box-shadow:0 0 0 2px rgba(245,197,66,.2);
+}
 .input::placeholder{color:var(--muted);opacity:.6}
 textarea.input{resize:none}
-.card{background:rgba(26,15,21,.6);backdrop-filter:blur(20px);border:1px solid rgba(201,69,90,.15);border-radius:16px;padding:24px}
+.card{
+background:linear-gradient(180deg,#140b0f,#1a0f15);
+border:1px solid rgba(245,197,66,.25);
+box-shadow:0 0 40px rgba(245,197,66,.08);
+}
 .text-gradient-gold{
 background:linear-gradient(135deg,#FFD166,#fff0b3,#FFD166);
 -webkit-background-clip:text;
@@ -103,7 +112,12 @@ background-clip:text;
 .builder-header .code-badge{font-size:12px;color:var(--muted);background:var(--input);padding:4px 10px;border-radius:6px;font-family:monospace}
 .tabs{display:flex;gap:4px;background:rgba(26,15,21,.5);border-radius:var(--radius);padding:4px;margin-bottom:24px}
 .tab{flex:1;display:flex;align-items:center;justify-content:center;gap:8px;padding:12px;border-radius:8px;font-size:14px;cursor:pointer;transition:all .3s;border:none;background:transparent;color:var(--muted)}
-.tab.active{background:var(--primary);color:var(--primary-fg)}
+..tab.active{
+background:#0d0d0d;
+border:1px solid #f5c542;
+color:#f5c542;
+box-shadow:0 0 20px rgba(245,197,66,.25);
+}
 .tab:hover:not(.active){color:var(--fg)}
 .tab svg{width:16px;height:16px}
 .form-group{margin-bottom:16px}
@@ -242,6 +256,10 @@ background-clip:text;
 
 /* SVG icons inline */
 .svg-heart{display:inline-block}
+
+  h1,h2,h3,.font-display{
+color:#f5c542;
+}
 </style>
 </head>
 <body>
