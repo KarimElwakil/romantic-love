@@ -3,771 +3,521 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Love Album - أنشئ ألبوم حب لا يُنسى</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,500;1,600;1,700&family=Tajawal:wght@200;300;400;500;700;800;900&family=Cairo:wght@200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<title>ألبوم الحب - أنشئ لحظات لا تُنسى</title>
+<meta name="description" content="أنشئ ألبوم حب تفاعلي رومانسي لمن تحب">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;1,400&family=Tajawal:wght@300;400;500;700;800&family=Amiri:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
 <style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{
---bg:#07070a;
---card:#111118;
---border:#3a2d0f;
---input:#0d0d12;
+/* ============================================================
+   CSS - كل الستايلات
+   ============================================================ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
---primary:#e0a21a;        /* اللون الأساسي أصفر */
---primary-fg:#000;        /* لون النص جوه الزر */
---accent:#f5c542;         /* أصفر فاتح */
---accent-fg:#000;
---fg:#ffffff;             /* النص أبيض */
---muted:#cbbd9a;          /* نص فرعي دهبي هادي */
---destructive:#e74c3c;
---radius:12px;
-}
-body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--fg);min-height:100vh;overflow-x:hidden;direction:rtl}
-h1,h2,h3,h4,h5,h6,.font-display{font-family:'Playfair Display',serif}
-input,textarea,select,button{font-family:'Tajawal',sans-serif}
-::-webkit-scrollbar{width:6px}
-::-webkit-scrollbar-track{background:var(--bg)}
-::-webkit-scrollbar-thumb{background:rgba(201,69,90,.4);border-radius:3px}
-
-/* Utilities */
-.container{max-width:800px;margin:0 auto;padding:0 16px}
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:14px 28px;border-radius:var(--radius);font-size:16px;font-weight:500;border:none;cursor:pointer;transition:all .3s}
-.btn-primary{
-background:linear-gradient(135deg,#f5c542,#e0a21a);
-color:#000;
-box-shadow:0 0 25px rgba(245,197,66,.4);
-}
-
-.btn-primary:hover{
-opacity:.9;
-transform:translateY(-1px);
-}
-.btn-accent{background:linear-gradient(135deg,#d4a843,#e0be5a);color:var(--accent-fg)}
-.btn-accent:hover{opacity:.9}
-.btn-ghost{background:transparent;color:var(--muted);border:1px solid var(--border)}
-.btn-ghost:hover{border-color:var(--primary);color:var(--fg)}
-.btn-sm{padding:8px 16px;font-size:14px}
-.btn-full{width:100%}
-.input{width:100%;background:var(--input);border:1px solid var(--border);border-radius:var(--radius);padding:14px 18px;color:var(--fg);font-size:16px;transition:border-color .3s;outline:none}
-.input:focus{
-border-color:#f5c542;
-box-shadow:0 0 0 2px rgba(245,197,66,.2);
-}
-.input::placeholder{color:var(--muted);opacity:.6}
-textarea.input{resize:none}
-.card{
-background:linear-gradient(180deg,#140b0f,#1a0f15);
-border:none;
-border-radius:16px;
-padding:24px;
-position:relative;
-
-/* glow خفيف بس */
-box-shadow:
-0 10px 60px rgba(0,0,0,.6),
-0 0 40px rgba(255,180,60,.08) inset;
+:root {
+  --bg: #0d0d0d;
+  --fg: #e6d5b8;
+  --card: #141414;
+  --muted: #1f1f1f;
+  --muted-fg: #8a7a66;
+  --gold: #b8860b;
+  --gold-light: #d4a74a;
+  --gold-dark: #8a6508;
+  --rose: #c44569;
+  --rose-light: #e06080;
+  --wine: #2a0f1a;
+  --input-bg: #1a1a1a;
+  --border-gold: rgba(184,134,11,0.3);
+  --border-gold-strong: rgba(184,134,11,0.6);
+  --destructive: #e74c3c;
+  --green: #27ae60;
+  --radius: 12px;
+  --font-heading: 'Playfair Display', 'Amiri', serif;
+  --font-body: 'Tajawal', sans-serif;
+  --font-amiri: 'Amiri', serif;
+  --shadow-gold: 0 0 30px rgba(184,134,11,0.15), 0 0 60px rgba(184,134,11,0.05);
+  --gradient-gold: linear-gradient(135deg, #d4a74a, #b8860b);
+  --gradient-card: linear-gradient(145deg, #141414, #1a0f14);
+  --gradient-romantic: linear-gradient(135deg, #0d0d0d, #1a0f14, #0d0d0d);
 }
 
-.card::before{
-content:"";
-position:absolute;
-inset:0;
-border-radius:16px;
-pointer-events:none;
-box-shadow:0 0 40px rgba(245,197,66,.15) inset;
+body {
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--fg);
+  min-height: 100vh;
+  overflow-x: hidden;
+  direction: rtl;
 }
-.text-gradient-gold{
-background:linear-gradient(135deg,#FFD166,#fff0b3,#FFD166);
--webkit-background-clip:text;
--webkit-text-fill-color:transparent;
-background-clip:text;
+
+h1, h2, h3, h4 { font-family: var(--font-heading); }
+
+.text-gradient-gold {
+  background: linear-gradient(135deg, #d4a74a, #b8860b, #8a6508);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
-.text-gradient-rose{background:linear-gradient(135deg,#c9455a,#e88a9a,#c9455a);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.glow-rose{box-shadow:0 0 30px rgba(201,69,90,.3),0 0 60px rgba(201,69,90,.1)}
-.glow-gold{box-shadow:0 0 30px rgba(212,168,67,.3),0 0 60px rgba(212,168,67,.1)}
+
+.btn-gold {
+  background: var(--gradient-gold);
+  color: var(--bg);
+  border: none; border-radius: var(--radius);
+  font-weight: 700; cursor: pointer;
+  box-shadow: var(--shadow-gold);
+  transition: all 0.3s;
+  font-family: var(--font-body);
+}
+.btn-gold:hover { box-shadow: 0 0 40px rgba(184,134,11,0.3); transform: scale(1.02); }
+.btn-gold:active { transform: scale(0.98); }
+
+.btn-muted {
+  background: var(--muted); color: var(--fg);
+  border: none; border-radius: var(--radius);
+  cursor: pointer; transition: all 0.3s;
+  font-family: var(--font-body);
+}
+.btn-muted:hover { background: #2a2a2a; }
+
+.input-field {
+  width: 100%; background: var(--input-bg);
+  border: 1px solid var(--border-gold); border-radius: var(--radius);
+  padding: 12px 16px; color: var(--fg);
+  font-family: var(--font-body); font-size: 14px;
+  outline: none; transition: border-color 0.3s;
+}
+.input-field:focus { border-color: var(--gold); }
+.input-field::placeholder { color: var(--muted-fg); opacity: 0.6; }
+
+textarea.input-field { resize: none; }
+
+.card {
+  background: var(--gradient-card);
+  border: 1px solid var(--border-gold);
+  border-radius: 16px; padding: 24px;
+}
+
+.hidden { display: none !important; }
 
 /* Animations */
-@keyframes fadeUp{0%{opacity:0;transform:translateY(30px)}100%{opacity:1;transform:translateY(0)}}
-@keyframes cinematic{0%{opacity:0;transform:scale(.95) translateY(20px);filter:blur(10px)}100%{opacity:1;transform:scale(1) translateY(0);filter:blur(0)}}
-@keyframes floatHeart{0%{transform:translateY(100vh) scale(0) rotate(0);opacity:0}10%{opacity:.8}90%{opacity:.3}100%{transform:translateY(-10vh) scale(1) rotate(720deg);opacity:0}}
-@keyframes pulseGlow{0%,100%{opacity:.5}50%{opacity:1}}
-@keyframes spin{to{transform:rotate(360deg)}}
-.animate-fade-up{animation:fadeUp .8s ease-out forwards}
-.animate-cinematic{animation:cinematic 1.2s cubic-bezier(.16,1,.3,1) forwards}
-.animate-pulse-glow{animation:pulseGlow 3s ease-in-out infinite}
-
-/* Floating Hearts Container */
-.hearts-container{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:0}
-.floating-heart{position:absolute;animation:floatHeart linear infinite;color:rgba(201,69,90,.15)}
-.floating-heart svg{fill:currentColor}
-
-/* Pages */
-.page{display:none;min-height:100vh}
-.page.active{display:block}
-
-/* Code Entry */
-.code-entry{display:flex;align-items:center;justify-content:center;min-height:100vh;position:relative}
-.code-entry .ambient{position:absolute;top:25%;left:50%;transform:translateX(-50%);width:600px;height:600px;border-radius:50%;background:rgba(201,69,90,.05);filter:blur(120px)}
-.code-entry .content{position:relative;z-index:10;width:100%;max-width:420px;padding:0 16px}
-.code-entry .logo{text-align:center;margin-bottom:40px}
-.code-entry .logo-icon{display:inline-flex;align-items:center;justify-content:center;width:80px;height:80px;border-radius:50%;background:rgba(201,69,90,.1);border:1px solid rgba(201,69,90,.2);margin-bottom:24px}
-.code-entry .logo-icon svg{width:40px;height:40px;color:var(--primary);fill:rgba(201,69,90,.3)}
-.code-entry h1{font-size:clamp(32px,6vw,48px);font-style:italic;margin-bottom:12px}
-.code-entry .subtitle{color:var(--muted);font-size:18px}
-.code-input{text-align:center;font-size:22px;letter-spacing:.3em;text-transform:uppercase;direction:ltr}
-.code-error{color:var(--destructive);font-size:14px;text-align:center;margin-top:8px}
-.code-footer{text-align:center;color:rgba(138,112,128,.5);font-size:14px;margin-top:32px}
-.spinner{width:20px;height:20px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;display:inline-block}
-
-/* Builder */
-.builder-header{position:sticky;top:0;z-index:50;background:rgba(26,15,21,.8);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:12px 0}
-.builder-header .inner{display:flex;align-items:center;justify-content:space-between}
-.builder-header .brand{display:flex;align-items:center;gap:12px}
-.builder-header .brand svg{width:20px;height:20px;color:var(--primary);fill:rgba(201,69,90,.3)}
-.builder-header .brand span{font-family:'Playfair Display',serif;font-size:18px;font-style:italic}
-.builder-header .code-badge{font-size:12px;color:var(--muted);background:var(--input);padding:4px 10px;border-radius:6px;font-family:monospace}
-.tabs{display:flex;gap:4px;background:rgba(26,15,21,.5);border-radius:var(--radius);padding:4px;margin-bottom:24px}
-.tab{flex:1;display:flex;align-items:center;justify-content:center;gap:8px;padding:12px;border-radius:8px;font-size:14px;cursor:pointer;transition:all .3s;border:none;background:transparent;color:var(--muted)}
-..tab.active{
-background:#0d0d0d;
-border:1px solid #f5c542;
-color:#f5c542;
-box-shadow:0 0 20px rgba(245,197,66,.25);
+@keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes fadeInScale { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+@keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
+@keyframes pulse-slow { 0%,100% { opacity: 0.4; } 50% { opacity: 1; } }
+@keyframes heartFloat {
+  0% { transform: translateY(0) rotate(0deg); opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 0.8; }
+  100% { transform: translateY(-100vh) rotate(20deg); opacity: 0; }
 }
-.tab:hover:not(.active){color:var(--fg)}
-.tab svg{width:16px;height:16px}
-.form-group{margin-bottom:16px}
-.form-group label{display:block;font-size:14px;color:var(--muted);margin-bottom:6px}
-.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-@media(max-width:600px){.form-grid{grid-template-columns:1fr}}
+@keyframes sparkle { 0%,100% { opacity: 0.3; transform: scale(1); } 50% { opacity: 1; transform: scale(1.2); } }
+@keyframes heartPulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.15); } }
+@keyframes shake { 0%,100% { transform: rotate(0deg); } 25% { transform: rotate(5deg); } 75% { transform: rotate(-5deg); } }
 
-/* Block Editor */
-.block{background:rgba(26,15,21,.6);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:12px;transition:border-color .3s}
-.block:hover{border-color:rgba(201,69,90,.3)}
-.block-header{display:flex;align-items:center;gap:8px;padding:10px 14px;background:rgba(0,0,0,.2);border-bottom:1px solid var(--border)}
-.block-header .grip{color:var(--muted);cursor:grab}
-.block-header .type-label{flex:1;font-size:14px}
-.block-actions{display:flex;gap:2px;opacity:0;transition:opacity .3s}
-.block:hover .block-actions{opacity:1}
-.block-actions button{padding:4px;border-radius:4px;border:none;background:transparent;cursor:pointer;color:var(--muted);transition:all .2s}
-.block-actions button:hover{background:rgba(201,69,90,.1);color:var(--primary)}
-.block-actions button.del:hover{background:rgba(231,76,60,.15);color:var(--destructive)}
-.block-actions button:disabled{opacity:.3;cursor:default}
-.block-actions svg{width:16px;height:16px}
-.block-body{padding:14px}
-.block-colors{display:flex;gap:16px;padding-top:10px;border-top:1px solid rgba(255,255,255,.05);margin-top:10px}
-.block-colors label{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)}
-.block-colors input[type=color]{width:24px;height:24px;border-radius:4px;border:none;cursor:pointer;background:transparent}
-.file-upload{width:100%;border:2px dashed var(--border);border-radius:var(--radius);padding:32px;text-align:center;cursor:pointer;transition:all .3s;background:transparent;color:var(--muted)}
-.file-upload:hover{border-color:rgba(201,69,90,.4);color:var(--primary)}
-.file-upload .icon{font-size:32px;margin-bottom:8px}
-.file-preview img{width:100%;max-height:240px;object-fit:cover;border-radius:8px}
-.file-preview video{width:100%;max-height:240px;border-radius:8px}
-.file-preview .audio-info{display:flex;align-items:center;gap:12px;background:rgba(0,0,0,.2);border-radius:8px;padding:12px}
+.animate-fadeIn { animation: fadeIn 0.6s ease-out forwards; }
+.animate-fadeInScale { animation: fadeInScale 0.6s ease-out forwards; }
+.animate-float { animation: float 6s ease-in-out infinite; }
+.animate-pulse-slow { animation: pulse-slow 4s ease-in-out infinite; }
+.animate-heartPulse { animation: heartPulse 2s ease-in-out infinite; }
+.animate-shake { animation: shake 4s ease-in-out infinite; }
 
-/* Add Block */
-.add-block-btn{width:100%;border:2px dashed rgba(201,69,90,.3);border-radius:var(--radius);padding:24px;display:flex;align-items:center;justify-content:center;gap:12px;background:transparent;color:rgba(201,69,90,.7);font-size:18px;cursor:pointer;transition:all .3s}
-.add-block-btn:hover{border-color:rgba(201,69,90,.6);color:var(--primary)}
-.add-block-btn:hover svg{transform:rotate(90deg)}
-.add-block-btn svg{width:24px;height:24px;transition:transform .3s}
-.block-types{position:absolute;top:100%;left:0;right:0;margin-top:8px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:12px;display:grid;grid-template-columns:repeat(3,1fr);gap:8px;z-index:50;box-shadow:0 20px 60px rgba(0,0,0,.5)}
-@media(max-width:500px){.block-types{grid-template-columns:repeat(2,1fr)}}
-.block-type-btn{display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px 8px;border-radius:8px;background:rgba(0,0,0,.2);border:1px solid transparent;cursor:pointer;transition:all .2s;color:var(--fg);font-size:13px}
-.block-type-btn:hover{background:rgba(201,69,90,.1);border-color:rgba(201,69,90,.3)}
-.block-type-btn .icon{color:var(--primary);font-size:20px}
-
-/* Color presets */
-.color-presets{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-@media(min-width:600px){.color-presets{grid-template-columns:repeat(6,1fr)}}
-.color-preset{display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px;border-radius:8px;border:1px solid var(--border);cursor:pointer;transition:all .2s;background:transparent}
-.color-preset:hover{border-color:rgba(201,69,90,.5)}
-.color-preset .dots{display:flex;gap:4px}
-.color-preset .dot{width:16px;height:16px;border-radius:50%;border:1px solid var(--border)}
-.color-preset .name{font-size:12px;color:var(--muted)}
-.custom-colors{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;text-align:center}
-.custom-colors label{display:flex;flex-direction:column;align-items:center;gap:8px;font-size:14px;color:var(--muted)}
-.custom-colors .color-preview{display:flex;align-items:center;gap:6px}
-.custom-colors .swatch{width:24px;height:24px;border-radius:4px;border:1px solid var(--border)}
-.custom-colors input[type=color]{width:40px;height:32px;border-radius:4px;cursor:pointer;border:none}
-.toggle{width:48px;height:24px;border-radius:12px;border:none;cursor:pointer;position:relative;transition:background .3s}
-.toggle.on{background:var(--primary)}
-.toggle.off{background:var(--input)}
-.toggle .knob{width:20px;height:20px;border-radius:50%;background:var(--fg);position:absolute;top:2px;transition:all .3s}
-.toggle.on .knob{right:2px;left:auto}
-.toggle.off .knob{left:2px;right:auto}
-.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0}
-
-/* Publish */
-.publish-area{margin-top:32px;padding-bottom:40px}
-.publish-success{
-position:fixed;
-inset:0;
-display:flex;
-align-items:center;
-justify-content:center;
-z-index:9999;
-background:rgba(0,0,0,.65);
-backdrop-filter:blur(12px);
+/* Particles */
+.particle {
+  position: fixed; border-radius: 50%;
+  background: var(--gold); pointer-events: none;
+  animation: pulse-slow 4s ease-in-out infinite;
+  opacity: 0.3; z-index: 0;
 }
 
-.publish-success .inner{
-background: linear-gradient(145deg,#14090f,#1b0c12);
-border:1px solid #d4a84355;
-box-shadow:0 0 40px #d4a84333;
-border-radius:20px;
-padding:35px;
-width:420px;
-text-align:center;
-animation: cinematic 1s ease;
+/* Floating hearts */
+.floating-heart {
+  position: fixed; bottom: -30px;
+  color: var(--rose); pointer-events: none;
+  animation: heartFloat linear infinite;
+  z-index: 0; font-size: 20px;
 }
 
-  .big-btn{
-padding:16px 30px;
-border-radius:14px;
-font-size:17px;
-cursor:pointer;
-border:none;
-transition:.35s;
-font-weight:bold;
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: rgba(184,134,11,0.3); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(184,134,11,0.5); }
+
+/* Layout helpers */
+.flex-center { display: flex; align-items: center; justify-content: center; }
+.flex-between { display: flex; align-items: center; justify-content: space-between; }
+.gap-2 { gap: 8px; } .gap-3 { gap: 12px; } .gap-4 { gap: 16px; }
+
+/* ============================================================
+   Page: Landing
+   ============================================================ */
+#page-landing {
+  min-height: 100vh; display: flex; align-items: center; justify-content: center;
+  background: var(--gradient-romantic); position: relative; overflow: hidden;
+}
+#page-landing .glow-1 {
+  position: absolute; top: 20%; left: 50%; transform: translate(-50%,-50%);
+  width: 600px; height: 600px; border-radius: 50%;
+  background: rgba(196,69,105,0.05); filter: blur(120px);
+}
+#page-landing .glow-2 {
+  position: absolute; bottom: 0; left: 25%;
+  width: 400px; height: 400px; border-radius: 50%;
+  background: rgba(184,134,11,0.05); filter: blur(100px);
+}
+.landing-content { position: relative; z-index: 10; width: 100%; max-width: 420px; padding: 0 24px; }
+.landing-logo { text-align: center; margin-bottom: 40px; animation: fadeIn 1s ease-out; }
+.landing-logo .icon-circle {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 80px; height: 80px; border-radius: 50%;
+  border: 1px solid var(--border-gold); margin-bottom: 24px;
+  box-shadow: var(--shadow-gold); animation: shake 4s ease-in-out infinite;
+}
+.landing-logo .icon-circle svg { width: 40px; height: 40px; color: var(--gold); }
+.landing-logo h1 { font-size: 2.2rem; margin-bottom: 8px; }
+.landing-logo p { color: var(--muted-fg); font-size: 1.1rem; font-weight: 300; }
+
+.code-card {
+  animation: fadeIn 1s ease-out 0.3s backwards;
+  box-shadow: var(--shadow-gold);
+}
+.code-card .card-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+.code-card .card-header svg { width: 20px; height: 20px; color: var(--gold); }
+.code-card .card-header h2 { font-size: 1.2rem; }
+
+.code-input {
+  text-align: center; font-size: 1.1rem;
+  letter-spacing: 0.2em; direction: ltr;
 }
 
-.btn-gold{
-background:linear-gradient(135deg,#f5c542,#e0a21a);
-color:#000;
-box-shadow:0 0 25px rgba(245,197,66,.4);
+.code-card .submit-btn { width: 100%; padding: 14px; font-size: 1.1rem; margin-top: 4px; }
+.code-card .error-msg { color: var(--rose); font-size: 0.85rem; text-align: center; margin-top: 8px; }
+.code-card .demo-codes { color: var(--muted-fg); font-size: 0.75rem; text-align: center; margin-top: 16px; }
+
+
+
+/* ============================================================
+   Page: Builder
+   ============================================================ */
+#page-builder .builder-header {
+  position: sticky; top: 0; z-index: 50;
+  background: rgba(20,20,20,0.8); backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(184,134,11,0.15);
+  padding: 12px 16px;
+}
+.builder-header .inner { max-width: 900px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+.builder-header .logo-section { display: flex; align-items: center; gap: 12px; }
+.builder-header .logo-section svg { width: 24px; height: 24px; color: var(--gold); }
+.builder-header .logo-section .code-badge {
+  font-size: 0.7rem; background: var(--muted); padding: 4px 8px;
+  border-radius: 6px; color: var(--muted-fg); direction: ltr;
+}
+.builder-header .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.builder-header .actions button { padding: 8px 16px; font-size: 0.85rem; display: flex; align-items: center; gap: 6px; }
+
+.builder-body { max-width: 800px; margin: 0 auto; padding: 24px 16px; }
+
+/* Tabs */
+.builder-tabs {
+  display: flex; gap: 4px; background: var(--muted);
+  border-radius: var(--radius); padding: 4px; margin-bottom: 32px;
+}
+.builder-tabs button {
+  flex: 1; padding: 10px; border: none; border-radius: 10px;
+  background: transparent; color: var(--muted-fg);
+  font-family: var(--font-body); font-size: 0.85rem;
+  cursor: pointer; transition: all 0.3s;
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+}
+.builder-tabs button.active {
+  background: var(--card); color: var(--fg);
+  border: 1px solid rgba(184,134,11,0.15);
+  box-shadow: var(--shadow-gold);
+}
+.builder-tabs button svg { width: 16px; height: 16px; }
+
+/* Block picker */
+.block-picker { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; margin-bottom: 16px; }
+.block-picker button {
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  padding: 16px; background: var(--gradient-card);
+  border: 1px solid var(--border-gold); border-radius: var(--radius);
+  color: var(--fg); font-family: var(--font-body); font-size: 0.85rem;
+  cursor: pointer; transition: all 0.3s;
+}
+.block-picker button:hover { border-color: var(--gold); transform: scale(1.03); }
+.block-picker button svg { width: 24px; height: 24px; color: var(--gold); }
+
+/* Block item */
+.block-item {
+  background: var(--gradient-card); border: 1px solid var(--border-gold);
+  border-radius: 16px; padding: 20px; margin-bottom: 16px;
+  animation: fadeIn 0.4s ease-out;
+}
+.block-item-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+.block-item-header .type-badge {
+  font-size: 0.7rem; background: rgba(184,134,11,0.1);
+  color: var(--gold); padding: 4px 8px; border-radius: 6px;
+  display: flex; align-items: center; gap: 6px;
+}
+.block-item-header .block-actions { display: flex; gap: 4px; }
+.block-item-header .block-actions button {
+  background: none; border: none; color: var(--muted-fg);
+  cursor: pointer; padding: 6px; border-radius: 8px; transition: all 0.3s;
+}
+.block-item-header .block-actions button:hover { background: var(--muted); color: var(--fg); }
+.block-item-header .block-actions button.delete:hover { background: rgba(231,76,60,0.1); color: var(--destructive); }
+
+/* File upload area */
+.file-upload {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 12px; min-height: 120px; background: var(--input-bg);
+  border: 2px dashed var(--border-gold); border-radius: var(--radius);
+  cursor: pointer; padding: 16px; transition: border-color 0.3s;
+}
+.file-upload:hover { border-color: var(--gold); }
+.file-upload svg { width: 40px; height: 40px; color: var(--muted-fg); }
+.file-upload span { font-size: 0.85rem; color: var(--muted-fg); }
+.file-upload .sub { font-size: 0.7rem; color: rgba(138,122,102,0.6); }
+.file-upload input[type="file"] { display: none; }
+.file-upload img { max-height: 200px; border-radius: 8px; object-fit: contain; }
+.file-upload video { max-height: 200px; border-radius: 8px; width: 100%; }
+.file-upload audio { width: 100%; }
+
+.remove-file { font-size: 0.75rem; color: var(--destructive); background: none; border: none; cursor: pointer; margin-top: 4px; font-family: var(--font-body); }
+.remove-file:hover { text-decoration: underline; }
+
+/* Color picker row */
+.color-row { margin-bottom: 24px; }
+.color-row label { font-size: 0.85rem; color: var(--muted-fg); margin-bottom: 8px; display: block; }
+.color-row .colors-flex { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.color-preview { width: 40px; height: 40px; border-radius: 8px; border: 1px solid var(--border-gold); flex-shrink: 0; }
+.color-swatch {
+  width: 32px; height: 32px; border-radius: 8px; border: 2px solid transparent;
+  cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center;
+}
+.color-swatch.active { border-color: var(--gold); transform: scale(1.15); }
+.color-swatch svg { width: 12px; height: 12px; color: var(--fg); }
+
+.block-colors { display: flex; align-items: center; gap: 6px; margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(184,134,11,0.1); }
+.block-colors span { font-size: 0.7rem; color: var(--muted-fg); }
+.block-colors .color-swatch { width: 24px; height: 24px; }
+
+/* Toggle switch */
+.toggle-row { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; }
+.toggle-row span { color: var(--fg); font-size: 0.9rem; }
+.toggle-switch {
+  width: 48px; height: 28px; border-radius: 14px; cursor: pointer;
+  position: relative; transition: background 0.3s; border: none;
+}
+.toggle-switch.on { background: var(--gold); }
+.toggle-switch.off { background: var(--muted); }
+.toggle-knob {
+  width: 20px; height: 20px; background: var(--fg); border-radius: 50%;
+  position: absolute; top: 4px; transition: 0.3s;
+}
+.toggle-switch.on .toggle-knob { right: 4px; left: auto; }
+.toggle-switch.off .toggle-knob { left: 4px; right: auto; }
+
+/* Speed buttons */
+.speed-buttons { display: flex; gap: 8px; }
+.speed-btn {
+  flex: 1; padding: 8px; border: none; border-radius: 8px;
+  font-family: var(--font-body); font-size: 0.85rem;
+  cursor: pointer; transition: all 0.3s;
+}
+.speed-btn.active { background: var(--gold); color: var(--bg); }
+.speed-btn:not(.active) { background: var(--muted); color: var(--muted-fg); }
+
+/* Published overlay */
+.published-overlay {
+  position: fixed; inset: 0; z-index: 100;
+  background: rgba(13,13,13,0.92); backdrop-filter: blur(20px);
+  display: flex; align-items: center; justify-content: center;
+}
+.published-card {
+  background: var(--gradient-card); border: 1px solid var(--border-gold);
+  border-radius: 16px; padding: 40px; max-width: 420px; width: 90%;
+  text-align: center; box-shadow: var(--shadow-gold);
+  animation: fadeInScale 0.5s ease-out;
+}
+.published-card .heart-icon {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 64px; height: 64px; border-radius: 50%;
+  background: rgba(184,134,11,0.1); margin-bottom: 24px;
+}
+.published-card .heart-icon svg { width: 32px; height: 32px; color: var(--gold); }
+.published-card h2 { font-size: 1.5rem; margin-bottom: 12px; }
+.published-card .sub { color: var(--muted-fg); margin-bottom: 24px; }
+.published-card .link-box {
+  background: var(--muted); border-radius: var(--radius); padding: 14px;
+  font-family: monospace; font-size: 0.8rem; direction: ltr;
+  margin-bottom: 20px; word-break: break-all; color: var(--fg);
+}
+.published-card .btn-row { display: flex; gap: 12px; }
+.published-card .btn-row button { flex: 1; padding: 12px; font-size: 0.9rem; display: flex; align-items: center; justify-content: center; gap: 6px; }
+.published-card .btn-outline {
+  background: none; border: 1px solid var(--border-gold); border-radius: var(--radius);
+  color: var(--fg); cursor: pointer; font-family: var(--font-body); transition: 0.3s;
+}
+.published-card .btn-outline:hover { background: var(--muted); }
+.published-card .back-link {
+  margin-top: 16px; background: none; border: none;
+  color: var(--muted-fg); font-size: 0.85rem; cursor: pointer;
+  font-family: var(--font-body); transition: 0.3s;
+}
+.published-card .back-link:hover { color: var(--fg); }
+
+/* No blocks */
+.no-blocks { text-align: center; padding: 60px 0; color: var(--muted-fg); }
+.no-blocks svg { width: 48px; height: 48px; margin: 0 auto 16px; opacity: 0.2; }
+
+/* ============================================================
+   Page: Album Viewer
+   ============================================================ */
+#page-viewer { min-height: 100vh; position: relative; overflow: hidden; }
+.viewer-particles, .viewer-hearts { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+.viewer-glow {
+  position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+  width: 800px; height: 400px; border-radius: 50%;
+  background: rgba(184,134,11,0.05); filter: blur(150px);
+}
+.viewer-content { position: relative; z-index: 10; max-width: 640px; margin: 0 auto; padding: 48px 16px; }
+
+/* Password screen */
+.password-screen {
+  min-height: 100vh; display: flex; align-items: center; justify-content: center;
+  background: var(--gradient-romantic); position: relative; overflow: hidden;
+}
+.password-card { max-width: 360px; width: 90%; text-align: center; animation: fadeInScale 0.6s ease-out; }
+.password-card svg.lock { width: 48px; height: 48px; color: var(--gold); margin: 0 auto 16px; }
+.password-card h2 { font-size: 1.3rem; margin-bottom: 8px; }
+.password-card .hint { color: var(--muted-fg); font-size: 0.85rem; margin-bottom: 16px; }
+.password-card .error { color: var(--rose); font-size: 0.85rem; margin: 8px 0; }
+
+/* Entrance screen */
+.entrance-screen {
+  min-height: 100vh; display: flex; align-items: center; justify-content: center;
+  background: var(--gradient-romantic); position: relative; overflow: hidden;
+  text-align: center;
+}
+.entrance-screen .heart-big { animation: heartPulse 2s ease-in-out infinite; }
+.entrance-screen .heart-big svg { width: 80px; height: 80px; color: var(--gold); margin-bottom: 24px; }
+.entrance-screen h1 { font-size: 2.2rem; margin-bottom: 12px; }
+.entrance-screen .from { color: var(--muted-fg); font-size: 1.1rem; margin-bottom: 32px; }
+.entrance-screen .enter-btn { padding: 16px 40px; font-size: 1.1rem; border-radius: 16px; }
+
+/* Album block */
+.album-block {
+  border-radius: 16px; padding: 24px; margin-bottom: 32px;
+  border: 1px solid; animation: fadeIn 0.6s ease-out backwards;
+}
+.album-block h3 { font-family: var(--font-heading); font-size: 1.2rem; margin-bottom: 12px; }
+.album-block p { font-family: var(--font-amiri); font-size: 1.1rem; line-height: 1.8; white-space: pre-wrap; }
+.album-block img { width: 100%; border-radius: var(--radius); }
+.album-block audio, .album-block video { width: 100%; border-radius: var(--radius); }
+
+.hidden-msg-btn {
+  display: inline-block; padding: 12px 24px;
+  font-size: 0.95rem; border-radius: var(--radius);
+}
+.hidden-msg-content {
+  margin-top: 16px; font-family: var(--font-amiri);
+  font-size: 1.1rem; line-height: 1.8;
+  animation: fadeIn 0.5s ease-out;
 }
 
-.btn-gold:hover{
-transform:translateY(-2px) scale(1.05);
-box-shadow:0 0 35px rgba(245,197,66,.8);
+/* Counter */
+.counter-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; text-align: center; }
+.counter-item {
+  background: rgba(31,31,31,0.5); border-radius: var(--radius);
+  padding: 16px; border: 1px solid rgba(184,134,11,0.1);
 }
+.counter-item .number { font-family: var(--font-heading); font-size: 1.8rem; }
+.counter-item .label { font-size: 0.75rem; color: var(--muted-fg); margin-top: 4px; }
 
-.btn-dark{
-background:#111;
-border:1px solid #f5c542;
-color:#f5c542;
+.album-footer { text-align: center; margin-top: 64px; padding-bottom: 32px; }
+.album-footer svg { width: 24px; height: 24px; color: var(--gold); margin: 0 auto 8px; }
+.album-footer p { color: var(--muted-fg); font-size: 0.85rem; }
+
+
+
+
+
+.code-item {
+  display: flex; align-items: center; justify-content: space-between;
+  background: rgba(31,31,31,0.5); border-radius: var(--radius);
+  padding: 16px; border: 1px solid rgba(184,134,11,0.1);
+  margin-bottom: 12px; flex-wrap: wrap; gap: 8px;
 }
-
-.btn-dark:hover{
-background:#f5c542;
-color:#000;
-transform:scale(1.05);
+.code-item .info { display: flex; align-items: center; gap: 16px; }
+.code-item .info svg { width: 20px; height: 20px; color: var(--gold); }
+.code-item .code-text { font-family: monospace; letter-spacing: 0.15em; font-size: 0.95rem; }
+.code-item .status-row { display: flex; align-items: center; gap: 12px; margin-top: 4px; }
+.code-item .status-badge {
+  font-size: 0.7rem; padding: 2px 8px; border-radius: 999px;
 }
-
-  
-.publish-success .check-icon{display:inline-flex;align-items:center;justify-content:center;width:64px;height:64px;border-radius:50%;background:rgba(201,69,90,.2);margin-bottom:16px}
-.publish-success .check-icon svg{width:32px;height:32px;color:var(--primary)}
-.publish-success h3{font-size:28px;margin-bottom:12px}
-.publish-success .link{font-size:13px;color:var(--muted);word-break:break-all;direction:ltr;margin-bottom:20px}
-.publish-success .actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
-
-/* Album View */
-.album-view{position:relative;overflow:hidden}
-.album-view .ambient-glow{position:absolute;top:33%;left:50%;transform:translateX(-50%);width:500px;height:500px;border-radius:50%;filter:blur(150px)}
-.album-view .content{position:relative;z-index:10;max-width:640px;margin:0 auto;padding:48px 16px}
-.album-header{text-align:center;padding:32px 0}
-.album-header h1{font-size:clamp(28px,6vw,44px);font-style:italic;margin-bottom:8px}
-.album-header .from{font-size:14px;opacity:.6}
-.album-message{text-align:center;padding:32px 0;font-size:20px;line-height:1.8}
-.album-counter{text-align:center;padding:16px 0}
-.album-counter .label{font-size:14px;opacity:.6;margin-bottom:8px}
-.album-counter .value{font-family:'Playfair Display',serif;font-size:22px;direction:ltr}
-.album-block{border-radius:16px;padding:24px;margin-bottom:16px}
-.album-block.text-block p{font-size:18px;line-height:1.8;white-space:pre-wrap}
-.album-block img{width:100%;border-radius:12px}
-.album-block video{width:100%;border-radius:12px}
-.album-block .caption{font-size:14px;text-align:center;opacity:.8;margin-top:12px}
-.album-block .play-btn{width:56px;height:56px;border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform .2s}
-.album-block .play-btn:hover{transform:scale(1.1)}
-.album-block .play-btn svg{width:24px;height:24px}
-.album-block .audio-row{display:flex;align-items:center;gap:16px}
-.album-block .audio-name{font-size:14px}
-.reveal-btn{display:inline-flex;align-items:center;gap:8px;padding:12px 24px;border-radius:var(--radius);border:1px solid;cursor:pointer;transition:all .2s;background:transparent;font-size:16px}
-.reveal-btn:hover{transform:scale(1.05)}
-.album-footer{text-align:center;padding:48px 0;opacity:.4}
-.album-footer svg{width:24px;height:24px;margin:0 auto 8px}
-.album-footer p{font-size:12px}
-
-/* Password Screen */
-.password-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;position:relative}
-.password-screen .content{position:relative;z-index:10;width:100%;max-width:380px;padding:0 16px;text-align:center}
-.password-screen .lock-icon{margin-bottom:24px}
-.password-screen .lock-icon svg{width:48px;height:48px}
-.password-screen .hint{font-size:18px;margin-bottom:24px}
-.password-screen .pass-input{text-align:center;font-size:20px;direction:ltr}
-
-/* Admin */
-.admin-header{position:sticky;top:0;z-index:50;background:rgba(26,15,21,.8);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:12px 0}
-.admin-header .inner{display:flex;align-items:center;justify-content:space-between}
-.admin-header .brand{display:flex;align-items:center;gap:12px}
-.admin-header .brand svg{width:20px;height:20px;color:var(--accent)}
-.admin-header .brand span{font-family:'Playfair Display',serif;font-size:18px;font-style:italic}
-.code-row{display:flex;align-items:center;gap:12px;background:rgba(0,0,0,.2);border-radius:8px;padding:12px;margin-bottom:8px}
-.code-row .code-text{flex:1;font-family:monospace;font-size:14px;direction:ltr}
-.badge{font-size:12px;padding:4px 10px;border-radius:6px}
-.badge-new{background:rgba(201,69,90,.2);color:var(--primary)}
-.badge-used{background:rgba(212,168,67,.2);color:var(--accent)}
-.badge-expired{background:rgba(231,76,60,.2);color:var(--destructive)}
-.badge-published{background:rgba(201,69,90,.2);color:var(--primary)}
-.badge-draft{background:rgba(0,0,0,.3);color:var(--muted)}
-.icon-btn{padding:6px;border-radius:4px;border:none;background:transparent;cursor:pointer;color:var(--muted);transition:all .2s}
-.icon-btn:hover{background:rgba(201,69,90,.1);color:var(--primary)}
-.icon-btn.del:hover{background:rgba(231,76,60,.15);color:var(--destructive)}
-.icon-btn svg{width:16px;height:16px}
-.empty-state{text-align:center;color:var(--muted);padding:32px}
-.add-code-row{display:flex;gap:12px}
-.add-code-row input{flex:1}
-.album-row{display:flex;align-items:center;gap:12px;background:rgba(0,0,0,.2);border-radius:8px;padding:12px;margin-bottom:8px}
-.album-row .info{flex:1;font-size:13px;color:var(--muted)}
-
-/* Toast */
-.toast-container{position:fixed;bottom:20px;right:20px;z-index:9999}
-.toast{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:14px 20px;font-size:14px;color:var(--fg);box-shadow:0 10px 40px rgba(0,0,0,.5);animation:fadeUp .4s ease-out}
-.toast.error{border-color:var(--destructive)}
-
-/* SVG icons inline */
-.svg-heart{display:inline-block}
-
-  h1,h2,h3,.font-display{
-color:#f5c542;
+.status-new { background: rgba(39,174,96,0.1); color: var(--green); }
+.status-used { background: rgba(184,134,11,0.1); color: var(--gold); }
+.status-expired { background: rgba(231,76,60,0.1); color: var(--destructive); }
+.code-item .time-text { font-size: 0.7rem; color: var(--muted-fg); display: flex; align-items: center; gap: 4px; }
+.code-item .item-actions { display: flex; gap: 4px; }
+.code-item .item-actions button {
+  background: none; border: none; color: var(--muted-fg); padding: 6px;
+  border-radius: 8px; cursor: pointer; transition: 0.3s;
 }
+.code-item .item-actions button:hover { background: var(--muted); color: var(--fg); }
+.code-item .item-actions button.delete:hover { background: rgba(231,76,60,0.1); color: var(--destructive); }
 
-  /* glow indicator للتاب */
-.tab{
-position:relative;
-overflow:hidden;
-transition:.35s;
+/* Responsive */
+@media (max-width: 600px) {
+  .builder-header .actions { width: 100%; justify-content: flex-end; }
+  .block-picker { grid-template-columns: repeat(2, 1fr); }
+  .counter-grid { grid-template-columns: repeat(2, 1fr); }
+  .published-card .btn-row { flex-direction: column; }
+  .code-item { flex-direction: column; align-items: flex-start; }
+  .code-item .item-actions { align-self: flex-end; }
 }
-
-.tab::after{
-content:"";
-position:absolute;
-inset:0;
-border-radius:10px;
-opacity:0;
-transition:.35s;
-box-shadow:0 0 25px rgba(255,200,80,.0);
-}
-
-.tab:hover::after{
-opacity:1;
-box-shadow:0 0 25px rgba(255,200,80,.25);
-}
-
-.tab.active{
-background:#0b0b0b;
-color:#f5c542;
-border:1px solid #f5c542;
-box-shadow:0 0 30px rgba(245,197,66,.35);
-transform:translateY(-1px) scale(1.02);
-}
-
-  .tabs{
-position:relative;
-}
-
-.tabs::before{
-content:"";
-position:absolute;
-bottom:-2px;
-height:2px;
-width:100%;
-background:linear-gradient(90deg,transparent,#f5c542,transparent);
-opacity:.4;
-}
-
-  .input{
-background:#0b0b0f;
-border:1px solid rgba(245,197,66,.35);
-box-shadow:0 0 0 1px rgba(255,215,120,.08) inset;
-}
-
-.input:focus{
-border-color:#f5c542;
-box-shadow:
-0 0 0 1px rgba(255,215,120,.25) inset,
-0 0 18px rgba(245,197,66,.25);
-}
-
-
-  /* success fullscreen */
-.success-screen{
-position:fixed;
-inset:0;
-background:rgba(0,0,0,.75);
-backdrop-filter:blur(12px);
-display:none;
-align-items:center;
-justify-content:center;
-z-index:999999;
-}
-
-.success-card{
-width:420px;
-max-width:90%;
-background:linear-gradient(145deg,#1a0f15,#2a111a);
-border:1px solid rgba(212,168,67,.5);
-border-radius:20px;
-padding:40px 25px;
-text-align:center;
-box-shadow:0 0 80px rgba(212,168,67,.25);
-animation:pop .4s ease;
-}
-
-@keyframes pop{
-from{transform:scale(.8);opacity:0}
-to{transform:scale(1);opacity:1}
-}
-
-.success-card h2{
-color:#e7c46a;
-margin:10px 0;
-}
-
-.link-box{
-background:#111;
-padding:12px;
-border-radius:12px;
-margin:15px 0;
-font-size:13px;
-word-break:break-all;
-border:1px solid rgba(212,168,67,.4);
-}
-
-.gold-btn{
-background:linear-gradient(45deg,#d4a843,#f1d07a);
-border:none;
-padding:12px 20px;
-border-radius:12px;
-margin:5px;
-font-weight:bold;
-cursor:pointer;
-}
-
-.dark-btn{
-background:transparent;
-border:1px solid #d4a843;
-color:#d4a843;
-padding:12px 20px;
-border-radius:12px;
-margin:5px;
-cursor:pointer;
-}
-
-.back-edit{
-margin-top:15px;
-opacity:.7;
-cursor:pointer;
-}
-
-
-  <!-- ---------------------------------------------------------------------------------------- -->
 </style>
 </head>
 <body>
 
-<!-- Floating Hearts -->
-<div class="hearts-container" id="heartsContainer"></div>
+<!-- ============================================================
+     SVG Icons (inline for standalone)
+     ============================================================ -->
+<svg style="display:none">
+  <symbol id="icon-heart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></symbol>
+  <symbol id="icon-key" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="15.5" r="5.5"/><path d="m21 2-9.6 9.6"/><path d="m15.5 7.5 3 3L22 7l-3-3"/></symbol>
+  <symbol id="icon-lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></symbol>
+  <symbol id="icon-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="M12 5v14"/></symbol>
+  <symbol id="icon-trash" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></symbol>
+  <symbol id="icon-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></symbol>
+  <symbol id="icon-save" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></symbol>
+  <symbol id="icon-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></symbol>
+  <symbol id="icon-type" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" x2="15" y1="20" y2="20"/><line x1="12" x2="12" y1="4" y2="20"/></symbol>
+  <symbol id="icon-image" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></symbol>
+  <symbol id="icon-music" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></symbol>
+  <symbol id="icon-video" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 8-6 4 6 4V8Z"/><rect width="14" height="12" x="2" y="6" rx="2" ry="2"/></symbol>
+  <symbol id="icon-message" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 21 1.9-5.7a8.5 8.5 0 1 1 3.8 3.8z"/></symbol>
+  <symbol id="icon-timer" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="10" x2="14" y1="2" y2="2"/><line x1="12" x2="15" y1="14" y2="11"/><circle cx="12" cy="14" r="8"/></symbol>
+  <symbol id="icon-palette" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r=".5"/><circle cx="17.5" cy="10.5" r=".5"/><circle cx="8.5" cy="7.5" r=".5"/><circle cx="6.5" cy="12" r=".5"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></symbol>
+  <symbol id="icon-settings" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></symbol>
+  <symbol id="icon-link" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></symbol>
+  <symbol id="icon-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></symbol>
+  <symbol id="icon-shield" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></symbol>
+  <symbol id="icon-clock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></symbol>
+  <symbol id="icon-arrow-right" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></symbol>
+  <symbol id="icon-grip" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="12" r="1"/><circle cx="9" cy="5" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="15" cy="19" r="1"/></symbol>
+</svg>
 
-<!-- Toast -->
-<div class="toast-container" id="toastContainer"></div>
+<div id="icon-fn" style="display:none"></div>
 
-<!-- PAGE: Code Entry -->
-<div class="page active" id="pageCodeEntry">
-  <div class="code-entry">
-    <div class="ambient"></div>
-    <div class="content">
-      <div class="logo animate-fade-up">
-        <div class="logo-icon glow-rose">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" fill="rgba(201,69,90,0.3)"/></svg>
-        </div>
-        <h1 class="text-gradient-gold">Love Album</h1>
-        <p class="subtitle">أنشئ ألبوم حب لا يُنسى</p>
-      </div>
-      <form onsubmit="handleCodeSubmit(event)" class="animate-fade-up" style="animation-delay:.2s">
-        <div class="card">
-          <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#d4a843" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-            <span style="font-size:18px">أدخل كود الشراء</span>
-          </div>
-          <div style="display:flex;flex-direction:column;gap:12px">
-            <input type="text" id="codeInput" class="input code-input" placeholder="مثال: LOVE2025" autocomplete="off" autofocus>
-            <div id="codeError" class="code-error" style="display:none"></div>
-            <button type="submit" class="btn btn-primary btn-full" id="codeSubmitBtn">
-              <span>دخول</span>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="transform:scaleX(-1)"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-            </button>
-          </div>
-        </div>
-      </form>
-      <p class="code-footer animate-fade-up" style="animation-delay:.4s">تحتاج كود شراء للبدء في إنشاء ألبومك</p>
-    </div>
-  </div>
-</div>
-
-<!-- PAGE: Builder -->
-<div class="page" id="pageBuilder">
-  <div class="builder-header">
-    <div class="container inner">
-    
-      <div class="brand">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" fill="rgba(201,69,90,0.3)"/></svg>
-        <span class="text-gradient-gold">Love Album</span>
-        <span class="code-badge" id="builderCodeBadge"></span>
-      </div>
-      
-  <div class="top-actions">
-
-<button onclick="manualSave()" class="btn-ghost">💾 حفظ</button>
-
-<button onclick="previewAlbum()" class="btn-ghost">👁 معاينة</button>
-
-<button onclick="publishAlbum()" class="btn-accent">✨ إنشاء الألبوم</button>
-</div>
-
-      
-      <button class="icon-btn" onclick="handleLogout()" title="خروج">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-      </button>
-    </div>
-  </div>
-  <div class="container" style="padding-top:24px;padding-bottom:40px">
-    <!-- Tabs -->
-    <div class="tabs">
-      <button class="tab active" onclick="switchTab('content',this)">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-        المحتوى
-      </button>
-      <button class="tab" onclick="switchTab('design',this)">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="13.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="10.5" r="2.5"/><circle cx="8.5" cy="7.5" r="2.5"/><circle cx="6.5" cy="12.5" r="2.5"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.9 0 1.7-.8 1.7-1.7 0-.5-.2-.9-.5-1.2-.3-.3-.5-.7-.5-1.2 0-.9.8-1.7 1.7-1.7H16c3.3 0 6-2.7 6-6 0-5.5-4.5-9.8-10-9.8z"/></svg>
-        التصميم
-      </button>
-      <button class="tab" onclick="switchTab('settings',this)">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-        الإعدادات
-      </button>
-    </div>
-
-    <!-- Tab: Content -->
-    <div id="tabContent" class="animate-fade-up">
-      <div class="card" style="margin-bottom:24px">
-        <h3 class="font-display" style="font-size:20px;margin-bottom:16px">المعلومات الأساسية</h3>
-        <div class="form-grid">
-          <div class="form-group"><label>اسمك</label><input class="input" id="senderName" placeholder="اسمك..." oninput="updateAlbumField('senderName',this.value)"></div>
-        <div class="form-group"><label>اسم الشخص</label><input class="input" id="receiverName" placeholder="اسم حبيبك/حبيبتك..." oninput="updateAlbumField('receiverName',this.value)"></div>
-          <div class="form-group">
-<label>تاريخ العلاقة</label>
-<input type="date" class="input" id="relationshipDate"
-oninput="updateAlbumField('relationshipDate',this.value)">
-</div>
-        </div>
-        <div class="form-group">
-<label>الرسالة الرئيسية</label>
-<textarea class="input" id="loveMessage"
-rows="4"
-oninput="updateAlbumField('loveMessage',this.value)">
-</textarea>
-</div>
-
-<div class="form-group">
-<label>كلمة المرور (اختياري)</label>
-<input class="input" id="password"
-oninput="updatePasswordField(this.value)">
-</div>
-
-<div class="form-group">
-<label>جملة فوق كلمة المرور</label>
-<input class="input" id="passwordHint"
-oninput="updateAlbumField('passwordHint',this.value)">
-</div>
-      </div>
-
-      <h3 class="font-display" style="font-size:20px;margin-bottom:16px;display:flex;align-items:center;gap:8px">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#d4a843" stroke-width="2"><path d="M12 3l1.5 4.5H18l-3.5 2.5L16 14.5 12 11.5 8 14.5l1.5-4.5L6 7.5h4.5z"/></svg>
-        أقسام الألبوم
-      </h3>
-      <div id="blocksContainer"></div>
-      <div style="position:relative;margin-top:12px">
-        <button class="add-block-btn" onclick="toggleAddMenu()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          إضافة قسم جديد
-        </button>
-        <div class="block-types" id="addBlockMenu" style="display:none">
-          <button class="block-type-btn" onclick="addBlock('text')"><span class="icon">📝</span>نص / مقالة</button>
-          <button class="block-type-btn" onclick="addBlock('image')"><span class="icon">🖼️</span>صورة</button>
-          <button class="block-type-btn" onclick="addBlock('music')"><span class="icon">🎵</span>موسيقى</button>
-          <button class="block-type-btn" onclick="addBlock('video')"><span class="icon">🎬</span>فيديو</button>
-          <button class="block-type-btn" onclick="addBlock('hidden-message')"><span class="icon">👁️</span>رسالة مخفية</button>
-          <button class="block-type-btn" onclick="addBlock('counter')"><span class="icon">⏱️</span>عداد العلاقة</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Tab: Design -->
-    <div id="tabDesign" style="display:none" class="animate-fade-up">
-      <div class="card" style="margin-bottom:24px">
-        <h3 class="font-display" style="font-size:20px;margin-bottom:16px">الألوان</h3>
-        <label style="font-size:14px;color:var(--muted);margin-bottom:8px;display:block">ألوان جاهزة</label>
-        <div class="color-presets" id="colorPresets" style="margin-bottom:20px"></div>
-        <div class="custom-colors">
-          <label><div class="color-preview"><span class="swatch" id="swatchBg"></span>خلفية</div><input type="color" id="colorBg" oninput="updateColor('bgColor',this.value)"></label>
-          <label><div class="color-preview"><span class="swatch" id="swatchText"></span>نص</div><input type="color" id="colorText" oninput="updateColor('textColor',this.value)"></label>
-          <label><div class="color-preview"><span class="swatch" id="swatchBorder"></span>إطار</div><input type="color" id="colorBorder" oninput="updateColor('borderColor',this.value)"></label>
-        </div>
-      </div>
-     </div>
-
-    <!-- Tab: Settings -->
-    <div id="tabSettings" style="display:none" class="animate-fade-up">
-      <div class="card" style="margin-bottom:20px">
-<h3 class="font-display" style="font-size:20px;margin-bottom:16px">الأنيميشن</h3>
-
-<div class="form-grid" style="margin-bottom:16px">
-<div class="form-group">
-<label>سرعة ظهور النص</label>
-<select class="input" id="textSpeed"
-onchange="updateAlbumField('textSpeed',this.value)">
-<option value="slow">بطيء</option>
-<option value="normal" selected>عادي</option>
-<option value="fast">سريع</option>
-</select>
-</div>
-
-<div class="form-group">
-<label>سرعة الأنيميشن</label>
-<select class="input" id="animationSpeed"
-onchange="updateAlbumField('animationSpeed',this.value)">
-<option value="slow">بطيء</option>
-<option value="normal" selected>عادي</option>
-<option value="fast">سريع</option>
-</select>
-</div>
-</div>
-
-<div class="toggle-row">
-<span>القلوب الطائرة ❤️</span>
-<button class="toggle on" id="toggleHearts"
-onclick="toggleOption('floatingHearts')">
-<span class="knob"></span>
-</button>
-</div>
-
-<div class="toggle-row">
-<span>تأثير الإضاءة ✨</span>
-<button class="toggle on" id="toggleGlow"
-onclick="toggleOption('glowEffect')">
-<span class="knob"></span>
-</button>
-</div>
-
-</div>
-     
-
-    <!-- Publish -->
-   
-    <div id="publishSuccess" style="display:none" class="card publish-success animate-fade-up">
-      <div class="check-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div>
-      <h3 class="text-gradient-gold font-display">تم إنشاء الألبوم! 🎉</h3>
-      <p class="link" id="albumLink"></p>
-     <div class="actions">
-
-<button class="big-btn btn-gold" onclick="copyAlbumLink()">
-نسخ الرابط
-</button>
-
-<button class="big-btn btn-dark" onclick="openAlbum()">
-فتح الألبوم
-</button>
-
-<br><br>
-
-<button class="btn-ghost" onclick="location.reload()">
-← الرجوع للتعديل
-</button>
-
-</div>
-    </div>
-  </div>
-</div>
-
-<!-- PAGE: Album View -->
-<div class="page" id="pageAlbum">
-  <!-- Password Screen -->
-  <div id="albumPasswordScreen" class="password-screen" style="display:none">
-    <div class="content animate-cinematic">
-      <div class="lock-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
-      <p class="hint" id="albumHint"></p>
-      <form onsubmit="handleAlbumUnlock(event)">
-        <input type="password" class="input pass-input" id="albumPassInput" placeholder="أدخل كلمة المرور...">
-        <div id="albumPassError" class="code-error" style="display:none;margin-top:8px"></div>
-        <button type="submit" class="btn btn-primary btn-full" style="margin-top:12px">فتح الألبوم</button>
-      </form>
-    </div>
-  </div>
-  <!-- Album Content -->
-  <div id="albumContent" class="album-view" style="display:none">
-    <div class="ambient-glow" id="albumAmbientGlow"></div>
-    <div class="content" id="albumSections"></div>
-  </div>
-  <!-- Not Found -->
-  <div id="albumNotFound" style="display:none;min-height:100vh;display:none;align-items:center;justify-content:center;text-align:center;padding:40px">
-    <div class="animate-fade-up">
-      <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="rgba(201,69,90,.3)" stroke-width="2" style="margin:0 auto 16px;display:block"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-      <h1 class="font-display" style="font-size:28px;margin-bottom:8px">الألبوم غير موجود</h1>
-      <p style="color:var(--muted)">تأكد من الرابط وحاول مجدداً</p>
-    </div>
-  </div>
-</div>
-
-<!-- PAGE: Admin -->
-<div class="page" id="pageAdmin">
-  <div id="adminLogin" style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:16px">
-    <form onsubmit="handleAdminLogin(event)" style="width:100%;max-width:380px" class="animate-fade-up">
-      <div style="text-align:center;margin-bottom:24px">
-        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#d4a843" stroke-width="2" style="margin:0 auto 12px;display:block"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-        <h1 class="font-display" style="font-size:24px">لوحة التحكم</h1>
-      </div>
-      <input type="password" class="input" id="adminPassInput" placeholder="كلمة مرور الأدمن" style="text-align:center;margin-bottom:12px">
-      <button type="submit" class="btn btn-primary btn-full glow-rose">دخول</button>
-    </form>
-  </div>
-  <div id="adminPanel" style="display:none">
-    <div class="admin-header">
-      <div class="container inner">
-        <div class="brand">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-          <span class="text-gradient-gold">لوحة التحكم</span>
-        </div>
-        <button class="icon-btn" onclick="goHome()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></button>
-      </div>
-    </div>
-    <div class="container" style="padding-top:24px;padding-bottom:40px">
-      <div class="card" style="margin-bottom:24px">
-        <h3 class="font-display" style="font-size:20px;margin-bottom:16px">إنشاء كود جديد</h3>
-        <div class="add-code-row">
-          <input class="input" id="newCodeInput" placeholder="اكتب الكود..." dir="ltr" style="text-transform:uppercase">
-          <button class="btn btn-primary" onclick="adminAddCode()">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            إضافة
-          </button>
-        </div>
-      </div>
-      <div class="card" style="margin-bottom:24px">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
-          <h3 class="font-display" style="font-size:20px">الأكواد</h3>
-          <button class="icon-btn" onclick="refreshAdmin()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg></button>
-        </div>
-        <div id="adminCodesList"></div>
-      </div>
-      <div class="card">
-        <h3 class="font-display" style="font-size:20px;margin-bottom:16px">الألبومات</h3>
-        <div id="adminAlbumsList"></div>
-      </div>
-    </div>
-  </div>
-</div>
+<!-- ============================================================
+     Pages Container
+     ============================================================ -->
+<div id="page-landing"></div>
+<div id="page-builder" class="hidden"></div>
+<div id="page-viewer" class="hidden"></div>
 
 
+<!-- Firebase v8 -->
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
@@ -782,821 +532,979 @@ const firebaseConfig = {
   appId: "1:861816430901:web:144adb8ebbc2ad966d6c7c"
 };
 
-firebase.initializeApp(firebaseConfig);
+// تشغيل مرة واحدة فقط
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+}
+
 const db = firebase.database();
-db.ref("test").set({
-  msg:"hello",
-  time:Date.now()
-});
 </script>
+
+
+
+
+
+
 
 
 <script>
-  let currentAlbum = null;
-let viewAlbum = null;
+/* ============================================================
+   JavaScript - كل الكود
+   ============================================================ */
 
-function closePublishPopup(){
-document.getElementById("publishPopup").style.display="none";
+// ============================================================
+// ICON HELPER
+// ============================================================
+function icon(name, size = 24) {
+  return `<svg width="${size}" height="${size}"><use href="#icon-${name}"/></svg>`;
 }
 
-function copyFinalLink(){
-navigator.clipboard.writeText(window.finalAlbumUrl);
-showToast("تم نسخ الرابط ✨");
+// ============================================================
+// DATABASE LAYER - جاهز للربط بقاعدة بياناتك
+// ====== CLOUDINARY CONFIG ======
+const CLOUDINARY_CLOUD = "dvcl9qjpt";
+const CLOUDINARY_PRESET = "lovealbum"; // اسم preset اللي عندك
+
+async function uploadToCloudinary(base64File) {
+  const formData = new FormData();
+  formData.append("file", base64File);
+  formData.append("upload_preset", CLOUDINARY_PRESET);
+
+  const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/auto/upload`, {
+    method: "POST",
+    body: formData
+  });
+
+  const data = await res.json();
+  return data.secure_url; // ده لينك الصورة
 }
+// ============================================================
+// غيّر الفانكشنز دي لتربط بـ Firebase أو أي قاعدة بيانات
+// حاليًا تستخدم localStorage للتخزين المحلي
 
-function openFinalAlbum(){
-window.open(window.finalAlbumUrl,"_blank");
-}
-  
-  function getAlbumId(){
-return localStorage.getItem("albumId") || "LOVE"+Math.floor(Math.random()*99999);
-}
+const DB = {
 
+//////////////////////////////////////////////////////
+// جلب كود
+//////////////////////////////////////////////////////
+async getCodeData(code){
+  code = code.toUpperCase().trim();
+  const snap = await db.ref("codes/"+code).once("value");
+  if(!snap.exists()) return null;
+  return snap.val();
+},
 
-  
-function publishAlbum(){
+//////////////////////////////////////////////////////
+// التحقق من الكود + نظام 24 ساعة
+//////////////////////////////////////////////////////
+async validateCode(code){
 
-if(!currentAlbum) return;
+  code = code.toUpperCase().trim();
+  const snap = await db.ref("codes/"+code).once("value");
 
-currentAlbum.isPublished = true;
+  if(!snap.exists()){
+    return {valid:false,message:"الكود غير صحيح"};
+  }
 
-db.ref("albums/"+currentAlbum.code).set(currentAlbum)
-.then(()=>{
+  let data = snap.val();
+  const now = Date.now();
 
-const url = location.origin + location.pathname + "?id=" + currentAlbum.code;
+  // اول استخدام
+  if(!data.used){
 
-document.getElementById("publishSuccess").style.display="block";
-document.getElementById("albumLink").innerText = url;
+    await db.ref("codes/"+code).update({
+      used:true,
+      firstUsedAt: now,
+      expiresAt: now + (24*60*60*1000)
+    });
 
-showToast("تم إنشاء الألبوم بنجاح ✨");
+    return {valid:true,editable:true,firstTime:true};
+  }
 
-});
-}
+  // انتهت المدة
+  if(data.expiresAt && now > data.expiresAt){
+    return {valid:true,editable:false,expired:true};
+  }
 
-async function loadAlbum(){
+  // لسه شغال
+  return {valid:true,editable:true};
+},
 
-const params = new URLSearchParams(location.search);
-const id = params.get("id");
+//////////////////////////////////////////////////////
+// تمديد الوقت (لو مددت من فايربيز يدوي)
+//////////////////////////////////////////////////////
+async extendTime(code,hours){
 
-if(!id) return;
+  const now = Date.now();
 
-const snap = await db.ref("albums/"+id).once("value");
+  await db.ref("codes/"+code).update({
+    expiresAt: now + (hours*60*60*1000)
+  });
 
-if(!snap.exists()){
-document.body.innerHTML="<h2 style='color:white;text-align:center;margin-top:50px'>الألبوم غير موجود</h2>";
-return;
-}
+},
 
-const data = snap.val();
-
-// لو مش منشور ولسه مش preview
-if(!data.isPublished && !params.get("preview")){
-document.body.innerHTML="<h2 style='color:white;text-align:center;margin-top:50px'>الألبوم غير منشور</h2>";
-return;
-}
-
-// 🔥 عرض الألبوم الحقيقي
-showPage("pageAlbum");
-viewAlbum = data;
-
-if(data.password){
-document.getElementById("albumPasswordScreen").style.display="flex";
-document.getElementById("albumHint").innerText = data.passwordHint || "ادخل كلمة السر";
-}else{
-renderAlbumContent();
-}
-
-}
-  
-  
-  function updatePasswordField(val){
-currentAlbum.password = val;
-saveAlbum(currentAlbum);
-
-const hint = document.getElementById("passwordHint");
-
-if(!val){
-hint.value="";
-hint.disabled=true;
-currentAlbum.passwordHint="";
-}else{
-hint.disabled=false;
-}
-
-saveAlbum(currentAlbum);
-}
-// ==================== DATA STORE ====================
-const CODES_KEY='love_codes',ALBUMS_KEY='love_albums',ACTIVE_KEY='love_active';
-const DEFAULT_CODES=[
-  {code:'LOVE2025',isUsed:false,firstUsedAt:null,expiresAt:null},
-  {code:'HEART001',isUsed:false,firstUsedAt:null,expiresAt:null},
-  {code:'ROSE7777',isUsed:false,firstUsedAt:null,expiresAt:null}
-];
-
-function getCodes(){const s=localStorage.getItem(CODES_KEY);if(!s){localStorage.setItem(CODES_KEY,JSON.stringify(DEFAULT_CODES));return JSON.parse(JSON.stringify(DEFAULT_CODES))}return JSON.parse(s)}
-function saveCodes(c){localStorage.setItem(CODES_KEY,JSON.stringify(c))}
-function getActive(){return localStorage.getItem(ACTIVE_KEY)}
-function setActive(c){localStorage.setItem(ACTIVE_KEY,c.toUpperCase())}
-function clearActive(){localStorage.removeItem(ACTIVE_KEY)}
-function getAlbums(){
-  const s = localStorage.getItem(ALBUMS_KEY);
-  return s ? JSON.parse(s) : {};
-}
-
-function saveAlbums(a){
-  localStorage.setItem(ALBUMS_KEY, JSON.stringify(a));
-}
-// ===== FIREBASE SAVE =====
-function saveAlbum(album){
-  const a=getAlbums();
-  a[album.code]=album;
-  saveAlbums(a);
-
-  db.ref("albums/"+album.code).set(album);
-}
- 
-
-// ===== FIREBASE LOAD =====
-async function getAlbum(code){
-  code = code.toUpperCase();
-
-  // حاول من فايربيز
+//////////////////////////////////////////////////////
+// جلب الألبوم
+//////////////////////////////////////////////////////
+async getAlbum(code){
   const snap = await db.ref("albums/"+code).once("value");
-  if(snap.exists()) return snap.val();
+  return snap.exists()? snap.val() : null;
+},
 
-  // fallback لو مش موجود
-  const local = getAlbums()[code];
-  return local || null;
-}
+//////////////////////////////////////////////////////
+// حفظ الألبوم
+//////////////////////////////////////////////////////
+async saveAlbum(album){
 
+  for(let block of album.blocks){
 
-function validateCode(code){
-  const codes=getCodes();const f=codes.find(c=>c.code===code.toUpperCase());
-  if(!f)return{valid:false,reason:'الكود غير صحيح'};
-  if(f.isUsed&&f.expiresAt&&new Date()>new Date(f.expiresAt))return{valid:false,reason:'انتهت صلاحية الكود'};
-  if(!f.isUsed){f.isUsed=true;f.firstUsedAt=new Date().toISOString();f.expiresAt=new Date(Date.now()+24*3600000).toISOString();saveCodes(codes)}
-  return{valid:true}
-}
-function isEditable(code){const codes=getCodes();const f=codes.find(c=>c.code===code.toUpperCase());if(!f||!f.expiresAt)return true;return new Date()<new Date(f.expiresAt)}
-function createEmpty(code){return{code:code.toUpperCase(),senderName:'',receiverName:'',password:'',passwordHint:'',loveMessage:'',blocks:[],bgColor:'#1a0a10',textColor:'#f5e6d3',borderColor:'#c9455a',animationSpeed:'normal',textSpeed:'normal',floatingHearts:true,glowEffect:true,relationshipDate:'',isPublished:false,createdAt:new Date().toISOString()}}
-function genId(){return Math.random().toString(36).substr(2,9)}
+    if(block.content && block.content.startsWith("data:")){
 
-// ==================== TOAST ====================
-function showToast(msg,isError){
-  const t=document.createElement('div');t.className='toast'+(isError?' error':'');t.textContent=msg;
-  document.getElementById('toastContainer').appendChild(t);
-  setTimeout(()=>t.remove(),3000);
-}
+      const formData = new FormData();
+      formData.append("file", block.content);
+      formData.append("upload_preset", "lovealbum");
 
-// ==================== FLOATING HEARTS ====================
-function createHearts(){
-  const c=document.getElementById('heartsContainer');c.innerHTML='';
-  for(let i=0;i<15;i++){
-    const h=document.createElement('div');h.className='floating-heart';
-    h.style.left=Math.random()*100+'%';
-    h.style.animationDuration=(Math.random()*8+6)+'s';
-    h.style.animationDelay=Math.random()*10+'s';
-    const size=Math.random()*16+8;
-    h.innerHTML=`<svg width="${size}" height="${size}" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>`;
-    c.appendChild(h);
-  }
-}
-createHearts();
-
-// ==================== ROUTING ====================
-
-let currentAudio=null;
-let audioPlaying=false;
-
-function showPage(id){
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-}
-
-function route(){
-  const params=new URLSearchParams(window.location.search);
-  const page=params.get('page');
-  const albumId=params.get('id');
-  
-  if(page==='admin'){showPage('pageAdmin');return}
-  if(albumId){showPage('pageAlbum');loadAlbumView(albumId);return}
-  
-  // Check active code
-  const active=getActive();
-  if(active&&isEditable(active)){
-    showPage('pageBuilder');loadBuilder(active);return
-  }
-  if(active)clearActive();
-  showPage('pageCodeEntry');
-}
-
-// ==================== CODE ENTRY ====================
-function handleCodeSubmit(e){
-  e.preventDefault();
-  const code=document.getElementById('codeInput').value.trim();
-  const errEl=document.getElementById('codeError');
-  errEl.style.display='none';
-  if(!code){errEl.textContent='يرجى إدخال الكود';errEl.style.display='block';return}
-  
-  const btn=document.getElementById('codeSubmitBtn');
-  btn.innerHTML='<span class="spinner"></span>';btn.disabled=true;
-  
-  setTimeout(()=>{
-    const r=validateCode(code);
-    if(r.valid){setActive(code.toUpperCase());showPage('pageBuilder');loadBuilder(code.toUpperCase())}
-    else{errEl.textContent=r.reason;errEl.style.display='block'}
-    btn.innerHTML='<span>دخول</span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="transform:scaleX(-1)"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';btn.disabled=false;
-  },800);
-}
-
-// ==================== BUILDER ====================
-async function loadBuilder(code){
-
-let data = await getAlbum(code);
-
-// لو مفيش ألبوم
-if(!data){
-currentAlbum = createEmpty(code);
-saveAlbum(currentAlbum);
-}else{
-currentAlbum = data;
-}
-
-// 🔥 أهم إصلاح
-if(!currentAlbum.blocks) currentAlbum.blocks = [];
-if(!currentAlbum.bgColor) currentAlbum.bgColor = "#1a0a10";
-if(!currentAlbum.textColor) currentAlbum.textColor = "#f5e6d3";
-if(!currentAlbum.borderColor) currentAlbum.borderColor = "#c9455a";
-
-// عرض البيانات
-document.getElementById('builderCodeBadge').textContent=code;
-document.getElementById('senderName').value=currentAlbum.senderName||"";
-document.getElementById('receiverName').value=currentAlbum.receiverName||"";
-document.getElementById('password').value=currentAlbum.password||"";
-document.getElementById('passwordHint').value=currentAlbum.passwordHint||"";
-document.getElementById('loveMessage').value=currentAlbum.loveMessage||"";
-
-renderBlocks();
-renderPresets();
-updateColorInputs();
-  updateMusicButton();
-}
-
-function updateAlbumField(field,value){if(!currentAlbum)return;currentAlbum[field]=value;saveAlbum(currentAlbum)}
-function updateColor(field,value){if(!currentAlbum)return;currentAlbum[field]=value;saveAlbum(currentAlbum);updateColorInputs()}
-
-function updateColorInputs(){
-  document.getElementById('colorBg').value=currentAlbum.bgColor;
-  document.getElementById('colorText').value=currentAlbum.textColor;
-  document.getElementById('colorBorder').value=currentAlbum.borderColor;
-  document.getElementById('swatchBg').style.backgroundColor=currentAlbum.bgColor;
-  document.getElementById('swatchText').style.backgroundColor=currentAlbum.textColor;
-  document.getElementById('swatchBorder').style.backgroundColor=currentAlbum.borderColor;
-}
-
-function updateToggle(id,val){
-  const el=document.getElementById(id);
-  el.className='toggle '+(val?'on':'off');
-}
-
-function toggleOption(field){
-  if(!currentAlbum)return;
-  currentAlbum[field]=!currentAlbum[field];
-  saveAlbum(currentAlbum);
-  if(field==='floatingHearts')updateToggle('toggleHearts',currentAlbum.floatingHearts);
-  if(field==='glowEffect')updateToggle('toggleGlow',currentAlbum.glowEffect);
-}
-
-function switchTab(tab,btn){
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-  btn.classList.add('active');
-
-  document.getElementById('tabContent').style.display = tab==='content' ? 'block':'none';
-  document.getElementById('tabDesign').style.display = tab==='design' ? 'block':'none';
-  document.getElementById('tabSettings').style.display = tab==='settings' ? 'block':'none';
-
-  // 🔥 أهم جزء: اخفاء شاشة تم الإنشاء عند الرجوع للأقسام
-  if(tab === 'content'){
-    document.getElementById('publishSuccess').style.display = 'none';
-   
-  }
-}
-
-const PRESETS=[
-  {name:'أحمر داكن',bg:'#1a0a10',text:'#f5e6d3',border:'#c9455a'},
-  {name:'وردي',bg:'#1a0a14',text:'#ffe4e9',border:'#e91e63'},
-  {name:'ذهبي',bg:'#12100a',text:'#f5e6c8',border:'#d4a843'},
-  {name:'أزرق',bg:'#0a0e1a',text:'#e0e8f5',border:'#4a7fc9'},
-  {name:'بنفسجي',bg:'#120a1a',text:'#e8e0f5',border:'#9c45c9'},
-  {name:'أخضر',bg:'#0a1a10',text:'#e0f5e6',border:'#45c96a'}
-];
-
-function renderPresets(){
-  const c=document.getElementById('colorPresets');c.innerHTML='';
-  PRESETS.forEach(p=>{
-    c.innerHTML+=`<button class="color-preset" onclick="applyPreset('${p.bg}','${p.text}','${p.border}')"><div class="dots"><div class="dot" style="background:${p.bg}"></div><div class="dot" style="background:${p.border}"></div></div><span class="name">${p.name}</span></button>`;
-  });
-}
-
-function applyPreset(bg,text,border){
-  currentAlbum.bgColor=bg;currentAlbum.textColor=text;currentAlbum.borderColor=border;
-  saveAlbum(currentAlbum);updateColorInputs();
-}
-
-function loadBuilderData(){
-  document.getElementById('builderCodeBadge').textContent=currentAlbum.code;
-  document.getElementById('senderName').value=currentAlbum.senderName||"";
-  document.getElementById('receiverName').value=currentAlbum.receiverName||"";
-  document.getElementById('password').value=currentAlbum.password||"";
-  document.getElementById('passwordHint').value=currentAlbum.passwordHint||"";
-  document.getElementById('loveMessage').value=currentAlbum.loveMessage||"";
-  document.getElementById('relationshipDate').value=currentAlbum.relationshipDate||"";
-  renderBlocks();
-}
-
-// Blocks
-function renderBlocks(){
-  const c=document.getElementById('blocksContainer');c.innerHTML='';
-  const labels={text:'📝 نص / مقالة',image:'🖼️ صورة',music:'🎵 موسيقى',video:'🎬 فيديو','hidden-message':'👁️ رسالة مخفية',counter:'⏱️ عداد العلاقة'};
-  currentAlbum.blocks.forEach((b,i)=>{
-    let bodyHTML='';
-    if(b.type==='text'||b.type==='hidden-message'){
-      bodyHTML=`<textarea class="input" rows="4" placeholder="${b.type==='hidden-message'?'اكتب الرسالة المخفية...':'اكتب النص هنا...'}" oninput="updateBlockContent(${i},this.value)">${b.content||''}</textarea>`;
-    }else if(b.type==='image'||b.type==='music'||b.type==='video'){
-      const accept=b.type==='image'?'image/*':b.type==='music'?'audio/*':'video/*';
-      const icon=b.type==='image'?'🖼️':b.type==='music'?'🎵':'🎬';
-      if(b.fileData){
-        let preview='';
-        if(b.type==='image')preview=`<div class="file-preview"><img src="${b.fileData}"></div>`;
-        else if(b.type==='music')preview=`<div class="file-preview"><div class="audio-info"><span style="font-size:24px">🎵</span><span style="flex:1;font-size:14px;overflow:hidden;text-overflow:ellipsis">${b.fileName||'موسيقى'}</span></div></div>`;
-        else preview=`<div class="file-preview"><video src="${b.fileData}" controls></video></div>`;
-        bodyHTML=preview+`<button class="btn btn-ghost btn-sm" style="margin-top:8px" onclick="triggerFile(${i},'${accept}')">تغيير الملف</button>`;
-      }else{
-        bodyHTML=`<button class="file-upload" onclick="triggerFile(${i},'${accept}')"><div class="icon">${icon}</div><div>اختر ملف من جهازك</div></button>`;
-      }
-      if(b.type==='image'||b.type==='video'){
-        bodyHTML+=`<input class="input" style="margin-top:8px" placeholder="وصف (اختياري)..." value="${b.content||''}" oninput="updateBlockContent(${i},this.value)">`;
-      }
-    }else if(b.type==='counter'){
-      bodyHTML=`<label style="font-size:14px;color:var(--muted);margin-bottom:4px;display:block">تاريخ بداية العلاقة</label><input type="date" class="input" dir="ltr" value="${b.content||''}" oninput="updateBlockContent(${i},this.value)">`;
-    }
-
-    const blockHTML=`
-    <div class="block" style="border-color:${b.borderColor||'var(--border)'};${b.bgColor?'background:'+b.bgColor:''}">
-      <div class="block-header">
-        <span class="grip"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="5" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="19" r="1"/></svg></span>
-        <span class="type-label">${labels[b.type]||b.type}</span>
-        <div class="block-actions">
-          <button onclick="moveBlock(${i},-1)" ${i===0?'disabled':''}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"/></svg></button>
-          <button onclick="moveBlock(${i},1)" ${i===currentAlbum.blocks.length-1?'disabled':''}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></button>
-          <button onclick="dupBlock(${i})"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>
-          <button class="del" onclick="delBlock(${i})"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
-        </div>
-      </div>
-      <div class="block-body">
-        ${bodyHTML}
-        <div class="block-colors">
-          <label>خلفية <input type="color" value="${b.bgColor||currentAlbum.bgColor}" oninput="updateBlockColor(${i},'bgColor',this.value)"></label>
-          <label>نص <input type="color" value="${b.textColor||currentAlbum.textColor}" oninput="updateBlockColor(${i},'textColor',this.value)"></label>
-          <label>إطار <input type="color" value="${b.borderColor||currentAlbum.borderColor}" oninput="updateBlockColor(${i},'borderColor',this.value)"></label>
-        </div>
-      </div>
-    </div>`;
-    c.innerHTML+=blockHTML;
-  });
-}
-
-function toggleAddMenu(){const m=document.getElementById('addBlockMenu');m.style.display=m.style.display==='none'?'grid':'none'}
-function addBlock(type){
-
-  // 🔥 منع إضافة أكتر من أغنية
-  if(type === "music"){
-    const hasMusic = currentAlbum.blocks.some(b => b.type === "music");
-    if(hasMusic){
-      showToast("مسموح أغنية واحدة فقط ⚠️", true);
-      return;
-    }
-  }
-
-  const b={
-    id:genId(),
-    type:type,
-    content:'',
-    bgColor:currentAlbum.bgColor,
-    textColor:currentAlbum.textColor,
-    borderColor:currentAlbum.borderColor
-  };
-
-  currentAlbum.blocks.push(b);
-  saveAlbum(currentAlbum);
-  renderBlocks();
-  updateMusicButton();
-
-  document.getElementById('addBlockMenu').style.display='none';
-}
-function updateBlockContent(i,val){currentAlbum.blocks[i].content=val;saveAlbum(currentAlbum)}
-function updateBlockColor(i,field,val){currentAlbum.blocks[i][field]=val;saveAlbum(currentAlbum);renderBlocks()}
-function moveBlock(i,dir){
-  const t=i+dir;if(t<0||t>=currentAlbum.blocks.length)return;
-  [currentAlbum.blocks[i],currentAlbum.blocks[t]]=[currentAlbum.blocks[t],currentAlbum.blocks[i]];
-  saveAlbum(currentAlbum);renderBlocks();
-}
-function dupBlock(i){const b={...currentAlbum.blocks[i],id:genId()};currentAlbum.blocks.splice(i+1,0,b);saveAlbum(currentAlbum);renderBlocks()}
-function delBlock(i){
-  currentAlbum.blocks.splice(i,1);
-  saveAlbum(currentAlbum);
-  renderBlocks();
-  updateMusicButton(); // يرجع الزرار لو اتمسحت
-}
-  function updateMusicButton(){
-  const musicBtn = document.querySelector('[onclick="addBlock(\'music\')"]');
-  if(!musicBtn) return;
-
-  const hasMusic = currentAlbum.blocks.some(b => b.type === "music");
-
-  if(hasMusic){
-    musicBtn.style.opacity = "0.4";
-    musicBtn.style.pointerEvents = "none";
-    musicBtn.innerHTML = "🎵 تمت إضافة أغنية";
-  }else{
-    musicBtn.style.opacity = "1";
-    musicBtn.style.pointerEvents = "auto";
-    musicBtn.innerHTML = "<span class='icon'>🎵</span>موسيقى";
-  }
-}
-// File handling
-async function triggerFile(blockIndex, accept) {
-  const input = document.createElement('input');
-  input.type = 'file';
-  input.accept = accept;
-
-  input.onchange = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    showToast("جاري رفع الملف... ⏳");
-
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("upload_preset", "lovealbum");
-
-    try {
-      const response = await fetch(
+      const res = await fetch(
         "https://api.cloudinary.com/v1_1/dvcl9qjpt/auto/upload",
-        {
-          method: "POST",
-          body: formData
-        }
+        {method:"POST",body:formData}
       );
 
-      const data = await response.json();
-
-      if (!data.secure_url) {
-        showToast("فشل الرفع ❌", true);
-        return;
-      }
-
-      currentAlbum.blocks[blockIndex].fileData = data.secure_url;
-      currentAlbum.blocks[blockIndex].fileName = file.name;
-
-      saveAlbum(currentAlbum);
-      renderBlocks();
-
-      showToast("تم رفع الملف بنجاح ✨");
-
-    } catch (err) {
-      showToast("حدث خطأ أثناء الرفع ❌", true);
+      const data = await res.json();
+      block.content = data.secure_url;
     }
+  }
+
+  await db.ref("albums/"+album.id).set(album);
+},
+
+//////////////////////////////////////////////////////
+// انشاء ألبوم افتراضي اول مرة
+//////////////////////////////////////////////////////
+createDefaultAlbum(code){
+  return {
+    id: code,
+    senderName:'',
+    receiverName:'',
+    password:'',
+    passwordHint:'',
+    mainMessage:'',
+    backgroundColor:'#0d0d0d',
+    textColor:'#e6d5b8',
+    borderColor:'#b8860b',
+    enableHearts:true,
+    enableLights:true,
+    animationSpeed:'normal',
+    textSpeed:'normal',
+    blocks:[],
+    createdAt: Date.now(),
+    relationshipStartDate:''
   };
-
-  input.click();
 }
 
-function handleLogout(){clearActive();showPage('pageCodeEntry');document.getElementById('codeInput').value=''}
+};
 
+// ============================================================
+// ROMANTIC COLORS
+// ============================================================
+const ROMANTIC_COLORS = [
+  { name: 'ذهبي', value: '#b8860b' },
+  { name: 'وردي', value: '#c44569' },
+  { name: 'أحمر نبيذي', value: '#722f37' },
+  { name: 'بنفسجي داكن', value: '#4a0e4e' },
+  { name: 'أزرق ليلي', value: '#1a1a40' },
+  { name: 'أسود فاخر', value: '#0d0d0d' },
+  { name: 'كريمي', value: '#f5e6d3' },
+  { name: 'وردي فاتح', value: '#f7cac9' },
+];
 
+const BLOCK_TYPES = [
+  { type: 'text', icon: 'type', label: 'نص / مقالة' },
+  { type: 'image', icon: 'image', label: 'صورة' },
+  { type: 'music', icon: 'music', label: 'موسيقى' },
+  { type: 'video', icon: 'video', label: 'فيديو' },
+  { type: 'hidden-message', icon: 'message', label: 'رسالة مخفية' },
+  { type: 'counter', icon: 'timer', label: 'عداد العلاقة' },
+];
 
-function showPublishSuccess(){
-  const s=document.getElementById('publishSuccess');s.style.display='block';
-  const url=location.origin+location.pathname+'?id='+currentAlbum.code;
-  document.getElementById('albumLink').textContent=url;
+// ============================================================
+// ROUTER
+// ============================================================
+function showPage(pageId) {
+  document.querySelectorAll('[id^="page-"]').forEach(p => p.classList.add('hidden'));
+  document.getElementById(pageId).classList.remove('hidden');
 }
 
-function copyAlbumLink(){
-  const url=location.origin+location.pathname+'?id='+currentAlbum.code;
-  navigator.clipboard.writeText(url).then(()=>showToast('تم نسخ الرابط! ✨'));
+// ============================================================
+// PARTICLES & HEARTS
+// ============================================================
+function createParticles(container) {
+  let html = '';
+  for (let i = 0; i < 30; i++) {
+    const x = Math.random() * 100, y = Math.random() * 100;
+    const size = 1 + Math.random() * 3;
+    const delay = Math.random() * 5;
+    html += `<div class="particle" style="left:${x}%;top:${y}%;width:${size}px;height:${size}px;animation-delay:${delay}s"></div>`;
+  }
+  container.innerHTML = html;
 }
 
-function openAlbum(){
-  const url=location.origin+location.pathname+'?id='+currentAlbum.code;
-  window.open(url,'_blank');
+function createFloatingHearts(container) {
+  let html = '';
+  for (let i = 0; i < 15; i++) {
+    const x = Math.random() * 100;
+    const delay = Math.random() * 5;
+    const dur = 4 + Math.random() * 4;
+    const size = 10 + Math.random() * 20;
+    html += `<div class="floating-heart" style="left:${x}%;font-size:${size}px;animation-duration:${dur}s;animation-delay:${delay}s">♥</div>`;
+  }
+  container.innerHTML = html;
 }
 
-// ==================== ALBUM VIEW ====================
+// ============================================================
+// PAGE: LANDING
+// ============================================================
+function renderLanding() {
+  const el = document.getElementById('page-landing');
+  el.innerHTML = `
+    <div class="glow-1"></div><div class="glow-2"></div>
+    <div id="landing-particles"></div>
+    <div id="landing-hearts"></div>
+    <div class="landing-content">
+      <div class="landing-logo">
+        <div class="icon-circle">${icon('heart', 40)}</div>
+        <h1 class="text-gradient-gold">ألبوم الحب</h1>
+        <p>أنشئ لحظات لا تُنسى لمن تحب</p>
+      </div>
+      <div class="card code-card">
+        <div class="card-header">${icon('key', 20)}<h2>أدخل كود الشراء</h2></div>
+        <form id="code-form">
+          <input id="code-input" class="input-field code-input" type="text" placeholder="كود الشراء" dir="ltr" maxlength="20" autocomplete="off">
+          <div id="code-error" class="error-msg hidden"></div>
+          <button type="submit" class="btn-gold submit-btn" id="code-submit">دخول</button>
+        </form>
+      </div>
+    </div>
+  `;
+  createParticles(document.getElementById('landing-particles'));
+  createFloatingHearts(document.getElementById('landing-hearts'));
+
+  const form = document.getElementById('code-form');
+  const input = document.getElementById('code-input');
+  const errEl = document.getElementById('code-error');
+
+  input.addEventListener('input', () => { input.value = input.value.toUpperCase(); errEl.classList.add('hidden'); });
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const code = input.value.trim();
+    if (!code) { errEl.textContent = 'الرجاء إدخال الكود'; errEl.classList.remove('hidden'); return; }
+    const btn = document.getElementById('code-submit');
+    btn.textContent = 'جاري التحقق...'; btn.disabled = true;
+    await new Promise(r => setTimeout(r, 600));
+    const result = await DB.validateCode(code);
+    btn.textContent = 'دخول'; btn.disabled = false;
+    
+if (result.valid) {
+
+    // حفظ الكود في المتصفح
+localStorage.setItem("album_code", code);
+localStorage.setItem("album_login_time", Date.now());
+
+  if (result.expired) {
+    alert("تم انتهاء صلاحية الكود — تواصل مع الدعم");
+    return;
+  }
+
+  if (result.editable) {
+    renderBuilder(code);
+  } else {
+    renderViewer(code);
+  }
+}
+
+    else {
+      errEl.textContent = result.message; errEl.classList.remove('hidden');
+    }
+  });
+
+ 
+  showPage('page-landing');
+}
+
+// ============================================================
+// PAGE: BUILDER
+// ============================================================
+async function renderBuilder(code){
+
+let album = await DB.getAlbum(code);
 
 
-async function loadAlbumView(id){
-
-const album = await getAlbum(id);
 
 if(!album){
-document.getElementById('albumNotFound').style.display='flex';
-return;
+  album = DB.createDefaultAlbum(code);
+  await DB.saveAlbum(album);
+} 
+
+else {
+  // إصلاح البيانات القديمة لو ناقصها blocks
+  if(!album.blocks) album.blocks = [];
+  if(!album.backgroundColor) album.backgroundColor = '#0d0d0d';
+  if(!album.textColor) album.textColor = '#e6d5b8';
+  if(!album.borderColor) album.borderColor = '#b8860b';
 }
 
-viewAlbum = album;
+// مراقبة الكود لحظيًا
+const codeRef = db.ref("codes/"+code);
 
-// لو فيه باسورد
-if(album.password){
+codeRef.on("value", (snap)=>{
 
-document.getElementById('albumPasswordScreen').style.display='flex';
-document.getElementById('albumContent').style.display='none';
-
-let hint = album.passwordHint || "ادخل كلمة السر ❤️";
-document.getElementById('albumHint').innerText = hint;
-
-}else{
-
-document.getElementById('albumPasswordScreen').style.display='none';
-renderAlbumContent();
-
-}
-
-// hearts
-if(album.floatingHearts) createHearts();
-else document.getElementById('heartsContainer').innerHTML="";
-}
-
-function handleAlbumUnlock(e){
-  e.preventDefault();
-  const val=document.getElementById('albumPassInput').value;
-  if(val===viewAlbum.password){
-    document.getElementById('albumPasswordScreen').style.display='none';
-    renderAlbumContent();
-  }else{
-    const err=document.getElementById('albumPassError');err.textContent='كلمة المرور غير صحيحة';err.style.display='block';
+  if(!snap.exists()){
+    showBlockedScreen("تم حذف هذه الجلسة — تواصل مع الدعم");
+    return;
   }
-}
 
-function renderAlbumContent(){
-  const a=viewAlbum;
-  const container=document.getElementById('albumContent');
-  container.style.display='block';
-  container.style.background=a.bgColor;
-  container.style.color=a.textColor;
-  
-  const glow=document.getElementById('albumAmbientGlow');
-  if(a.glowEffect){glow.style.background=a.borderColor+'15';glow.style.display='block'}
-  else glow.style.display='none';
-  
-  const sections=document.getElementById('albumSections');
-  sections.innerHTML='';
-  
-  const speedMap={slow:800,normal:500,fast:200};
-  const delay=speedMap[a.animationSpeed]||500;
-  
-  // Header
-  let html=`<div class="album-header" style="opacity:0"><svg width="40" height="40" viewBox="0 0 24 24" fill="${a.borderColor}40" stroke="${a.borderColor}" stroke-width="2" style="margin:0 auto 16px;display:block" class="animate-pulse-glow"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg><h1 style="font-style:italic">إلى ${a.receiverName||'...'}</h1><p class="from">من ${a.senderName||'...'} 💕</p></div>`;
-  
-  // Love message
-  if(a.loveMessage){
-    html+=`<div class="album-message" style="opacity:0"><p style="white-space:pre-wrap">${a.loveMessage}</p></div>`;
+  const data = snap.val();
+
+  if(data.deleted){
+    showBlockedScreen("تم حذف هذه الجلسة — تواصل مع الدعم");
+    return;
   }
-  
-  // Counter
-  if(a.relationshipDate){
-    html+=`<div class="album-counter" style="opacity:0"><p class="label">معاً منذ</p><p class="value" id="viewCounter"></p></div>`;
+
+  if(data.disabled){
+    showBlockedScreen("تم تعطيل هذه الجلسة — تواصل مع الدعم");
+    return;
   }
-  
-  // Blocks
-  a.blocks.forEach((b,i)=>{
-    const style=`background:${b.bgColor||'transparent'};color:${b.textColor||a.textColor};border:1px solid ${b.borderColor||a.borderColor};${a.glowEffect?'box-shadow:0 4px 30px '+b.borderColor+'20':''}`;
-    let content='';
-    
-    if(b.type==='text')content=`<p style="font-size:18px;line-height:1.8;white-space:pre-wrap">${b.content}</p>`;
-    else if(b.type==='image'&&b.fileData){content=`<img src="${b.fileData}" style="width:100%;border-radius:12px">${b.content?'<p class="caption">'+b.content+'</p>':''}`}
-    else if(b.type==='video'&&b.fileData){content=`<video src="${b.fileData}" controls style="width:100%;border-radius:12px"></video>${b.content?'<p class="caption">'+b.content+'</p>':''}`}
-   else if(b.type==='music' && b.fileData){
-
-  // مش هنعرض اي زرار او اسم
-  content = `<audio id="audio_${b.id}" src="${b.fileData}" preload="auto"></audio>`;
-
-  // تشغيل تلقائي في الخلفية
-  setTimeout(()=>{
-    const audio = document.getElementById("audio_"+b.id);
-    if(audio){
-      audio.volume = 0.9;
-      audio.loop = true;
-
-      // autoplay قوي
-      audio.play().catch(()=>{
-        // لو المتصفح منع التشغيل
-        document.body.addEventListener("click",()=>{
-          audio.play();
-        },{once:true});
-      });
-    }
-  },1500);
-}
-    else if(b.type==='hidden-message'){
-      content=`<div style="text-align:center" id="hidden_${b.id}"><button class="reveal-btn" style="color:${b.textColor||a.textColor};border-color:${b.borderColor||a.borderColor};background:${b.borderColor||a.borderColor}20" onclick="revealHidden('${b.id}','${(b.content||'').replace(/'/g,"\\'")}')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> اضغط لكشف الرسالة</button></div>`;
-    }
-    else if(b.type==='counter'){
-      const date=b.content;
-      let val='—';
-      if(date){const diff=Date.now()-new Date(date).getTime();if(diff>0)val=Math.floor(diff/(1000*3600*24))+' يوم';else val='لم يبدأ بعد'}
-      content=`<div style="text-align:center"><p style="font-size:14px;opacity:.7">معاً منذ</p><p class="font-display" style="font-size:22px;direction:ltr;margin-top:8px">${val}</p></div>`;
-    }
-    
-    if(content)html+=`<div class="album-block" style="${style};opacity:0;border-radius:16px;padding:24px;margin-bottom:16px">${content}</div>`;
-  });
-
-  // زرار الرجوع للتعديل (لو معاينة)
-const params = new URLSearchParams(window.location.search);
-if(params.get("preview") === "1"){
-  const backBtn = document.createElement("div");
-  backBtn.style.textAlign = "center";
-  backBtn.style.marginTop = "40px";
-
-  backBtn.innerHTML = `
-    <button onclick="window.close()" 
-    style="
-      background:#d4a843;
-      border:none;
-      padding:14px 28px;
-      border-radius:12px;
-      font-size:16px;
-      cursor:pointer;
-      color:#000;
-      box-shadow:0 0 25px #d4a84355
-    ">
-    ⬅️ الرجوع للتعديل
-    </button>
-  `;
-
-  document.getElementById("albumSections").appendChild(backBtn);
-}
-  
-  // Footer
-  html+=`<div class="album-footer" style="opacity:0"><svg viewBox="0 0 24 24" fill="none" stroke="${a.borderColor}" stroke-width="2" style="margin:0 auto 8px;display:block;width:24px;height:24px"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg><p>صنع بكل حب 💕</p></div>`;
-  
-  sections.innerHTML=html;
-  
-  // Progressive reveal
-  const items=sections.children;
-  for(let i=0;i<items.length;i++){
-    setTimeout(()=>{items[i].style.opacity='1';items[i].style.animation='cinematic 1.2s cubic-bezier(.16,1,.3,1) forwards'},i*delay);
-  }
-  
-  // Live counter
-  if(a.relationshipDate){
-    setInterval(()=>{
-      const el=document.getElementById('viewCounter');if(!el)return;
-      const start=new Date(a.relationshipDate).getTime();
-      const diff=Date.now()-start;
-      if(diff<0){el.textContent='لم يبدأ بعد';return}
-      const d=Math.floor(diff/(1000*3600*24));
-      const h=Math.floor((diff%(1000*3600*24))/(1000*3600));
-      const m=Math.floor((diff%(1000*3600))/(1000*60));
-      const s=Math.floor((diff%(1000*60))/1000);
-      el.textContent=d+' يوم · '+h+' ساعة · '+m+' دقيقة · '+s+' ثانية';
-    },1000);
-  }
-}
-
-function toggleAudioView(btn,id){
-  const audio=document.getElementById('audio_'+id);
-  if(!audio)return;
-  if(audio.paused){
-    audio.play();
-    btn.innerHTML=`<svg viewBox="0 0 24 24" fill="${viewAlbum.bgColor}" stroke="none"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>`;
-  }else{
-    audio.pause();
-    btn.innerHTML=`<svg viewBox="0 0 24 24" fill="${viewAlbum.bgColor}" stroke="none"><polygon points="5 3 19 12 5 21 5 3"/></svg>`;
-  }
-}
-
-function revealHidden(id,content){
-  const el=document.getElementById('hidden_'+id);
-  if(el)el.innerHTML=`<p style="font-size:18px;animation:cinematic 1.2s cubic-bezier(.16,1,.3,1) forwards">${content}</p>`;
-}
-
-// ==================== ADMIN ====================
-function handleAdminLogin(e){
-  e.preventDefault();
-  const pass=document.getElementById('adminPassInput').value;
-  if(pass==='admin123'){
-    document.getElementById('adminLogin').style.display='none';
-    document.getElementById('adminPanel').style.display='block';
-    refreshAdmin();
-  }else showToast('كلمة المرور خاطئة',true);
-}
-
-function refreshAdmin(){
-  const codes=getCodes();const albums=getAlbums();
-  
-  // Codes
-  const cl=document.getElementById('adminCodesList');
-  if(codes.length===0){cl.innerHTML='<div class="empty-state">لا توجد أكواد</div>';return}
-  cl.innerHTML='';
-  codes.forEach(c=>{
-    const expired=c.expiresAt&&new Date()>new Date(c.expiresAt);
-    const badge=c.isUsed?(expired?'<span class="badge badge-expired">منتهي</span>':'<span class="badge badge-used">مستخدم</span>'):'<span class="badge badge-new">جديد</span>';
-    const hasAlbum=!!albums[c.code];
-    cl.innerHTML+=`<div class="code-row"><span class="code-text">${c.code}</span>${badge}${c.isUsed?`<button class="icon-btn" onclick="adminExtend('${c.code}')" title="تمديد 24 ساعة"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#d4a843" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></button>`:''}${hasAlbum?`<button class="icon-btn" onclick="window.open('${location.pathname}?id=${c.code}','_blank')" title="عرض الألبوم"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>`:''}<button class="icon-btn del" onclick="adminDelCode('${c.code}')" title="حذف"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button></div>`;
-  });
-  
-  // Albums
-  const al=document.getElementById('adminAlbumsList');
-  const albumKeys=Object.keys(albums);
-  if(albumKeys.length===0){al.innerHTML='<div class="empty-state">لا توجد ألبومات</div>';return}
-  al.innerHTML='';
-  albumKeys.forEach(code=>{
-    const a=albums[code];
-    al.innerHTML+=`<div class="album-row"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg><span style="font-family:monospace;font-size:14px" dir="ltr">${code}</span><span class="info">${a.senderName?'من '+a.senderName:''} ${a.receiverName?'إلى '+a.receiverName:''}</span>${a.isPublished?'<span class="badge badge-published">منشور</span>':'<span class="badge badge-draft">مسودة</span>'}<button class="icon-btn" onclick="window.open('${location.pathname}?id=${code}','_blank')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button><button class="icon-btn del" onclick="adminDelAlbum('${code}')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button></div>`;
-  });
-}
-
-function adminAddCode(){
-  const input=document.getElementById('newCodeInput');
-  const code=input.value.trim().toUpperCase();
-  if(!code){showToast('اكتب الكود',true);return}
-  const codes=getCodes();
-  if(codes.find(c=>c.code===code)){showToast('الكود موجود بالفعل',true);return}
-  codes.push({code,isUsed:false,firstUsedAt:null,expiresAt:null});
-  saveCodes(codes);input.value='';refreshAdmin();showToast('تم إضافة الكود ✨');
-}
-
-function adminDelCode(code){
-  let codes=getCodes();codes=codes.filter(c=>c.code!==code);saveCodes(codes);refreshAdmin();showToast('تم حذف الكود');
-}
-
-function adminExtend(code){
-  const codes=getCodes();const f=codes.find(c=>c.code===code);
-  if(f){f.expiresAt=new Date(Date.now()+24*3600000).toISOString();saveCodes(codes);refreshAdmin();showToast('تم تمديد 24 ساعة ✨')}
-}
-
-function adminDelAlbum(code){
-  const a=getAlbums();delete a[code];saveAlbums(a);refreshAdmin();showToast('تم حذف الألبوم');
-}
-
-function goHome(){location.href=location.pathname}
-
-// ==================== INIT ====================
-route();
-
-  function manualSave(){
-  if(!currentAlbum) return;
-
-  saveAlbum(currentAlbum);
-
-  showToast("تم الحفظ بنجاح 💾");
-}
-
-
- function previewAlbum(){
-
-if(!currentAlbum) return;
-
-// حفظ قبل المعاينة
-db.ref("albums/"+currentAlbum.code).set(currentAlbum)
-.then(()=>{
-
-const url = location.origin + location.pathname + "?id=" + currentAlbum.code + "&preview=1";
-
-// فتح المعاينة
-window.open(url,"_blank");
-
-showToast("تم فتح المعاينة 👁");
 
 });
+
+  let activeTab = 'content';
+  let showPicker = false;
+  let saved = false;
+
+  function save() { DB.saveAlbum(album); }
+  function render() { buildBuilderHTML(album, activeTab, showPicker, saved, code); }
+
+  function buildBuilderHTML(album, tab, picker, savedState, code) {
+    const el = document.getElementById('page-builder');
+    el.innerHTML = `
+      <header class="builder-header"><div class="inner">
+        <div class="logo-section">${icon('heart',24)}<h1 class="text-gradient-gold" style="font-size:1.1rem">بناء الألبوم</h1><span class="code-badge">${code}</span></div>
+        <div class="actions">
+          <button class="btn-muted" id="b-save" style="font-size:0.85rem;padding:8px 16px;display:flex;align-items:center;gap:6px">${savedState ? icon('check',16) : icon('save',16)} ${savedState ? 'تم الحفظ' : 'حفظ'}</button>
+          <button class="btn-muted" id="b-preview" style="font-size:0.85rem;padding:8px 16px;display:flex;align-items:center;gap:6px">${icon('eye',16)} معاينة</button>
+          <button class="btn-gold" id="b-publish" style="font-size:0.85rem;padding:8px 20px;display:flex;align-items:center;gap:6px">إنشاء الألبوم</button>
+          <button class="btn-muted" id="logout-btn" style="font-size:0.85rem;padding:8px 16px">تسجيل خروج</button>
+        </div>
+      </div></header>
+      <div class="builder-body">
+        <div class="builder-tabs">
+          <button class="${tab==='content'?'active':''}" data-tab="content">${icon('type',16)} المحتوى</button>
+          <button class="${tab==='design'?'active':''}" data-tab="design">${icon('palette',16)} التصميم</button>
+          <button class="${tab==='settings'?'active':''}" data-tab="settings">${icon('settings',16)} الإعدادات</button>
+        </div>
+        <div id="tab-content"></div>
+      </div>
+      <div id="published-overlay" class="hidden"></div>
+    `;
+
+    // Tab switching
+    el.querySelectorAll('.builder-tabs button').forEach(btn => {
+      btn.addEventListener('click', () => { activeTab = btn.dataset.tab; render(); });
+    });
+
+    // Actions
+    el.querySelector('#b-save').addEventListener('click', () => { save(); saved = true; render(); setTimeout(() => { saved = false; render(); }, 2000); });
+    el.querySelector('#b-preview').addEventListener('click', () => renderViewer(code));
+    el.querySelector('#b-publish').addEventListener('click', () => {
+      save();
+      showPublished(code);
+    });
+    // logout
+el.querySelector('#logout-btn').addEventListener('click',()=>{
+  localStorage.removeItem("album_code");
+  localStorage.removeItem("album_login_time");
+  location.reload();
+});
+
+    // Render active tab
+    if (tab === 'content') renderContentTab();
+    else if (tab === 'design') renderDesignTab();
+    else renderSettingsTab();
+  }
+
+  function renderContentTab() {
+    const container = document.getElementById('tab-content');
+    let html = `
+      <div class="card animate-fadeIn" style="margin-bottom:24px">
+        <h3 class="text-gradient-gold" style="margin-bottom:16px">المعلومات الأساسية</h3>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+          <div><label style="font-size:0.85rem;color:var(--muted-fg);display:block;margin-bottom:4px">اسمك</label>
+            <input class="input-field" id="f-sender" value="${esc(album.senderName)}" placeholder="اسمك هنا"></div>
+          <div><label style="font-size:0.85rem;color:var(--muted-fg);display:block;margin-bottom:4px">اسم الشخص المرسل له</label>
+            <input class="input-field" id="f-receiver" value="${esc(album.receiverName)}" placeholder="اسم حبيبك/حبيبتك"></div>
+        </div>
+        <div style="margin-top:16px"><label style="font-size:0.85rem;color:var(--muted-fg);display:block;margin-bottom:4px">الرسالة الرئيسية</label>
+          <textarea class="input-field" id="f-message" rows="4" placeholder="اكتب رسالتك الرومانسية هنا...">${esc(album.mainMessage)}</textarea></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px">
+          <div><label style="font-size:0.85rem;color:var(--muted-fg);display:block;margin-bottom:4px">كلمة المرور (اختياري)</label>
+            <input class="input-field" id="f-password" value="${esc(album.password)}" placeholder="كلمة مرور للألبوم"></div>
+          <div><label style="font-size:0.85rem;color:var(--muted-fg);display:block;margin-bottom:4px">تلميح كلمة المرور</label>
+            <input class="input-field" id="f-hint" value="${esc(album.passwordHint)}" placeholder="مثال: أول يوم عرفنا بعض"></div>
+        </div>
+        <div style="margin-top:16px"><label style="font-size:0.85rem;color:var(--muted-fg);display:block;margin-bottom:4px">تاريخ بداية العلاقة (للعداد)</label>
+          <input class="input-field" id="f-date" type="date" value="${album.relationshipStartDate}" dir="ltr"></div>
+      </div>
+
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+        <h3 class="text-gradient-gold">الأقسام</h3>
+        <button class="btn-gold" id="add-block-btn" style="padding:8px 16px;font-size:0.85rem;display:flex;align-items:center;gap:6px">${icon('plus',16)} إضافة قسم</button>
+      </div>
+      <div id="block-picker" class="${showPicker ? 'block-picker' : 'hidden'}"></div>
+    `;
+
+    if (album.blocks.length === 0) {
+      html += `<div class="no-blocks">${icon('heart',48)}<p>لا توجد أقسام بعد. أضف أقسام لبناء ألبومك!</p></div>`;
+    } else {
+      html += '<div id="blocks-list"></div>';
+    }
+
+    container.innerHTML = html;
+
+    // Bind basic info
+    bindInput('f-sender', v => album.senderName = v);
+    bindInput('f-receiver', v => album.receiverName = v);
+    bindInput('f-message', v => album.mainMessage = v);
+    bindInput('f-password', v => album.password = v);
+    bindInput('f-hint', v => album.passwordHint = v);
+    bindInput('f-date', v => album.relationshipStartDate = v);
+
+    // Add block button
+    document.getElementById('add-block-btn').addEventListener('click', () => { showPicker = !showPicker; render(); });
+
+    // Block picker
+    if (showPicker) {
+      const picker = document.getElementById('block-picker');
+      picker.innerHTML = BLOCK_TYPES.map(bt =>
+        `<button data-type="${bt.type}">${icon(bt.icon, 24)}<span>${bt.label}</span></button>`
+      ).join('');
+      picker.querySelectorAll('button').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const type = btn.dataset.type;
+          album.blocks.push({ id: 'block_' + Date.now(), type, content: '', title: '', color: '#0d0d0d', textColor: '#e6d5b8', order: album.blocks.length });
+          showPicker = false; render();
+        });
+      });
+    }
+
+    // Render blocks
+    if (album.blocks.length > 0) {
+      const list = document.getElementById('blocks-list');
+      list.innerHTML = album.blocks.map((block, i) => renderBlockEditor(block, i)).join('');
+      bindBlockEvents();
+    }
+  }
+
+  function renderBlockEditor(block, index) {
+    const typeInfo = BLOCK_TYPES.find(bt => bt.type === block.type);
+    let contentHTML = '';
+
+    if (block.type === 'text') {
+      contentHTML = `
+        <input class="input-field block-field" data-id="${block.id}" data-field="title" value="${esc(block.title||'')}" placeholder="عنوان القسم" style="margin-bottom:8px">
+        <textarea class="input-field block-field" data-id="${block.id}" data-field="content" rows="3" placeholder="اكتب نص المقالة...">${esc(block.content)}</textarea>
+      `;
+    } else if (block.type === 'image') {
+      contentHTML = `
+        <input class="input-field block-field" data-id="${block.id}" data-field="title" value="${esc(block.title||'')}" placeholder="عنوان الصورة (اختياري)" style="margin-bottom:8px">
+        <label class="file-upload">
+          ${block.content ? `<img src="${block.content}" alt="معاينة">` : `${icon('image',40)}<span>اضغط لاختيار صورة من جهازك</span>`}
+          <input type="file" accept="image/*" class="file-input" data-id="${block.id}">
+        </label>
+        ${block.content ? `<button class="remove-file" data-id="${block.id}">إزالة الصورة</button>` : ''}
+      `;
+    } else if (block.type === 'music') {
+      contentHTML = `
+        <label class="file-upload">
+          ${block.content ? `<div style="width:100%;text-align:center">${icon('music',24)}<span style="display:block;margin:8px 0;font-size:0.85rem;color:var(--fg)">تم رفع الموسيقى ✓</span><audio controls src="${block.content}" style="width:100%"></audio></div>` : `${icon('music',40)}<span>اضغط لاختيار ملف صوتي من جهازك</span><span class="sub">MP3, WAV, M4A, OGG</span>`}
+          <input type="file" accept="audio/*" class="file-input" data-id="${block.id}">
+        </label>
+        ${block.content ? `<button class="remove-file" data-id="${block.id}">إزالة الموسيقى</button>` : ''}
+      `;
+    } else if (block.type === 'video') {
+      contentHTML = `
+        <label class="file-upload">
+          ${block.content ? `<video controls src="${block.content}" style="width:100%;max-height:200px;border-radius:8px"></video>` : `${icon('video',40)}<span>اضغط لاختيار فيديو من جهازك</span><span class="sub">MP4, WebM, MOV</span>`}
+          <input type="file" accept="video/*" class="file-input" data-id="${block.id}">
+        </label>
+        ${block.content ? `<button class="remove-file" data-id="${block.id}">إزالة الفيديو</button>` : ''}
+      `;
+    } else if (block.type === 'hidden-message') {
+      contentHTML = `
+        <input class="input-field block-field" data-id="${block.id}" data-field="title" value="${esc(block.title||'')}" placeholder="نص الزر (مثال: اضغط لكشف السر 💌)" style="margin-bottom:8px">
+        <textarea class="input-field block-field" data-id="${block.id}" data-field="content" rows="2" placeholder="الرسالة المخفية...">${esc(block.content)}</textarea>
+      `;
+    } else if (block.type === 'counter') {
+      contentHTML = `<p style="font-size:0.85rem;color:var(--muted-fg)">سيظهر عداد تلقائي من تاريخ بداية العلاقة المحدد أعلاه ⏱️</p>`;
+    }
+
+    const colorSwatches = ROMANTIC_COLORS.slice(0, 5).map(c =>
+      `<div class="color-swatch block-color-swatch ${block.color === c.value ? 'active' : ''}" data-id="${block.id}" data-color="${c.value}" style="background:${c.value}" title="${c.name}"></div>`
+    ).join('');
+
+    return `
+      <div class="block-item">
+        <div class="block-item-header">
+          <div style="display:flex;align-items:center;gap:12px">
+            <span style="color:var(--muted-fg);cursor:grab">${icon('grip',16)}</span>
+            <span class="type-badge">${typeInfo?.label || block.type}</span>
+          </div>
+          <div class="block-actions">
+            <button class="dup-block" data-id="${block.id}" title="تكرار">${icon('copy',16)}</button>
+            <button class="delete del-block" data-id="${block.id}" title="حذف">${icon('trash',16)}</button>
+          </div>
+        </div>
+        ${contentHTML}
+        <div class="block-colors"><span>لون القسم:</span>${colorSwatches}</div>
+      </div>
+    `;
+  }
+
+  function bindBlockEvents() {
+    // Text fields
+    document.querySelectorAll('.block-field').forEach(field => {
+      field.addEventListener('input', () => {
+        const block = album.blocks.find(b => b.id === field.dataset.id);
+        if (block) block[field.dataset.field] = field.value;
+      });
+    });
+    // File inputs
+    document.querySelectorAll('.file-input').forEach(input => {
+      input.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = () => {
+          const block = album.blocks.find(b => b.id === input.dataset.id);
+          if (block) { block.content = reader.result; render(); }
+        };
+        reader.readAsDataURL(file);
+      });
+    });
+    // Remove file
+    document.querySelectorAll('.remove-file').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const block = album.blocks.find(b => b.id === btn.dataset.id);
+        if (block) { block.content = ''; render(); }
+      });
+    });
+    // Delete block
+    document.querySelectorAll('.del-block').forEach(btn => {
+      btn.addEventListener('click', () => {
+        album.blocks = album.blocks.filter(b => b.id !== btn.dataset.id);
+        render();
+      });
+    });
+    // Duplicate block
+    document.querySelectorAll('.dup-block').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const block = album.blocks.find(b => b.id === btn.dataset.id);
+        if (block) {
+          album.blocks.push({ ...block, id: 'block_' + Date.now(), order: album.blocks.length });
+          render();
+        }
+      });
+    });
+    // Block color
+    document.querySelectorAll('.block-color-swatch').forEach(swatch => {
+      swatch.addEventListener('click', () => {
+        const block = album.blocks.find(b => b.id === swatch.dataset.id);
+        if (block) { block.color = swatch.dataset.color; render(); }
+      });
+    });
+  }
+
+  function renderDesignTab() {
+    const container = document.getElementById('tab-content');
+    let html = '<div class="card animate-fadeIn"><h3 class="text-gradient-gold" style="margin-bottom:24px">الألوان</h3>';
+    [
+      { label: 'لون الخلفية', key: 'backgroundColor' },
+      { label: 'لون النص', key: 'textColor' },
+      { label: 'لون الإطار', key: 'borderColor' },
+    ].forEach(item => {
+      html += `<div class="color-row"><label>${item.label}</label><div class="colors-flex">
+        <div class="color-preview" style="background:${album[item.key]}"></div>
+        ${ROMANTIC_COLORS.map(c => `<div class="color-swatch album-color ${album[item.key]===c.value?'active':''}" data-key="${item.key}" data-color="${c.value}" style="background:${c.value}" title="${c.name}">${album[item.key]===c.value ? icon('check',12) : ''}</div>`).join('')}
+      </div></div>`;
+    });
+    html += '</div>';
+    container.innerHTML = html;
+
+    container.querySelectorAll('.album-color').forEach(swatch => {
+      swatch.addEventListener('click', () => {
+        album[swatch.dataset.key] = swatch.dataset.color;
+        render();
+      });
+    });
+  }
+
+  function renderSettingsTab() {
+    const container = document.getElementById('tab-content');
+    container.innerHTML = `
+      <div class="card animate-fadeIn">
+        <h3 class="text-gradient-gold" style="margin-bottom:24px">التأثيرات</h3>
+        <div class="toggle-row"><span>القلوب الطائرة</span>
+          <button class="toggle-switch ${album.enableHearts?'on':'off'}" id="t-hearts"><div class="toggle-knob"></div></button></div>
+        <div class="toggle-row"><span>الإضاءة والتوهج</span>
+          <button class="toggle-switch ${album.enableLights?'on':'off'}" id="t-lights"><div class="toggle-knob"></div></button></div>
+        <div style="margin-top:16px"><label style="font-size:0.9rem;display:block;margin-bottom:8px">سرعة الأنيميشن</label>
+          <div class="speed-buttons">
+            <button class="speed-btn ${album.animationSpeed==='slow'?'active':''}" data-speed="slow">بطيء</button>
+            <button class="speed-btn ${album.animationSpeed==='normal'?'active':''}" data-speed="normal">عادي</button>
+            <button class="speed-btn ${album.animationSpeed==='fast'?'active':''}" data-speed="fast">سريع</button>
+          </div>
+        </div>
+      </div>
+    `;
+    document.getElementById('t-hearts').addEventListener('click', () => { album.enableHearts = !album.enableHearts; render(); });
+    document.getElementById('t-lights').addEventListener('click', () => { album.enableLights = !album.enableLights; render(); });
+    container.querySelectorAll('.speed-btn').forEach(btn => {
+      btn.addEventListener('click', () => { album.animationSpeed = btn.dataset.speed; render(); });
+    });
+  }
+
+  function showPublished(code) {
+    const overlay = document.getElementById('published-overlay');
+    const link = window.location.origin + window.location.pathname + '?view=' + code;
+    overlay.classList.remove('hidden');
+    overlay.innerHTML = `
+      <div class="published-overlay">
+        <div class="published-card">
+          <div class="heart-icon animate-heartPulse">${icon('heart',32)}</div>
+          <h2 class="text-gradient-gold">تم إنشاء الألبوم! 🎉</h2>
+          <p class="sub">شارك الرابط مع من تحب</p>
+          <div class="link-box">${link}</div>
+          <div class="btn-row">
+            <button class="btn-gold" id="pub-copy">${icon('link',16)} نسخ الرابط</button>
+            <button class="btn-outline" id="pub-open">${icon('eye',16)} فتح الألبوم</button>
+          </div>
+          <button class="back-link" id="pub-back">العودة للتعديل</button>
+        </div>
+      </div>
+    `;
+    document.getElementById('pub-copy').addEventListener('click', () => {
+      navigator.clipboard.writeText(link);
+      document.getElementById('pub-copy').innerHTML = icon('check',16) + ' تم النسخ!';
+      setTimeout(() => { document.getElementById('pub-copy').innerHTML = icon('link',16) + ' نسخ الرابط'; }, 2000);
+    });
+    document.getElementById('pub-open').addEventListener('click', () => renderViewer(code));
+    document.getElementById('pub-back').addEventListener('click', () => { overlay.classList.add('hidden'); });
+  }
+
+  function bindInput(id, setter) {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('input', () => setter(el.value));
+  }
+
+  render();
+  showPage('page-builder');
+
+  // AUTOSAVE كل 5 ثواني بدون إعادة رندر
+if(window.autoSaveInterval) clearInterval(window.autoSaveInterval);
+
+window.autoSaveInterval = setInterval(()=>{
+  DB.saveAlbum(album);
+  console.log("autosave...");
+},5000);
 }
 
-  
+// ============================================================
+// PAGE: ALBUM VIEWER
+// ============================================================
+async function renderViewer(code) {
+ const album = await DB.getAlbum(code);
+ window.currentBuilderCode = code;
+  const el = document.getElementById('page-viewer');
 
-function copyLink(link){
-navigator.clipboard.writeText(link);
-alert("تم نسخ الرابط");
+  if (!album) {
+    el.innerHTML = `<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--gradient-romantic)">
+      <div style="text-align:center" class="animate-fadeIn">${icon('heart',64)}<p style="color:var(--muted-fg);font-size:1.1rem;margin-top:16px">الألبوم غير موجود</p>
+      <button class="btn-muted" onclick="renderLanding()" style="margin-top:24px;padding:10px 24px">العودة للرئيسية</button></div></div>`;
+    showPage('page-viewer');
+    return;
+  }
+
+  // Password check
+  if (album.password) {
+    showPasswordScreen(album, code, el);
+    return;
+  }
+
+  showEntranceScreen(album, code, el);
 }
 
+function showPasswordScreen(album, code, el) {
+  el.innerHTML = `
+    <div class="password-screen">
+      <div id="pw-particles"></div><div id="pw-hearts"></div>
+      <div class="card password-card" style="position:relative;z-index:10">
+        ${icon('lock',48)}
+        <h2 class="text-gradient-gold">ألبوم محمي</h2>
+        ${album.passwordHint ? `<p class="hint">💡 ${esc(album.passwordHint)}</p>` : ''}
+        <input class="input-field" id="pw-input" type="password" placeholder="أدخل كلمة المرور" style="text-align:center;margin-bottom:12px">
+        <div id="pw-error" class="error hidden">كلمة المرور غير صحيحة</div>
+        <button class="btn-gold" id="pw-submit" style="width:100%;padding:12px;font-size:1rem">فتح الألبوم</button>
+      </div>
+    </div>
+  `;
+  createParticles(document.getElementById('pw-particles'));
+  createFloatingHearts(document.getElementById('pw-hearts'));
+
+  const input = document.getElementById('pw-input');
+  const submit = document.getElementById('pw-submit');
+  const error = document.getElementById('pw-error');
+
+  function tryUnlock() {
+    if (input.value === album.password) { showEntranceScreen(album, code, el); }
+    else { error.classList.remove('hidden'); }
+  }
+  submit.addEventListener('click', tryUnlock);
+  input.addEventListener('keydown', e => { if (e.key === 'Enter') tryUnlock(); });
+  input.addEventListener('input', () => error.classList.add('hidden'));
+
+  showPage('page-viewer');
+}
+
+function showEntranceScreen(album, code, el) {
+  el.innerHTML = `
+    <div class="entrance-screen">
+      <div id="ent-particles"></div><div id="ent-hearts"></div>
+      <div style="position:relative;z-index:10" class="animate-fadeIn">
+        <div class="heart-big">${icon('heart',80)}</div>
+        <h1 class="text-gradient-gold">إلى ${esc(album.receiverName || 'حبيبي')}</h1>
+        <p class="from">من ${esc(album.senderName || 'محب')} ♥</p>
+        <button class="btn-gold enter-btn" id="enter-album">افتح الألبوم 💝</button>
+      </div>
+    </div>
+  `;
+  createParticles(document.getElementById('ent-particles'));
+  createFloatingHearts(document.getElementById('ent-hearts'));
+  document.getElementById('enter-album').addEventListener('click', () => showAlbumContent(album, el));
+  showPage('page-viewer');
+}
+
+function showAlbumContent(album, el) {
+  const animDelay = album.animationSpeed === 'slow' ? 0.4 : album.animationSpeed === 'fast' ? 0.1 : 0.2;
+
+ let blocksHTML = (album.blocks || []).map((block, i) => {
+    const delay = (i * animDelay + 0.5).toFixed(1);
+    let inner = '';
+
+    if (block.type === 'text') {
+      inner = `${block.title ? `<h3 class="text-gradient-gold">${esc(block.title)}</h3>` : ''}
+        <p>${esc(block.content)}</p>`;
+    } else if (block.type === 'image' && block.content) {
+      inner = `${block.title ? `<h3 class="text-gradient-gold">${esc(block.title)}</h3>` : ''}
+        <img src="${block.content}" alt="صورة الألبوم">`;
+    } else if (block.type === 'music' && block.content) {
+      inner = `<div style="text-align:center">${icon('music',32)}<audio controls src="${block.content}" style="width:100%;margin-top:12px"></audio></div>`;
+    } else if (block.type === 'video' && block.content) {
+      inner = `<video controls src="${block.content}" style="width:100%;border-radius:12px"></video>`;
+    } else if (block.type === 'hidden-message') {
+      inner = `<div style="text-align:center">
+        <button class="btn-gold hidden-msg-btn" data-id="${block.id}">${esc(block.title || 'اضغط لكشف السر 💌')}</button>
+        <div class="hidden-msg-content hidden" id="hmsg-${block.id}">${esc(block.content)}</div>
+      </div>`;
+    } else if (block.type === 'counter' && album.relationshipStartDate) {
+      inner = `<h3 class="text-gradient-gold" style="text-align:center;margin-bottom:16px">مدة حبنا ♥</h3>
+        <div class="counter-grid" id="counter-${block.id}">
+          <div class="counter-item"><div class="number text-gradient-gold" id="cnt-d-${block.id}">0</div><div class="label">يوم</div></div>
+          <div class="counter-item"><div class="number text-gradient-gold" id="cnt-h-${block.id}">0</div><div class="label">ساعة</div></div>
+          <div class="counter-item"><div class="number text-gradient-gold" id="cnt-m-${block.id}">0</div><div class="label">دقيقة</div></div>
+          <div class="counter-item"><div class="number text-gradient-gold" id="cnt-s-${block.id}">0</div><div class="label">ثانية</div></div>
+        </div>`;
+    }
+
+    return `<div class="album-block" style="background-color:${block.color||album.backgroundColor};border-color:${album.borderColor}40;color:${block.textColor||album.textColor};animation-delay:${delay}s">${inner}</div>`;
+  }).join('');
+
+  const footerDelay = (album.blocks.length * animDelay + 1).toFixed(1);
+
+  el.innerHTML = `
+    <div style="min-height:100vh;position:relative;overflow:hidden;background-color:${album.backgroundColor};color:${album.textColor}">
+      <div id="v-hearts" style="position:fixed;inset:0;pointer-events:none;z-index:0"></div>
+      <div id="v-particles" style="position:fixed;inset:0;pointer-events:none;z-index:0"></div>
+      <div class="viewer-glow"></div>
+      <div style="position:fixed;top:20px;left:20px;z-index:999">
+<button onclick="renderBuilder(window.currentBuilderCode)" 
+style="background:#b8860b;color:black;border:none;padding:10px 16px;border-radius:10px;cursor:pointer;font-weight:bold">
+⬅ رجوع للتعديل
+</button>
+</div>
+      <div class="viewer-content">
+        <div style="text-align:center;margin-bottom:48px" class="animate-fadeIn">
+          ${icon('heart',40)}
+          <h1 class="text-gradient-gold" style="font-size:2.2rem;margin:16px 0">${esc(album.receiverName || 'حبيبي')}</h1>
+          ${album.mainMessage ? `<p style="font-family:var(--font-amiri);font-size:1.1rem;line-height:1.8;max-width:500px;margin:0 auto;color:${album.textColor}">${esc(album.mainMessage)}</p>` : ''}
+        </div>
+        ${blocksHTML}
+        <div class="album-footer" style="animation-delay:${footerDelay}s" class="animate-fadeIn">
+          ${icon('heart',24)}
+          <p>صنع بـ ♥ بواسطة ${esc(album.senderName || 'محب')}</p>
+        </div>
+      </div>
+    </div>
+  `;
+
+  if (album.enableHearts) createFloatingHearts(document.getElementById('v-hearts'));
+  if (album.enableLights) createParticles(document.getElementById('v-particles'));
+
+  // Hidden messages
+  el.querySelectorAll('.hidden-msg-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const msg = document.getElementById('hmsg-' + btn.dataset.id);
+      msg.classList.toggle('hidden');
+    });
+  });
+
+  // Counters
+  album.blocks.filter(b => b.type === 'counter').forEach(block => {
+    if (!album.relationshipStartDate) return;
+    const start = new Date(album.relationshipStartDate).getTime();
+    function updateCounter() {
+      const diff = Date.now() - start;
+      const d = document.getElementById('cnt-d-' + block.id);
+      const h = document.getElementById('cnt-h-' + block.id);
+      const m = document.getElementById('cnt-m-' + block.id);
+      const s = document.getElementById('cnt-s-' + block.id);
+      if (d) d.textContent = Math.floor(diff / (1000*60*60*24));
+      if (h) h.textContent = Math.floor((diff / (1000*60*60)) % 24);
+      if (m) m.textContent = Math.floor((diff / (1000*60)) % 60);
+      if (s) s.textContent = Math.floor((diff / 1000) % 60);
+    }
+    updateCounter();
+    setInterval(updateCounter, 1000);
+  });
+
+  showPage('page-viewer');
+}
+
+
+ 
+   
  
 
 
-
-function openAlbum(){
-let link = document.getElementById("finalLink").innerText;
-window.open(link,"_blank");
+// ============================================================
+// UTILITIES
+// ============================================================
+function esc(str) {
+  if (!str) return '';
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
 }
 
-function copyAlbumLink(){
-let link = document.getElementById("finalLink").innerText;
-navigator.clipboard.writeText(link);
-alert("تم نسخ الرابط");
-}
-  
+// ============================================================
+// URL ROUTING
+// ============================================================
+function initRouter() {
 
-  loadAlbum();
+  const params = new URLSearchParams(window.location.search);
+  const viewCode = params.get('view');
+  const buildCode = params.get('build');
+
+  // لو داخل لينك مباشر
+  if (viewCode) {
+    renderViewer(viewCode.toUpperCase());
+    return;
+  }
+
+  if (buildCode) {
+    renderBuilder(buildCode.toUpperCase());
+    return;
+  }
+
+  // فحص لوكال ستوردج
+  const savedCode = localStorage.getItem("album_code");
+  const loginTime = localStorage.getItem("album_login_time");
+
+  if(savedCode && loginTime){
+
+    const diff = Date.now() - parseInt(loginTime);
+
+    // لو لسه في 24 ساعة
+    if(diff < (24*60*60*1000)){
+      renderBuilder(savedCode);
+      return;
+    }else{
+      // انتهت 24 ساعة
+      localStorage.removeItem("album_code");
+      localStorage.removeItem("album_login_time");
+    }
+  }
+
+  renderLanding();
+}
+
+function showBlockedScreen(msg){
+
+  if(window.autoSaveInterval){
+    clearInterval(window.autoSaveInterval);
+  }
+
+  document.body.innerHTML = `
+  <div style="
+  min-height:100vh;
+  background:#0d0d0d;
+  color:#e6d5b8;
+  font-family:Tajawal;
+  display:flex;
+  align-items:center;
+  justify-content:center">
+
+    <div style="text-align:center">
+
+      <h2 style="color:#b8860b;margin-bottom:15px">🚫 الجلسة متوقفة</h2>
+
+      <p style="font-size:1.1rem;margin-bottom:25px">
+      ${msg} 
+      </p>
+
+      <button onclick="forceLogout()" 
+      style="
+      background:#b8860b;
+      color:black;
+      border:none;
+      padding:14px 26px;
+      border-radius:12px;
+      cursor:pointer;
+      font-weight:bold;
+      font-size:16px">
+      تسجيل خروج
+      </button>
+
+    </div>
+  </div>
+  `;
+}
+
+function forceLogout(){
+  localStorage.removeItem("album_code");
+  localStorage.removeItem("album_login_time");
+  location.href = location.pathname;
+}
+
+// تسجيل خروج كامل
+function forceLogout(){
+  localStorage.removeItem("album_code");
+  localStorage.removeItem("album_login_time");
+  location.href = location.pathname; // يرجع للبداية
+}
+
+initRouter();
 </script>
+
+
 
 </body>
 </html>
