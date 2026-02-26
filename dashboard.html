@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Love Admin - لوحة التحكم</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+--bg:#0d0f14;--bg2:#13151c;--card:#181b24;--card2:#1e2130;
+--gold:#d4af37;--gold2:#b8941f;--gold3:#f0d060;--gold-glow:rgba(212,175,55,.15);
+--text:#e8e0d0;--text2:#9a9490;--border:rgba(212,175,55,.15);
+--success:#3cb371;--warning:#e8a020;--info:#4a9eff;--danger:#e05050;
+--radius:12px;--font:'Tajawal',sans-serif;
+}
+body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--gold2);border-radius:3px}
+
+/* LOGIN */
+#loginPage{display:flex;align-items:center;justify-content:center;min-height:100vh;position:relative}
+#loginPage::before{content:'';position:absolute;top:20%;left:30%;width:300px;height:300px;background:var(--gold-glow);border-radius:50%;filter:blur(120px)}
+.login-box{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:40px;width:100%;max-width:420px;position:relative;backdrop-filter:blur(20px);animation:slideUp .5s ease}
+.login-logo{width:64px;height:64px;border-radius:16px;background:linear-gradient(135deg,var(--gold3),var(--gold2));display:flex;align-items:center;justify-content:center;margin:0 auto 20px;box-shadow:0 0 30px rgba(212,175,55,.3)}
+.login-logo svg{width:32px;height:32px;fill:var(--bg)}
+.login-title{text-align:center;font-size:24px;font-weight:700;background:linear-gradient(135deg,var(--gold3),var(--gold),var(--gold2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:5px}
+.login-sub{text-align:center;color:var(--text2);font-size:14px;margin-bottom:30px}
+.form-group{margin-bottom:18px}
+.form-group label{display:block;font-size:13px;color:var(--text2);margin-bottom:6px}
+.form-group .input-wrap{position:relative}
+.form-group input{width:100%;padding:12px 40px 12px 12px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:var(--font);font-size:14px;outline:none;transition:.3s}
+.form-group input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(212,175,55,.1)}
+.form-group .icon{position:absolute;right:12px;top:50%;transform:translateY(-50%);color:var(--text2);width:18px;height:18px}
+.btn-gold{width:100%;padding:12px;border:none;border-radius:8px;background:linear-gradient(135deg,var(--gold3),var(--gold2));color:var(--bg);font-family:var(--font);font-size:15px;font-weight:700;cursor:pointer;transition:.3s;box-shadow:0 0 20px rgba(212,175,55,.2)}
+.btn-gold:hover{opacity:.9;box-shadow:0 0 30px rgba(212,175,55,.35)}
+.btn-gold:disabled{opacity:.5;cursor:not-allowed}
+.login-error{color:var(--danger);font-size:13px;text-align:center;margin-top:10px;display:none}
+
+/* APP LAYOUT */
+#appPage{display:none;min-height:100vh}
+.app-wrap{display:flex;min-height:100vh}
+
+/* SIDEBAR */
+.sidebar{width:250px;background:var(--bg2);border-left:1px solid var(--border);display:flex;flex-direction:column;position:fixed;right:0;top:0;bottom:0;z-index:100;transition:transform .3s}
+.sidebar-header{padding:20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px}
+.sidebar-logo{width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,var(--gold3),var(--gold2));display:flex;align-items:center;justify-content:center;box-shadow:0 0 15px rgba(212,175,55,.2)}
+.sidebar-logo svg{width:20px;height:20px;fill:var(--bg)}
+.sidebar-brand h2{font-size:16px;font-weight:700;background:linear-gradient(135deg,var(--gold3),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.sidebar-brand p{font-size:11px;color:var(--text2)}
+.sidebar-nav{flex:1;padding:10px;overflow-y:auto}
+.nav-item{display:flex;align-items:center;gap:10px;padding:12px 16px;border-radius:8px;color:var(--text2);font-size:14px;font-weight:500;cursor:pointer;transition:.2s;border:1px solid transparent;margin-bottom:2px}
+.nav-item:hover{background:var(--card);color:var(--text)}
+.nav-item.active{background:rgba(212,175,55,.1);color:var(--gold);border-color:rgba(212,175,55,.15)}
+.nav-item svg{width:20px;height:20px;flex-shrink:0}
+.sidebar-footer{padding:16px;border-top:1px solid var(--border)}
+.user-info{margin-bottom:12px}
+.user-info .name{font-size:14px;font-weight:600}
+.user-info .role{font-size:11px;color:var(--text2)}
+.btn-logout{width:100%;display:flex;align-items:center;justify-content:center;gap:8px;padding:10px;border-radius:8px;border:1px solid rgba(224,80,80,.3);background:transparent;color:var(--danger);font-family:var(--font);font-size:13px;cursor:pointer;transition:.2s}
+.btn-logout:hover{background:rgba(224,80,80,.08)}
+
+/* MAIN */
+.main-content{flex:1;margin-right:250px;padding:30px}
+
+/* MOBILE */
+.mobile-header{display:none;position:sticky;top:0;z-index:50;background:rgba(13,15,20,.9);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:12px 16px;justify-content:space-between;align-items:center}
+.mobile-header h1{font-size:16px;font-weight:700;background:linear-gradient(135deg,var(--gold3),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.burger{background:none;border:none;color:var(--text);cursor:pointer}
+.burger svg{width:24px;height:24px}
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);z-index:90}
+
+@media(max-width:768px){
+.sidebar{transform:translateX(100%)}
+.sidebar.open{transform:translateX(0)}
+.overlay.show{display:block}
+.main-content{margin-right:0;padding:16px}
+.mobile-header{display:flex}
+}
+
+/* PAGE HEADER */
+.page-header{margin-bottom:30px}
+.page-header h1{font-size:28px;font-weight:700;background:linear-gradient(135deg,var(--gold3),var(--gold),var(--gold2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.page-header p{color:var(--text2);font-size:14px;margin-top:4px}
+.page-header-row{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+
+/* STAT CARDS */
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px;margin-bottom:30px}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:24px;transition:.3s;animation:slideUp .5s ease both}
+.stat-card:hover{border-color:rgba(212,175,55,.3);transform:translateY(-3px);box-shadow:0 0 30px var(--gold-glow)}
+.stat-icon{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:16px}
+.stat-icon svg{width:24px;height:24px}
+.stat-val{font-size:32px;font-weight:700}
+.stat-label{font-size:13px;color:var(--text2);margin-top:4px}
+
+/* TABLE */
+.table-wrap{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.table-scroll{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:right;padding:14px 16px;color:var(--text2);font-weight:500;border-bottom:1px solid var(--border);white-space:nowrap}
+td{padding:12px 16px;border-bottom:1px solid rgba(255,255,255,.03);white-space:nowrap}
+tr:hover td{background:rgba(255,255,255,.02)}
+.code-text{font-family:monospace;font-weight:700;color:var(--gold);direction:ltr;unicode-bidi:bidi-override}
+
+/* BADGES */
+.badge{display:inline-block;padding:4px 12px;border-radius:20px;font-size:11px;font-weight:600}
+.badge-new{background:rgba(74,158,255,.15);color:var(--info)}
+.badge-used{background:rgba(60,179,113,.15);color:var(--success)}
+.badge-expired{background:rgba(154,148,144,.15);color:var(--text2)}
+.badge-disabled{background:rgba(224,80,80,.15);color:var(--danger)}
+
+/* ACTION BTNS */
+.act-btn{width:32px;height:32px;border-radius:8px;border:none;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;transition:.2s;background:transparent}
+.act-btn svg{width:16px;height:16px}
+.act-btn.view{color:var(--gold)}.act-btn.view:hover{background:rgba(212,175,55,.1)}
+.act-btn.extend{color:var(--info)}.act-btn.extend:hover{background:rgba(74,158,255,.1)}
+.act-btn.disable{color:var(--warning)}.act-btn.disable:hover{background:rgba(232,160,32,.1)}
+.act-btn.enable{color:var(--success)}.act-btn.enable:hover{background:rgba(60,179,113,.1)}
+.act-btn.delete{color:var(--danger)}.act-btn.delete:hover{background:rgba(224,80,80,.1)}
+
+/* MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(6px);z-index:200;align-items:center;justify-content:center;padding:16px}
+.modal-overlay.show{display:flex}
+.modal-box{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:28px;width:100%;max-width:500px;max-height:80vh;overflow-y:auto;animation:slideUp .3s ease}
+.modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.modal-header h3{font-size:18px;font-weight:700}
+.modal-close{background:none;border:none;color:var(--text2);cursor:pointer}
+.modal-close svg{width:20px;height:20px}
+
+/* WORKER CARD */
+.worker-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:12px;transition:.3s}
+.worker-card:hover{border-color:rgba(212,175,55,.25);box-shadow:0 0 20px var(--gold-glow)}
+.worker-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.worker-avatar{width:40px;height:40px;border-radius:12px;background:rgba(212,175,55,.1);display:flex;align-items:center;justify-content:center}
+.worker-avatar svg{width:20px;height:20px;color:var(--gold)}
+.worker-info{margin-right:12px;flex:1}
+.worker-info .wname{font-weight:700;font-size:14px}
+.worker-info .wpass{font-size:11px;color:var(--text2);font-family:monospace;direction:ltr}
+.perm-tags{display:flex;flex-wrap:wrap;gap:6px}
+.perm-tag{padding:3px 10px;border-radius:12px;background:rgba(212,175,55,.1);color:var(--gold);font-size:11px}
+
+/* LOG ITEM */
+.log-item{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:8px;display:flex;align-items:center;gap:14px;transition:.3s;animation:slideUp .4s ease both}
+.log-item:hover{border-color:rgba(212,175,55,.2)}
+.log-icon{width:40px;height:40px;border-radius:12px;background:rgba(212,175,55,.1);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.log-icon svg{width:20px;height:20px;color:var(--gold)}
+.log-body{flex:1}
+.log-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.log-worker{font-size:13px;font-weight:600}
+.log-action{padding:2px 8px;border-radius:10px;background:rgba(212,175,55,.1);color:var(--gold);font-size:11px}
+.log-code{font-family:monospace;font-size:11px;color:var(--text2);direction:ltr}
+.log-time{font-size:11px;color:var(--text2);margin-top:4px}
+
+/* ALBUM VIEWER */
+.album-section{margin-bottom:20px}
+.album-section h4{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text2);margin-bottom:10px}
+.album-section h4 svg{width:16px;height:16px}
+.album-msg{background:var(--bg2);border-radius:8px;padding:12px;font-size:13px;margin-bottom:6px}
+.album-imgs{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px}
+.album-imgs img{width:100%;height:100px;object-fit:cover;border-radius:8px}
+.album-imgs video{width:100%;border-radius:8px}
+
+/* FILTER BAR */
+.filter-bar{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:20px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.filter-bar label{font-size:13px;font-weight:500}
+.filter-bar select,.filter-bar input[type=number]{padding:8px 14px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:var(--font);font-size:13px;outline:none}
+.filter-bar select:focus,.filter-bar input:focus{border-color:var(--gold)}
+
+/* SALES SUMMARY */
+.summary-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px;margin-top:20px}
+.summary-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:24px;transition:.3s}
+.summary-card:hover{border-color:rgba(212,175,55,.3);box-shadow:0 0 30px var(--gold-glow)}
+.summary-card .slabel{font-size:13px;color:var(--text2);margin-bottom:8px}
+.summary-card .sval{font-size:28px;font-weight:700}
+.gold-val{background:linear-gradient(135deg,var(--gold3),var(--gold),var(--gold2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+
+/* CHECKBOX */
+.perm-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.perm-check{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:8px;cursor:pointer;font-size:13px;transition:.2s}
+.perm-check:hover{background:var(--bg2)}
+.perm-check input[type=checkbox]{accent-color:var(--gold);width:16px;height:16px}
+.btn-sm{padding:6px 14px;border-radius:8px;border:none;font-family:var(--font);font-size:12px;font-weight:600;cursor:pointer;transition:.2s}
+.btn-sm-gold{background:rgba(212,175,55,.15);color:var(--gold)}.btn-sm-gold:hover{background:rgba(212,175,55,.25)}
+.btn-sm-add{background:linear-gradient(135deg,var(--gold3),var(--gold2));color:var(--bg)}.btn-sm-add:hover{opacity:.9}
+.empty-state{padding:40px;text-align:center;color:var(--text2);font-size:14px}
+
+/* ANIMATIONS */
+@keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes glowPulse{0%,100%{box-shadow:0 0 15px rgba(212,175,55,.15)}50%{box-shadow:0 0 30px rgba(212,175,55,.3)}}
+.glow-pulse{animation:glowPulse 3s ease-in-out infinite}
+
+/* PAGES */
+.page{display:none}.page.active{display:block}
+</style>
+</head>
+<body>
+
+<!-- ==================== LOGIN PAGE ==================== -->
+<div id="loginPage">
+  <div class="login-box">
+    <div class="login-logo"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg></div>
+    <div class="login-title">لوحة التحكم</div>
+    <div class="login-sub">نظام إدارة أكواد الحب</div>
+    <div class="form-group">
+      <label>اسم المستخدم</label>
+      <div class="input-wrap">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        <input type="text" id="loginUser" placeholder="أدخل اسم المستخدم" dir="ltr">
+      </div>
+    </div>
+    <div class="form-group">
+      <label>كلمة المرور</label>
+      <div class="input-wrap">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+        <input type="password" id="loginPass" placeholder="أدخل كلمة المرور" dir="ltr">
+      </div>
+    </div>
+    <button class="btn-gold" id="loginBtn">تسجيل الدخول</button>
+    <div class="login-error" id="loginError">اسم المستخدم أو كلمة المرور غير صحيحة</div>
+  </div>
+</div>
+
+<!-- ==================== APP PAGE ==================== -->
+<div id="appPage">
+  <div class="overlay" id="overlay"></div>
+  <div class="mobile-header">
+    <h1>Love Admin</h1>
+    <button class="burger" id="burgerBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+  </div>
+  <div class="app-wrap">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-logo"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="var(--bg)"/></svg></div>
+        <div class="sidebar-brand"><h2>Love Admin</h2><p>لوحة التحكم</p></div>
+      </div>
+      <nav class="sidebar-nav" id="sidebarNav"></nav>
+      <div class="sidebar-footer">
+        <div class="user-info"><div class="name" id="userName"></div><div class="role" id="userRole"></div></div>
+        <button class="btn-logout" id="logoutBtn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>تسجيل خروج</button>
+      </div>
+    </aside>
+    <div class="main-content" id="mainContent"></div>
+  </div>
+</div>
+
+<!-- ==================== MODAL ==================== -->
+<div class="modal-overlay" id="modal">
+  <div class="modal-box" id="modalBox"></div>
+</div>
+
+<script>
+// ============== FIREBASE CONFIG ==============
+const firebaseConfig = {
+  apiKey: "AIzaSyAEpVTV2bAzIal7FkEl3JadPvn0fkqpAF4",
+  authDomain: "love-site-e2cb7.firebaseapp.com",
+  databaseURL: "https://love-site-e2cb7-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "love-site-e2cb7",
+  storageBucket: "love-site-e2cb7.appspot.com",
+  messagingSenderId: "861816430901",
+  appId: "1:861816430901:web:144adb8ebbc2ad966d6c7c"
+};
+if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+// ============== PATHS ==============
+const PATHS = { codes: 'codes', albums: 'albums', workers: 'workers', logs: 'logs', sales: 'sales', settings: 'settings' };
+
+// ============== SUPER ADMIN ==============
+const SUPER_ADMIN = { username: 'karimelwakil', password: 'Admin@123' };
+
+// ============== PERMISSIONS ==============
+const ALL_PERMS = ['manage_codes','extend_time','disable_code','delete_code','view_albums','view_messages','sales','statistics','edit_albums','delete_albums'];
+const PERM_LABELS = {
+  manage_codes:'إدارة الأكواد', extend_time:'تمديد الوقت', disable_code:'تعطيل الكود',
+  delete_code:'حذف الكود', view_albums:'عرض الألبومات', view_messages:'مشاهدة الرسائل',
+  sales:'المبيعات', statistics:'الإحصائيات', edit_albums:'تعديل الألبومات', delete_albums:'حذف الألبومات'
+};
+
+// ============== STATE ==============
+let currentUser = null;
+// ===== تثبيت الجلسة =====
+function restoreSession(){
+  const saved = localStorage.getItem("sessionUser");
+  if(saved){
+    try{
+      currentUser = JSON.parse(saved);
+    }catch(e){
+      localStorage.removeItem("sessionUser");
+    }
+  }
+}
+restoreSession();
+let currentPage = 'dashboard';
+let codesData = {};
+let albumsData = {};
+let workersData = {};
+let logsData = {};
+
+// ============== SVG ICONS ==============
+const ICONS = {
+  dashboard:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>',
+  codes:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 11-7.778 7.778 5.5 5.5 0 017.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>',
+  workers:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>',
+  sales:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>',
+  logs:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>',
+  eye:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>',
+  clock:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>',
+  ban:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>',
+  refresh:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg>',
+  trash:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>',
+  plus:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>',
+  x:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>',
+  shield:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>',
+  check:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>',
+  user:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>',
+  activity:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>',
+  msg:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>',
+  img:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>',
+  vid:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>',
+  dollar:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>'
+};
+
+// ============== HELPERS ==============
+function formatTime(ts) {
+  const d = new Date(ts);
+  return d.toLocaleDateString('ar-EG') + ' ' + d.toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit'});
+}
+function getTimeRemaining(exp) {
+  const diff = exp - Date.now();
+  if (diff <= 0) return 'منتهي';
+  const h = Math.floor(diff/3600000);
+  const m = Math.floor((diff%3600000)/60000);
+  return h + ' ساعة ' + m + ' دقيقة';
+}
+function getCodeStatus(c) {
+  if (c.disabled) return 'disabled';
+  if (!c.used) return 'new';
+  if (c.expiresAt && Date.now() > c.expiresAt) return 'expired';
+  return 'used';
+}
+const STATUS_LABELS = {new:'جديد',used:'مستخدم',expired:'منتهي',disabled:'معطل'};
+const STATUS_CLASSES = {new:'badge-new',used:'badge-used',expired:'badge-expired',disabled:'badge-disabled'};
+const ACTION_LABELS = {delete_code:'حذف كود',extend_time:'تمديد الوقت',disable_code:'تعطيل كود',enable_code:'تفعيل كود',create_code:'إنشاء كود',edit_album:'تعديل ألبوم'};
+
+function logAction(action, code) {
+  db.ref(PATHS.logs).push().set({ worker: currentUser.username, action, code: code||'', time: Date.now() });
+}
+function hasPerm(p) { return currentUser.role==='admin' || (currentUser.permissions && currentUser.permissions.includes(p)); }
+function $(id) { return document.getElementById(id); }
+function showModal(html) { $('modalBox').innerHTML = html; $('modal').classList.add('show'); }
+function hideModal() { $('modal').classList.remove('show'); }
+$('modal').addEventListener('click', function(e){ if(e.target===$('modal')) hideModal(); });
+
+// ============== AUTH ==============
+function tryLogin() {
+  const u = $('loginUser').value.trim();
+  const p = $('loginPass').value;
+  if (!u || !p) return;
+  $('loginBtn').disabled = true;
+  $('loginError').style.display = 'none';
+
+  if (u === SUPER_ADMIN.username && p === SUPER_ADMIN.password) {
+    currentUser = { username: u, role: 'admin', permissions: ALL_PERMS };
+    localStorage.setItem('sessionUser', JSON.stringify(currentUser));
+    enterApp();
+    return;
+  }
+
+  db.ref(PATHS.workers).orderByChild('username').equalTo(u).once('value', function(snap) {
+    const data = snap.val();
+    if (data) {
+      const id = Object.keys(data)[0];
+      const w = data[id];
+      if (w.password === p) {
+        currentUser = { username: w.username, role: 'worker', permissions: w.permissions || [] };
+        localStorage.setItem('sessionUser', JSON.stringify(currentUser));
+        enterApp();
+        return;
+      }
+    }
+    $('loginBtn').disabled = false;
+    $('loginError').style.display = 'block';
+  });
+}
+$('loginBtn').addEventListener('click', tryLogin);
+$('loginPass').addEventListener('keydown', function(e){ if(e.key==='Enter') tryLogin(); });
+$('logoutBtn').addEventListener('click', function(){ currentUser=null; localStorage.removeItem('sessionUser'); location.reload(); });
+
+// Auto login
+// ===== AUTO LOGIN SAFE =====
+window.addEventListener("load", ()=>{
+
+  const s = localStorage.getItem("sessionUser");
+  if(!s) return;
+
+  try{
+    currentUser = JSON.parse(s);
+  }catch(e){
+    localStorage.removeItem("sessionUser");
+    return;
+  }
+
+  // انتظر firebase يتأكد انه شغال
+  setTimeout(()=>{
+    enterApp();
+  },300);
+
+});
+
+// ============== ENTER APP ==============
+function enterApp() {
+  if(!currentUser){
+  location.reload();
+  return;
+}
+  $('loginPage').style.display = 'none';
+  $('appPage').style.display = 'block';
+  $('userName').textContent = currentUser.username;
+  $('userRole').textContent = currentUser.role === 'admin' ? 'مدير' : 'عامل';
+  buildNav();
+  startListeners();
+  navigate('dashboard');
+}
+
+// ============== SIDEBAR NAV ==============
+const NAV_ITEMS = [
+  { id:'dashboard', label:'لوحة التحكم', icon:'dashboard', perm:null, adminOnly:false },
+  { id:'codes', label:'إدارة الأكواد', icon:'codes', perm:'manage_codes', adminOnly:false },
+  { id:'workers', label:'إدارة العمال', icon:'workers', perm:null, adminOnly:true },
+  { id:'sales', label:'المبيعات', icon:'sales', perm:'sales', adminOnly:false },
+  { id:'logs', label:'نشاط العمال', icon:'logs', perm:null, adminOnly:true },
+];
+
+function buildNav() {
+  let html = '';
+  NAV_ITEMS.forEach(function(item) {
+    if (item.adminOnly && currentUser.role !== 'admin') return;
+    if (item.perm && !hasPerm(item.perm)) return;
+    html += '<div class="nav-item" data-page="'+item.id+'">'+ICONS[item.icon]+item.label+'</div>';
+  });
+  $('sidebarNav').innerHTML = html;
+  $('sidebarNav').querySelectorAll('.nav-item').forEach(function(el){
+    el.addEventListener('click', function(){ navigate(el.dataset.page); closeSidebar(); });
+  });
+}
+
+function navigate(page) {
+  currentPage = page;
+  $('sidebarNav').querySelectorAll('.nav-item').forEach(function(el){ el.classList.toggle('active', el.dataset.page===page); });
+  renderPage();
+}
+
+// Mobile sidebar
+$('burgerBtn').addEventListener('click', function(){ $('sidebar').classList.add('open'); $('overlay').classList.add('show'); });
+$('overlay').addEventListener('click', closeSidebar);
+function closeSidebar(){ $('sidebar').classList.remove('open'); $('overlay').classList.remove('show'); }
+
+// ============== REALTIME LISTENERS ==============
+function startListeners() {
+  db.ref(PATHS.codes).on('value', function(s){ codesData = s.val()||{}; if(currentPage==='dashboard'||currentPage==='codes'||currentPage==='sales') renderPage(); });
+  db.ref(PATHS.albums).on('value', function(s){ albumsData = s.val()||{}; if(currentPage==='codes'||currentPage==='sales') renderPage(); });
+  db.ref(PATHS.workers).on('value', function(s){ workersData = s.val()||{}; if(currentPage==='dashboard'||currentPage==='workers') renderPage(); });
+  db.ref(PATHS.logs).on('value', function(s){ logsData = s.val()||{}; if(currentPage==='logs') renderPage(); });
+}
+
+// ============== RENDER PAGES ==============
+function renderPage() {
+  switch(currentPage) {
+    case 'dashboard': renderDashboard(); break;
+    case 'codes': renderCodes(); break;
+    case 'workers': renderWorkers(); break;
+    case 'sales': renderSales(); break;
+    case 'logs': renderLogs(); break;
+  }
+}
+
+// ---------- DASHBOARD ----------
+function renderDashboard() {
+  const codes = Object.values(codesData);
+  const sc = {new:0,used:0,expired:0,disabled:0};
+  codes.forEach(function(c){ sc[getCodeStatus(c)]++; });
+  const wc = Object.keys(workersData).length;
+
+  const cards = [
+    {label:'إجمالي الأكواد',val:codes.length,bg:'rgba(212,175,55,.1)',color:'var(--gold)',icon:ICONS.codes},
+    {label:'أكواد جديدة',val:sc.new,bg:'rgba(74,158,255,.1)',color:'var(--info)',icon:ICONS.plus},
+    {label:'مستخدمة',val:sc.used,bg:'rgba(60,179,113,.1)',color:'var(--success)',icon:ICONS.check},
+    {label:'منتهية',val:sc.expired,bg:'rgba(232,160,32,.1)',color:'var(--warning)',icon:ICONS.clock},
+    {label:'معطلة',val:sc.disabled,bg:'rgba(224,80,80,.1)',color:'var(--danger)',icon:ICONS.ban},
+    {label:'العمال',val:wc,bg:'rgba(212,175,55,.08)',color:'var(--gold)',icon:ICONS.workers},
+  ];
+
+  let html = '<div class="page-header"><h1>لوحة التحكم</h1><p>نظرة عامة على النظام</p></div><div class="stats-grid">';
+  cards.forEach(function(c,i){
+    html += '<div class="stat-card" style="animation-delay:'+i*80+'ms"><div class="stat-icon" style="background:'+c.bg+';color:'+c.color+'">'+c.icon+'</div><div class="stat-val">'+c.val+'</div><div class="stat-label">'+c.label+'</div></div>';
+  });
+  html += '</div>';
+  $('mainContent').innerHTML = html;
+}
+
+// ---------- CODES ----------
+function renderCodes() {
+  const entries = Object.entries(codesData);
+  let html = '<div class="page-header"><div class="page-header-row"><div><h1>إدارة الأكواد</h1><p>إدارة وتتبع جميع الأكواد</p></div>';
+ if (hasPerm('manage_codes'))html += '<button class="btn-gold" style="width:auto;padding:10px 20px;font-size:13px" onclick="addRandomCode()">'+ICONS.plus+' إضافة كود</button>';
+  html += '</div></div>';
+
+  html += '<div class="table-wrap"><div class="table-scroll"><table><thead><tr><th>الكود</th><th>الحالة</th><th>المرسل</th><th>الوقت المتبقي</th><th>تاريخ الانتهاء</th><th>تحكم</th></tr></thead><tbody>';
+
+  if (entries.length === 0) {
+    html += '<tr><td colspan="6" class="empty-state">لا توجد أكواد</td></tr>';
+  } else {
+    entries.forEach(function(e){
+      const code = e[0], d = e[1];
+      const status = getCodeStatus(d);
+      const album = albumsData[code];
+      const sender = album ? (album.senderName||'-') : '-';
+      html += '<tr>';
+      html += '<td><span class="code-text">'+code+'</span></td>';
+      html += '<td><span class="badge '+STATUS_CLASSES[status]+'">'+STATUS_LABELS[status]+'</span></td>';
+      html += '<td>'+sender+'</td>';
+      html += '<td>'+(d.expiresAt ? getTimeRemaining(d.expiresAt) : '-')+'</td>';
+      html += '<td style="color:var(--text2)">'+(d.expiresAt ? formatTime(d.expiresAt) : '-')+'</td>';
+      html += '<td><div style="display:flex;gap:2px">';
+      if (hasPerm('view_albums') && album) html += '<button class="act-btn view" title="عرض" onclick="showAlbumModal(\''+code+'\')">'+ICONS.eye+'</button>';
+      if (hasPerm('extend_time')) html += '<button class="act-btn extend" title="تمديد" onclick="showExtendModal(\''+code+'\')">'+ICONS.clock+'</button>';
+      if (hasPerm('disable_code')) {
+        if (d.disabled) html += '<button class="act-btn enable" title="تفعيل" onclick="toggleDisable(\''+code+'\',true)">'+ICONS.refresh+'</button>';
+        else html += '<button class="act-btn disable" title="تعطيل" onclick="toggleDisable(\''+code+'\',false)">'+ICONS.ban+'</button>';
+      }
+      if (hasPerm('delete_code')) html += '<button class="act-btn delete" title="حذف" onclick="deleteCode(\''+code+'\')">'+ICONS.trash+'</button>';
+      html += '</div></td></tr>';
+    });
+  }
+  html += '</tbody></table></div></div>';
+  $('mainContent').innerHTML = html;
+}
+
+
+function addCode() {
+  const v = $('newCodeInput').value.trim();
+  if (!v) return;
+  db.ref(PATHS.codes+'/'+v).set({used:false,disabled:false,createdAt:Date.now()});
+  logAction('create_code',v);
+  hideModal();
+}
+
+function generateRandomCode() {
+  const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  const numbers = "0123456789";
+  let result = "";
+
+  for (let i = 0; i < 8; i++) {
+    // 70% حروف — 30% أرقام
+    if (Math.random() < 0.7) {
+      result += letters.charAt(Math.floor(Math.random() * letters.length));
+    } else {
+      result += numbers.charAt(Math.floor(Math.random() * numbers.length));
+    }
+  }
+
+  return result;
+}
+
+function addRandomCode() {
+
+  let newCode = generateRandomCode();
+
+  // لو الكود موجود يعيد المحاولة
+  if (codesData[newCode]) {
+    return addRandomCode();
+  }
+
+  db.ref(PATHS.codes + '/' + newCode).set({
+    used: false,
+    disabled: false,
+    createdAt: Date.now()
+  });
+
+  logAction('create_code', newCode);
+
+}
+function showExtendModal(code) {
+  showModal('<div class="modal-header"><h3>تمديد الوقت - '+code+'</h3><button class="modal-close" onclick="hideModal()">'+ICONS.x+'</button></div><div class="form-group"><input type="number" id="extendHoursInput" placeholder="عدد الساعات"></div><button class="btn-gold" onclick="extendCode(\''+code+'\')">تمديد</button>');
+}
+function extendCode(code) {
+  const h = parseInt($('extendHoursInput').value);
+  if (!h || h<=0) return;
+  const d = codesData[code];
+  const newExp = (d.expiresAt || Date.now()) + h*3600000;
+  db.ref(PATHS.codes+'/'+code+'/expiresAt').set(newExp);
+  logAction('extend_time',code);
+  hideModal();
+}
+async function toggleDisable(code,enable){
+
+  if(enable){
+    await db.ref("codes/"+code).update({
+      disabled:false
+    });
+    alert("تم تفعيل الكود");
+  }else{
+    await db.ref("codes/"+code).update({
+      disabled:true
+    });
+    alert("تم تعطيل الكود");
+  }
+
+}
+
+async function deleteCode(code){
+
+  if(!confirm("حذف الكود نهائي من النظام؟")) return;
+
+  try{
+
+    // حذف من codes
+    await db.ref("codes/"+code).remove();
+
+    // حذف من albums
+    await db.ref("albums/"+code).remove();
+
+    // حذف من الجدول فوراً
+    renderCodes();
+
+    alert("تم حذف الكود نهائيا من النظام");
+
+  }catch(e){
+    alert("خطأ أثناء الحذف");
+    console.log(e);
+  }
+}
+
+// ---------- ALBUM VIEWER ----------
+function showAlbumModal(code) {
+  const a = albumsData[code];
+  if (!a) return;
+  let html = '<div class="modal-header"><div><h3 style="background:linear-gradient(135deg,var(--gold3),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent">ألبوم: '+code+'</h3><p style="font-size:12px;color:var(--text2);margin-top:4px">المرسل: '+(a.senderName||'-')+'</p>';
+  if (a.password) html += '<p style="font-size:12px;color:var(--text2)">كلمة السر: <span style="font-family:monospace;color:var(--gold)">'+a.password+'</span></p>';
+  html += '</div><button class="modal-close" onclick="hideModal()">'+ICONS.x+'</button></div>';
+
+  const msgs = a.messages ? Object.values(a.messages) : [];
+  const imgs = a.images ? Object.values(a.images) : [];
+  const vids = a.videos ? Object.values(a.videos) : [];
+
+  if (msgs.length) {
+    html += '<div class="album-section"><h4>'+ICONS.msg+' الرسائل ('+msgs.length+')</h4>';
+    msgs.forEach(function(m){ html += '<div class="album-msg">'+(typeof m==='string'?m:(m.text||JSON.stringify(m)))+'</div>'; });
+    html += '</div>';
+  }
+  if (imgs.length) {
+    html += '<div class="album-section"><h4>'+ICONS.img+' الصور ('+imgs.length+')</h4><div class="album-imgs">';
+    imgs.forEach(function(u){ html += '<img src="'+(typeof u==='string'?u:(u.url||''))+'" alt="">'; });
+    html += '</div></div>';
+  }
+  if (vids.length) {
+    html += '<div class="album-section"><h4>'+ICONS.vid+' الفيديو ('+vids.length+')</h4>';
+    vids.forEach(function(u){ html += '<video src="'+(typeof u==='string'?u:(u.url||''))+'" controls style="width:100%;border-radius:8px;margin-bottom:6px"></video>'; });
+    html += '</div>';
+  }
+  if (!msgs.length && !imgs.length && !vids.length) html += '<div class="empty-state">لا يوجد محتوى في هذا الألبوم</div>';
+  showModal(html);
+}
+
+// ---------- WORKERS ----------
+function renderWorkers() {
+  const entries = Object.entries(workersData);
+  let html = '<div class="page-header"><div class="page-header-row"><div><h1>إدارة العمال</h1><p>إضافة وإدارة صلاحيات العمال</p></div><button class="btn-gold" style="width:auto;padding:10px 20px;font-size:13px" onclick="showAddWorkerModal()">'+ICONS.plus+' إضافة عامل</button></div></div>';
+
+  if (entries.length === 0) {
+    html += '<div class="empty-state" style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius)">لا يوجد عمال</div>';
+  } else {
+    entries.forEach(function(e){
+      const id=e[0], w=e[1];
+     html += '<div class="worker-card"><div class="worker-top"><div style="display:flex;align-items:center"><div class="worker-avatar">'+ICONS.shield+'</div><div class="worker-info"><div class="wname">'+w.username+'</div><div class="wpass">كلمة المرور: '+w.password+'</div></div></div><div style="display:flex;gap:6px"><button class="act-btn view" title="تعديل" onclick="showEditWorkerModal(\''+id+'\')" style="color:#4aa3ff"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4 12.5-12.5z"/></svg></button><button class="act-btn delete" onclick="deleteWorker(\''+id+'\')">'+ICONS.trash+'</button></div></div><div class="perm-tags">';
+      if (w.permissions && w.permissions.length) {
+        w.permissions.forEach(function(p){ html += '<span class="perm-tag">'+(PERM_LABELS[p]||p)+'</span>'; });
+      } else {
+        html += '<span style="font-size:12px;color:var(--text2)">لا توجد صلاحيات</span>';
+      }
+      html += '</div></div>';
+    });
+  }
+  $('mainContent').innerHTML = html;
+}
+
+function showAddWorkerModal() {
+  let html = '<div class="modal-header"><h3>إضافة عامل جديد</h3><button class="modal-close" onclick="hideModal()">'+ICONS.x+'</button></div>';
+  html += '<div class="form-group"><label>اسم المستخدم</label><input type="text" id="wUser" placeholder="اسم المستخدم" dir="ltr"></div>';
+  html += '<div class="form-group"><label>كلمة المرور</label><input type="text" id="wPass" placeholder="كلمة المرور" dir="ltr"></div>';
+  html += '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px"><label style="font-size:13px;color:var(--text2)">الصلاحيات</label><button class="btn-sm btn-sm-gold" onclick="selectAllPerms()">'+ICONS.check+' تحديد الكل</button></div>';
+  html += '<div class="perm-grid">';
+  ALL_PERMS.forEach(function(p){
+    html += '<label class="perm-check"><input type="checkbox" class="wPerm" value="'+p+'"> '+(PERM_LABELS[p]||p)+'</label>';
+  });
+  html += '</div><br><button class="btn-gold" onclick="addWorker()">إضافة</button>';
+  showModal(html);
+}
+function selectAllPerms() {
+  document.querySelectorAll('.wPerm').forEach(function(c){ c.checked=true; });
+}
+function addWorker() {
+  const u=$('wUser').value.trim(), p=$('wPass').value.trim();
+  if (!u||!p) return;
+  const perms = [];
+  document.querySelectorAll('.wPerm:checked').forEach(function(c){ perms.push(c.value); });
+  db.ref(PATHS.workers).push().set({username:u,password:p,permissions:perms});
+  hideModal();
+}
+function deleteWorker(id) {
+  if (!confirm('هل أنت متأكد من حذف هذا العامل؟')) return;
+  db.ref(PATHS.workers+'/'+id).remove();
+}
+
+function showEditWorkerModal(id){
+
+  const w = workersData[id];
+  if(!w) return;
+
+  let html = `
+  <div class="modal-header">
+    <h3>تعديل العامل</h3>
+    <button class="modal-close" onclick="hideModal()">${ICONS.x}</button>
+  </div>
+
+  <div class="form-group">
+    <label>اسم المستخدم</label>
+    <input type="text" id="editUser" value="${w.username}" dir="ltr">
+  </div>
+
+  <div class="form-group">
+    <label>كلمة المرور</label>
+    <input type="text" id="editPass" value="${w.password}" dir="ltr">
+  </div>
+
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+    <label style="font-size:13px;color:var(--text2)">الصلاحيات</label>
+    <button class="btn-sm btn-sm-gold" onclick="selectAllPermsEdit()">${ICONS.check} تحديد الكل</button>
+  </div>
+
+  <div class="perm-grid">
+  `;
+
+  ALL_PERMS.forEach(p=>{
+    const checked = w.permissions && w.permissions.includes(p) ? 'checked' : '';
+    html += `
+    <label class="perm-check">
+      <input type="checkbox" class="editPerm" value="${p}" ${checked}>
+      ${PERM_LABELS[p]||p}
+    </label>`;
+  });
+
+  html += `
+  </div><br>
+  <button class="btn-gold" onclick="saveWorkerEdit('${id}')">حفظ التعديلات</button>
+  `;
+
+  showModal(html);
+}
+
+function selectAllPermsEdit(){
+  document.querySelectorAll('.editPerm').forEach(c=>c.checked=true);
+}
+
+function saveWorkerEdit(id){
+
+  const username = document.getElementById("editUser").value.trim();
+  const password = document.getElementById("editPass").value.trim();
+  if(!username || !password) return;
+
+  const perms = [];
+  document.querySelectorAll(".editPerm:checked").forEach(c=>{
+    perms.push(c.value);
+  });
+
+  db.ref(PATHS.workers + "/" + id).update({
+    username: username,
+    password: password,
+    permissions: perms
+  });
+
+  hideModal();
+}
+
+// ---------- SALES ----------
+function renderSales() {
+  const savedPrice = localStorage.getItem('codePrice');
+  const price = savedPrice ? parseInt(savedPrice) : 150;
+
+  const used = Object.entries(codesData).filter(function(e){ const s=getCodeStatus(e[1]); return s==='used'||s==='expired'; });
+  const total = used.length * price;
+
+  let html = '<div class="page-header"><h1>المبيعات</h1><p>تتبع المبيعات والأرباح</p></div>';
+  html += '<div class="filter-bar"><label>سعر الكود:</label><input type="number" id="priceInput" value="'+price+'" onchange="updatePrice(this.value)"><span style="font-size:13px;color:var(--text2)">جنيه</span></div>';
+
+  html += '<div class="table-wrap"><div class="table-scroll"><table><thead><tr><th>الكود</th><th>المرسل</th><th>تاريخ الاستخدام</th><th>السعر</th></tr></thead><tbody>';
+  if (!used.length) {
+    html += '<tr><td colspan="4" class="empty-state">لا توجد مبيعات</td></tr>';
+  } else {
+    used.forEach(function(e){
+      const code=e[0],d=e[1],a=albumsData[code];
+      html += '<tr><td><span class="code-text">'+code+'</span></td><td>'+(a?a.senderName||'-':'-')+'</td><td style="color:var(--text2)">'+(d.firstUsedAt?formatTime(d.firstUsedAt):'-')+'</td><td style="font-weight:700;color:var(--success)">'+price+' جنيه</td></tr>';
+    });
+  }
+  html += '</tbody></table></div></div>';
+
+  html += '<div class="summary-grid"><div class="summary-card"><div class="slabel">إجمالي الأكواد المستخدمة</div><div class="sval">'+used.length+'</div></div><div class="summary-card glow-pulse"><div class="slabel">إجمالي الربح</div><div style="display:flex;align-items:center;gap:8px"><span style="color:var(--gold)">'+ICONS.dollar+'</span><div class="sval gold-val">'+total.toLocaleString()+' جنيه</div></div></div></div>';
+  $('mainContent').innerHTML = html;
+}
+function updatePrice(v) { localStorage.setItem('codePrice',v); renderSales(); }
+
+// ---------- LOGS ----------
+function renderLogs() {
+  const arr = Object.values(logsData);
+  const sevenDays = Date.now() - 7*86400000;
+  const recent = arr.filter(function(l){ return l.time >= sevenDays; }).sort(function(a,b){ return b.time-a.time; });
+  const uniqueWorkers = [...new Set(arr.map(function(l){ return l.worker; }))];
+
+ let html = `
+<div class="page-header">
+  <div class="page-header-row">
+    <div>
+      <h1>نشاط العمال</h1>
+      <p>سجل العمليات - آخر 7 أيام</p>
+    </div>
+
+    <button onclick="deleteAllLogs()" 
+    style="
+      background:linear-gradient(135deg,#ff3b3b,#c40000);
+      border:none;
+      color:#fff;
+      padding:10px 18px;
+      border-radius:10px;
+      font-family:var(--font);
+      font-weight:700;
+      cursor:pointer;
+      box-shadow:0 0 20px rgba(255,0,0,.35);
+      transition:.3s;
+    "
+    onmouseover="this.style.transform='scale(1.05)'"
+    onmouseout="this.style.transform='scale(1)'"
+    >
+    🔥 حذف الكل
+    </button>
+
+  </div>
+</div>
+`;
+  html += '<div class="filter-bar"><label>اختر عامل:</label><select id="logFilter" onchange="filterLogs()"><option value="all">الكل</option>';
+  uniqueWorkers.forEach(function(w){ html += '<option value="'+w+'">'+w+'</option>'; });
+  html += '</select></div><div id="logsContainer">';
+
+  if (!recent.length) {
+    html += '<div class="empty-state" style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius)">لا توجد سجلات</div>';
+  } else {
+    recent.forEach(function(l,i){
+  const logId = Object.keys(logsData).find(k => logsData[k] === l);
+
+  html += `
+  <div class="log-item" style="animation-delay:${i*30}ms" data-worker="${l.worker}">
+    
+    <button onclick="deleteOneLog('${logId}')" 
+    style="
+      background:transparent;
+      border:1px solid rgba(255,70,70,.3);
+      color:#ff4d4d;
+      padding:6px 10px;
+      border-radius:8px;
+      cursor:pointer;
+      font-size:11px;
+      transition:.3s;
+      margin-left:8px;
+    "
+    onmouseover="this.style.background='rgba(255,0,0,.15)'"
+    onmouseout="this.style.background='transparent'"
+    >
+    حذف
+    </button>
+
+    <div class="log-icon">${ICONS.activity}</div>
+
+    <div class="log-body">
+      <div class="log-meta">
+        <span class="log-worker">${ICONS.user} ${l.worker}</span>
+        <span class="log-action">${ACTION_LABELS[l.action]||l.action}</span>
+        ${l.code ? `<span class="log-code">${l.code}</span>` : ``}
+      </div>
+      <div class="log-time">${formatTime(l.time)}</div>
+    </div>
+  </div>
+  `;
+});
+  }
+  html += '</div>';
+  $('mainContent').innerHTML = html;
+}
+
+// ===== عند الرجوع للتبويب =====
+document.addEventListener("visibilitychange", ()=>{
+  if(!document.hidden){
+    const saved = localStorage.getItem("sessionUser");
+    if(saved && !currentUser){
+      currentUser = JSON.parse(saved);
+      enterApp();
+    }
+  }
+});
+
+function filterLogs() {
+  const v = $('logFilter').value;
+  document.querySelectorAll('.log-item').forEach(function(el){
+    el.style.display = (v==='all' || el.dataset.worker===v) ? 'flex' : 'none';
+  });
+}
+
+function deleteOneLog(id){
+  if(!confirm("حذف هذا اللوج؟")) return;
+  db.ref(PATHS.logs + '/' + id).remove();
+}
+
+function deleteAllLogs(){
+  if(!confirm("متأكد حذف كل السجل؟")) return;
+  db.ref(PATHS.logs).remove();
+}
+
+// ===== keep firebase alive =====
+setInterval(()=>{
+  if(currentUser){
+    console.log("session alive");
+  }
+},20000);
+</script>
+</body>
+</html>
