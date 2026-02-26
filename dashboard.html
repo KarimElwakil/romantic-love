@@ -458,6 +458,16 @@ function closeSidebar(){ $('sidebar').classList.remove('open'); $('overlay').cla
 
 // ============== REALTIME LISTENERS ==============
 function startListeners() {
+  // سعر الكود realtime
+db.ref("settings/codePrice").on("value", snap=>{
+  if(snap.exists()){
+    window.globalPrice = snap.val();
+  }else{
+    window.globalPrice = 150;
+  }
+
+  if(currentPage==="sales") renderSales();
+});
   db.ref(PATHS.codes).on('value', function(s){ codesData = s.val()||{}; if(currentPage==='dashboard'||currentPage==='codes'||currentPage==='sales') renderPage(); });
   db.ref(PATHS.albums).on('value', function(s){ albumsData = s.val()||{}; if(currentPage==='codes'||currentPage==='sales') renderPage(); });
   db.ref(PATHS.workers).on('value', function(s){ workersData = s.val()||{}; if(currentPage==='dashboard'||currentPage==='workers') renderPage(); });
@@ -785,8 +795,7 @@ function saveWorkerEdit(id){
 
 // ---------- SALES ----------
 function renderSales() {
-  const savedPrice = localStorage.getItem('codePrice');
-  const price = savedPrice ? parseInt(savedPrice) : 150;
+  let price = window.globalPrice || 150;
 
   const used = Object.entries(codesData).filter(function(e){ const s=getCodeStatus(e[1]); return s==='used'||s==='expired'; });
   const total = used.length * price;
@@ -808,7 +817,16 @@ function renderSales() {
   html += '<div class="summary-grid"><div class="summary-card"><div class="slabel">إجمالي الأكواد المستخدمة</div><div class="sval">'+used.length+'</div></div><div class="summary-card glow-pulse"><div class="slabel">إجمالي الربح</div><div style="display:flex;align-items:center;gap:8px"><span style="color:var(--gold)">'+ICONS.dollar+'</span><div class="sval gold-val">'+total.toLocaleString()+' جنيه</div></div></div></div>';
   $('mainContent').innerHTML = html;
 }
-function updatePrice(v) { localStorage.setItem('codePrice',v); renderSales(); }
+
+function updatePrice(v){
+
+  const price = parseInt(v);
+  if(!price || price<=0) return;
+
+  // حفظ في firebase
+  db.ref("settings/codePrice").set(price);
+
+}
 
 // ---------- LOGS ----------
 function renderLogs() {
