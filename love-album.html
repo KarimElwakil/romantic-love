@@ -550,12 +550,18 @@ const db = firebase.database();
 <script>
 
 function generateDeviceId(){
-  const ua = navigator.userAgent;
-  const lang = navigator.language;
-  const screenSize = screen.width + "x" + screen.height;
-  const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
-  return btoa(ua + "|" + lang + "|" + screenSize + "|" + timezone);
+let saved = localStorage.getItem("device_id");
+
+if(saved) return saved;
+
+// يولد id ثابت مرة واحدة فقط
+const random = Math.random().toString(36).substring(2,15);
+const time = Date.now().toString(36);
+const newId = btoa(random + time);
+
+localStorage.setItem("device_id",newId);
+return newId;
 }
 
 const urlParams = new URLSearchParams(location.search);
@@ -660,28 +666,28 @@ async validateCode(code){
 
 if(!data.used){
 
-  await ref.update({
-    used:true,
-    firstUsedAt: now,
-    expiresAt: now + (24*60*60*1000),
-    lastEnter: now,
-    deviceId: deviceId
-  });
+const deviceId = generateDeviceId();
 
-  localStorage.setItem("device_id",deviceId);
+await ref.update({
+used:true,
+firstUsedAt: now,
+expiresAt: now + (24*60*60*1000),
+lastEnter: now,
+deviceId: deviceId
+});
 
-  return {valid:true,editable:true,firstTime:true};
+return {valid:true,editable:true,firstTime:true};
 }
     
 
   // تحديث اخر دخول
   await ref.update({lastEnter: now});
 
-  const currentDevice = localStorage.getItem("device_id");
+ 
  
 
 if(data.deviceId && data.deviceId !== deviceId){
-  return {valid:false,message:"هذا الكود مرتبط بجهاز آخر — تواصل مع الدعم"};
+  return {valid:false,message:"هذا الكود مستخدم على جهاز آخر بالفعل"};
 }
 
   // انتهاء مدة
