@@ -548,6 +548,16 @@ const db = firebase.database();
 
 
 <script>
+
+function generateDeviceId(){
+  const ua = navigator.userAgent;
+  const lang = navigator.language;
+  const screenSize = screen.width + "x" + screen.height;
+  const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+  return btoa(ua + "|" + lang + "|" + screenSize + "|" + timezone);
+}
+
 const urlParams = new URLSearchParams(location.search);
 const previewCode = urlParams.get("preview");
 
@@ -645,21 +655,34 @@ async validateCode(code){
     return {valid:false,message:"تم تعطيل هذا الكود"};
   }
 
-  // اول دخول
-  if(!data.used){
+  const deviceId = generateDeviceId();
 
-    await ref.update({
-      used:true,
-      firstUsedAt: now,
-      expiresAt: now + (24*60*60*1000),
-      lastEnter: now
-    });
 
-    return {valid:true,editable:true,firstTime:true};
-  }
+if(!data.used){
+
+  await ref.update({
+    used:true,
+    firstUsedAt: now,
+    expiresAt: now + (24*60*60*1000),
+    lastEnter: now,
+    deviceId: deviceId
+  });
+
+  localStorage.setItem("device_id",deviceId);
+
+  return {valid:true,editable:true,firstTime:true};
+}
+    
 
   // تحديث اخر دخول
   await ref.update({lastEnter: now});
+
+  const currentDevice = localStorage.getItem("device_id");
+ 
+
+if(data.deviceId && data.deviceId !== deviceId){
+  return {valid:false,message:"هذا الكود مرتبط بجهاز آخر — تواصل مع الدعم"};
+}
 
   // انتهاء مدة
   if(data.expiresAt && now > data.expiresAt){
@@ -725,7 +748,7 @@ async saveAlbum(album){
     }
   }
 
-  await db.ref("albums/"+album.id).set(album);
+  await db.ref("albums/"+album.id).update(album);
 },
 
 //////////////////////////////////////
@@ -891,11 +914,15 @@ async function renderBuilder(code){
 
 let album = await DB.getAlbum(code);
 
-
-const localTemp = localStorage.getItem("selected_template");
-if(localTemp){
-album.template = localTemp;
+// تحميل التمبلت من فايربيز فقط
+const tempSnap = await db.ref("albums/"+code+"/settings/template").once("value");
+if(tempSnap.exists()){
+  album.template = tempSnap.val();
 }
+
+
+
+
 
 
 
@@ -1072,7 +1099,9 @@ ${icon('plus',16)} إضافة قسم
     bindInput('f-hint', v => album.passwordHint = v);
     bindInput('f-date', v => album.relationshipStartDate = v);
 
-    document.getElementById("choose-template").onclick = openTemplatePicker;
+   setTimeout(()=>{
+document.getElementById("choose-template")?.addEventListener("click",openTemplatePicker);
+},200);
 
     // Block picker
     if (showPicker) {
@@ -1108,7 +1137,20 @@ album.blocks.push({
       list.innerHTML = album.blocks.map((block, i) => renderBlockEditor(block, i)).join('');
       bindBlockEvents();
     }
+    setTimeout(()=>{
+const addBtn = document.getElementById("add-block-btn");
+
+if(addBtn){
+addBtn.onclick = ()=>{
+showPicker = !showPicker;
+render();
+};
+}
+
+},100);
   }
+
+  
 
   function renderBlockEditor(block, index) {
     const typeInfo = BLOCK_TYPES.find(bt => bt.type === block.type);
@@ -1426,8 +1468,13 @@ document.getElementById("choose-template")?.addEventListener("click",openTemplat
 if(window.autoSaveInterval) clearInterval(window.autoSaveInterval);
 
 window.autoSaveInterval = setInterval(()=>{
-  DB.saveAlbum(album);
+
+  const copy = {...album};
+  delete copy.settings; // سيب settings زي ما هي
+
+  DB.saveAlbum(copy);
   console.log("autosave...");
+
 },5000);
 }
 
@@ -1732,19 +1779,16 @@ function forceLogout(){
 async function openTemplatePicker(){
 
 const code = localStorage.getItem("album_code");
-if(!code){
-alert("افتح بالأول بالكود");
-return;
-}
+if(!code) return;
 
-// هات التمبلت المختار حاليا
-let selected = "";
 const snap = await db.ref("albums/"+code+"/settings/template").once("value");
-if(snap.exists()) selected = snap.val();
+let selected = snap.exists() ? snap.val() : "";
 
+// ===== overlay =====
 const overlay = document.createElement("div");
+overlay.id="tempOverlay";
 
-overlay.style = `
+overlay.style=`
 position:fixed;
 inset:0;
 background:rgba(0,0,0,.75);
@@ -1755,43 +1799,32 @@ align-items:center;
 justify-content:center;
 `;
 
-overlay.innerHTML = `
-
-<div id="templateBox" style="
+overlay.innerHTML=`
+<div id="tempBox" style="
 background:#111;
 border:1px solid rgba(184,134,11,.3);
 border-radius:22px;
 padding:30px;
 width:92%;
-max-width:600px;
-box-shadow:0 0 60px rgba(184,134,11,.15);
-position:relative">
+max-width:600px">
 
-<h2 style="
-color:#d4a74a;
-margin-bottom:25px;
-font-size:22px;
-text-align:center">
+<h2 style="color:#d4a74a;text-align:center;margin-bottom:20px">
 اختر تصميم الألبوم
 </h2>
 
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:15px">
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
 
-${templateCard("classic","ألبوم حب كلاسيكي راقي","✨",selected)}
+${templateCard("classic","ألبوم حب كلاسيكي","✨",selected)}
 ${templateCard("royal","ألبوم رومانسي فاخر","🌹",selected)}
-${templateCard("dark","ألبوم حب دارك مميز","🖤",selected)}
-${templateCard("story","ألبوم قصة حب تفاعلي","🎬",selected)}
+${templateCard("dark","ألبوم حب دارك","🖤",selected)}
+${templateCard("story","ألبوم قصة حب","🎬",selected)}
 
 </div>
 
-<div style="text-align:center;margin-top:25px">
-<button id="closeTemp" style="
-background:#222;
-color:#aaa;
-border:none;
-padding:12px 26px;
-border-radius:12px;
-cursor:pointer">
+<div style="text-align:center;margin-top:20px">
+<button id="closeTempBtn" style="
+background:#222;color:#aaa;border:none;
+padding:12px 26px;border-radius:12px;cursor:pointer">
 إغلاق
 </button>
 </div>
@@ -1802,50 +1835,48 @@ cursor:pointer">
 document.body.appendChild(overlay);
 
 //////////////////////////////////////////////////
-// منع قفل لما تدوس داخل الكارت
+// منع bubbling
 //////////////////////////////////////////////////
-document.getElementById("templateBox").onclick = (e)=>{
+document.getElementById("tempBox").addEventListener("click",(e)=>{
 e.stopPropagation();
-};
+});
 
 //////////////////////////////////////////////////
-// قفل لما تدوس برا
+// قفل overlay
 //////////////////////////////////////////////////
-overlay.onclick = ()=>{
-overlay.remove();
-};
+function closeOverlay(){
+document.getElementById("tempOverlay")?.remove();
+}
+
+overlay.addEventListener("click",closeOverlay);
+document.getElementById("closeTempBtn").addEventListener("click",closeOverlay);
 
 //////////////////////////////////////////////////
-// زر الإغلاق
+// اختيار تمبلت (ضغطة واحدة)
 //////////////////////////////////////////////////
-document.getElementById("closeTemp").onclick = ()=>{
-overlay.remove();
-};
-
-//////////////////////////////////////////////////
-// اختيار التمبلت
-//////////////////////////////////////////////////
-overlay.querySelectorAll("[data-select]").forEach(btn=>{
-btn.onclick = async (e)=>{
+overlay.querySelectorAll("[data-temp]").forEach(btn=>{
+btn.addEventListener("click",async (e)=>{
 e.stopPropagation();
 
-const id = btn.dataset.select;
+const id = btn.dataset.temp;
 
-// حفظ فوري
+// حفظ فايربيز
 await db.ref("albums/"+code+"/settings/template").set(id);
+localStorage.setItem("selected_template",id);
 
-// تحديث الشكل
-overlay.querySelectorAll(".tempBtn").forEach(b=>{
-b.classList.remove("selectedTemp");
+
+// تحديث الشكل فوراً
+overlay.querySelectorAll("[data-temp]").forEach(b=>{
+b.style.background="#d4a74a";
 b.innerHTML="اختيار";
 });
 
-btn.classList.add("selectedTemp");
+btn.style.background="#00c853";
 btn.innerHTML="✔ تم الاختيار";
 
-// يقفل بعد نص ثانية
-setTimeout(()=>overlay.remove(),400);
-};
+
+
+});
 });
 
 }
@@ -1862,16 +1893,15 @@ padding:22px;
 border-radius:18px;
 text-align:center">
 
-<div style="font-size:40px;margin-bottom:10px">${emoji}</div>
+<div style="font-size:38px;margin-bottom:10px">${emoji}</div>
 
-<div style="color:#e6d5b8;font-weight:bold;font-size:17px">
+<div style="color:#e6d5b8;font-weight:bold">
 ${title}
 </div>
 
-<div style="display:flex;gap:8px;margin-top:15px;justify-content:center">
+<div style="margin-top:14px">
 
-<button class="tempBtn ${is?'selectedTemp':''}"
-data-select="${id}"
+<button data-temp="${id}"
 style="
 background:${is?'#00c853':'linear-gradient(135deg,#d4a74a,#b8860b)'};
 border:none;
@@ -1891,7 +1921,8 @@ color:#d4a74a;
 padding:8px 14px;
 border-radius:10px;
 cursor:pointer;
-font-size:13px">
+font-size:13px;
+margin-top:8px">
 👁 معاينة
 </button>
 
@@ -1903,55 +1934,14 @@ font-size:13px">
 function previewTemplate(id){
 
 const code = localStorage.getItem("album_code");
-if(!code){
-alert("افتح بالأول بالكود");
-return;
-}
-
-// حفظ التمبلت مؤقت
-localStorage.setItem("preview_template",id);
-
-// فتح الألبوم الحقيقي
-window.open("index.html?preview="+code,"_blank");
-}
-
-async function selectTemplate(id){
-
-const code = localStorage.getItem("album_code");
 if(!code) return;
 
-//////////////////////////////////////////////////
-// احفظ في فايربيز
-//////////////////////////////////////////////////
-await db.ref("albums/"+code+"/settings/template").set(id);
-
-//////////////////////////////////////////////////
-// احفظ محلي (ده الأهم)
-//////////////////////////////////////////////////
-localStorage.setItem("selected_template",id);
-
-//////////////////////////////////////////////////
-// علّم فوراً
-//////////////////////////////////////////////////
-document.querySelectorAll(".tempBtn").forEach(b=>{
-b.style.background="linear-gradient(135deg,#d4a74a,#b8860b)";
-b.innerHTML="اختيار";
-});
-
-const btn = document.querySelector(`[data-select="${id}"]`);
-if(btn){
-btn.style.background="#00c853";
-btn.innerHTML="✔ تم الاختيار";
-}
-
-//////////////////////////////////////////////////
-// اقفل البوكس فقط بدون renderBuilder
-//////////////////////////////////////////////////
-setTimeout(()=>{
-document.querySelector(".template-wrap")?.remove();
-},300);
+localStorage.setItem("preview_template",id);
+window.open("index.html?preview="+code,"_blank");
 
 }
+
+
 
 initRouter();
 </script>
