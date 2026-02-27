@@ -549,19 +549,28 @@ const db = firebase.database();
 
 <script>
 
-function generateDeviceId(){
+async function getDeviceFingerprint(){
 
-let saved = localStorage.getItem("device_id");
+const canvas = document.createElement("canvas");
+const ctx = canvas.getContext("2d");
 
-if(saved) return saved;
+ctx.textBaseline="top";
+ctx.font="14px Arial";
+ctx.fillText("secure_device",2,2);
 
-// يولد id ثابت مرة واحدة فقط
-const random = Math.random().toString(36).substring(2,15);
-const time = Date.now().toString(36);
-const newId = btoa(random + time);
+const canvasData = canvas.toDataURL();
 
-localStorage.setItem("device_id",newId);
-return newId;
+const fingerprint = [
+navigator.userAgent,
+navigator.language,
+screen.width+"x"+screen.height,
+Intl.DateTimeFormat().resolvedOptions().timeZone,
+canvasData
+].join("||");
+
+const hash = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(fingerprint));
+const arr = Array.from(new Uint8Array(hash));
+return arr.map(b=>b.toString(16).padStart(2,"0")).join("");
 }
 
 const urlParams = new URLSearchParams(location.search);
@@ -644,6 +653,8 @@ async validateCode(code){
   const ref = db.ref("codes/"+code);
   const snap = await ref.once("value");
 
+  const deviceId = await getDeviceFingerprint();
+
   if(!snap.exists()){
     return {valid:false,message:"الكود غير صحيح"};
   }
@@ -661,19 +672,15 @@ async validateCode(code){
     return {valid:false,message:"تم تعطيل هذا الكود"};
   }
 
-  const deviceId = generateDeviceId();
+  
 
-
-if(!data.used){
-
-const deviceId = generateDeviceId();
+if(!data.deviceId){
 
 await ref.update({
+deviceId: deviceId,
 used:true,
 firstUsedAt: now,
-expiresAt: now + (24*60*60*1000),
-lastEnter: now,
-deviceId: deviceId
+expiresAt: now + (24*60*60*1000)
 });
 
 return {valid:true,editable:true,firstTime:true};
@@ -686,7 +693,7 @@ return {valid:true,editable:true,firstTime:true};
  
  
 
-if(data.deviceId && data.deviceId !== deviceId){
+if(data.deviceId !== deviceId){
   return {valid:false,message:"هذا الكود مستخدم على جهاز آخر بالفعل"};
 }
 
