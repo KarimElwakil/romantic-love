@@ -548,6 +548,49 @@ const db = firebase.database();
 
 
 <script>
+let currentCode = null;
+
+function startDeviceListener(){
+
+if(!currentCode) return;
+
+db.ref("codes/"+currentCode+"/forcedLogout")
+.on("value",snap=>{
+
+if(!snap.exists()) return;
+
+const val = snap.val();
+if(!val) return;
+
+// 🔴 أول ما يتطرد
+document.body.innerHTML = `
+<div style="
+height:100vh;
+background:black;
+display:flex;
+align-items:center;
+justify-content:center;
+flex-direction:column;
+font-family:Tajawal;
+color:white">
+
+<h1 style="color:red">تم إخراج هذا الجهاز</h1>
+<p style="opacity:.7">تم تسجيل الدخول من جهاز آخر</p>
+
+<button onclick="forceLogout()"
+style="padding:12px 25px;background:red;border:none;
+border-radius:10px;color:white;font-size:16px">
+تسجيل خروج
+</button>
+
+</div>`;
+
+// 🔴 امسح القيمة بعد التنفيذ
+db.ref("codes/"+currentCode+"/forcedLogout").remove();
+
+});
+
+}
 
 async function getDeviceFingerprint(){
 
@@ -658,6 +701,12 @@ async validateCode(code){
   if(!snap.exists()){
     return {valid:false,message:"الكود غير صحيح"};
   }
+
+// هنا بعد التأكيد
+currentCode = code;
+
+startDeviceListener();
+
 
   const data = snap.val();
   const now = Date.now();
