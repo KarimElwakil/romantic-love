@@ -548,9 +548,34 @@ const db = firebase.database();
 
 
 <script>
-/* ============================================================
-   JavaScript - كل الكود
-   ============================================================ */
+const urlParams = new URLSearchParams(location.search);
+const previewCode = urlParams.get("preview");
+
+if(previewCode){
+
+const localCode = localStorage.getItem("album_code");
+
+if(localCode !== previewCode){
+document.body.innerHTML = `
+<div style="
+height:100vh;
+display:flex;
+align-items:center;
+justify-content:center;
+background:#000;
+color:#fff;
+font-family:sans-serif;
+text-align:center">
+
+<div>
+<h2>هذه المعاينة خاصة بصاحب الألبوم فقط</h2>
+<p>لا يمكن فتحها من جهاز آخر</p>
+</div>
+
+</div>`;
+throw new Error("preview blocked");
+}
+}
 
 // ============================================================
 // ICON HELPER
@@ -584,9 +609,9 @@ async function uploadToCloudinary(base64File) {
 
 const DB = {
 
-//////////////////////////////////////////////////////
-// جلب كود
-//////////////////////////////////////////////////////
+//////////////////////////////////////
+// جلب بيانات الكود كاملة
+//////////////////////////////////////
 async getCodeData(code){
   code = code.toUpperCase().trim();
   const snap = await db.ref("codes/"+code).once("value");
@@ -594,69 +619,95 @@ async getCodeData(code){
   return snap.val();
 },
 
-//////////////////////////////////////////////////////
-// التحقق من الكود + نظام 24 ساعة
-//////////////////////////////////////////////////////
+//////////////////////////////////////
+// التحقق من الكود
+//////////////////////////////////////
 async validateCode(code){
 
   code = code.toUpperCase().trim();
-  const snap = await db.ref("codes/"+code).once("value");
+  const ref = db.ref("codes/"+code);
+  const snap = await ref.once("value");
 
   if(!snap.exists()){
     return {valid:false,message:"الكود غير صحيح"};
   }
 
-  let data = snap.val();
+  const data = snap.val();
   const now = Date.now();
 
-  // اول استخدام
+  // لو محذوف
+  if(data.deleted){
+    return {valid:false,message:"تم حذف هذا الكود"};
+  }
+
+  // لو متعطل
+  if(data.disabled){
+    return {valid:false,message:"تم تعطيل هذا الكود"};
+  }
+
+  // اول دخول
   if(!data.used){
 
-    await db.ref("codes/"+code).update({
+    await ref.update({
       used:true,
       firstUsedAt: now,
-      expiresAt: now + (24*60*60*1000)
+      expiresAt: now + (24*60*60*1000),
+      lastEnter: now
     });
 
     return {valid:true,editable:true,firstTime:true};
   }
 
-  // انتهت المدة
+  // تحديث اخر دخول
+  await ref.update({lastEnter: now});
+
+  // انتهاء مدة
   if(data.expiresAt && now > data.expiresAt){
     return {valid:true,editable:false,expired:true};
   }
 
-  // لسه شغال
   return {valid:true,editable:true};
 },
 
-//////////////////////////////////////////////////////
-// تمديد الوقت (لو مددت من فايربيز يدوي)
-//////////////////////////////////////////////////////
+//////////////////////////////////////
+// تمديد الوقت من لوحة التحكم
+//////////////////////////////////////
 async extendTime(code,hours){
-
   const now = Date.now();
-
   await db.ref("codes/"+code).update({
     expiresAt: now + (hours*60*60*1000)
   });
-
 },
 
-//////////////////////////////////////////////////////
+//////////////////////////////////////
+// مراقبة الكود لحظي
+//////////////////////////////////////
+watchCodeLive(code,callback){
+  db.ref("codes/"+code).on("value",(snap)=>{
+    if(!snap.exists()){
+      callback({deleted:true});
+      return;
+    }
+    callback(snap.val());
+  });
+},
+
+//////////////////////////////////////
 // جلب الألبوم
-//////////////////////////////////////////////////////
+//////////////////////////////////////
 async getAlbum(code){
   const snap = await db.ref("albums/"+code).once("value");
   return snap.exists()? snap.val() : null;
 },
 
-//////////////////////////////////////////////////////
+//////////////////////////////////////
 // حفظ الألبوم
-//////////////////////////////////////////////////////
+//////////////////////////////////////
 async saveAlbum(album){
 
-  for(let block of album.blocks){
+  album.lastEdit = Date.now();
+
+  for(let block of album.blocks || []){
 
     if(block.content && block.content.startsWith("data:")){
 
@@ -677,9 +728,9 @@ async saveAlbum(album){
   await db.ref("albums/"+album.id).set(album);
 },
 
-//////////////////////////////////////////////////////
-// انشاء ألبوم افتراضي اول مرة
-//////////////////////////////////////////////////////
+//////////////////////////////////////
+// انشاء ألبوم افتراضي
+//////////////////////////////////////
 createDefaultAlbum(code){
   return {
     id: code,
@@ -697,6 +748,8 @@ createDefaultAlbum(code){
     textSpeed:'normal',
     blocks:[],
     createdAt: Date.now(),
+    lastEdit: Date.now(),
+    status:"active",
     relationshipStartDate:''
   };
 }
@@ -839,6 +892,12 @@ async function renderBuilder(code){
 let album = await DB.getAlbum(code);
 
 
+const localTemp = localStorage.getItem("selected_template");
+if(localTemp){
+album.template = localTemp;
+}
+
+
 
 if(!album){
   album = DB.createDefaultAlbum(code);
@@ -875,6 +934,14 @@ codeRef.on("value", (snap)=>{
     return;
   }
 
+  const now = Date.now();
+
+  // انتهاء المدة
+  if(data.expiresAt && now > data.expiresAt){
+    showBlockedScreen("انتهت مدة التعديل الخاصة بهذا الكود");
+    return;
+  }
+
 });
 
   let activeTab = 'content';
@@ -896,6 +963,10 @@ codeRef.on("value", (snap)=>{
           <button class="btn-muted" id="logout-btn" style="font-size:0.85rem;padding:8px 16px">تسجيل خروج</button>
         </div>
       </div></header>
+     
+
+
+</div>
       <div class="builder-body">
         <div class="builder-tabs">
           <button class="${tab==='content'?'active':''}" data-tab="content">${icon('type',16)} المحتوى</button>
@@ -956,8 +1027,31 @@ el.querySelector('#logout-btn').addEventListener('click',()=>{
       </div>
 
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
-        <h3 class="text-gradient-gold">الأقسام</h3>
-        <button class="btn-gold" id="add-block-btn" style="padding:8px 16px;font-size:0.85rem;display:flex;align-items:center;gap:6px">${icon('plus',16)} إضافة قسم</button>
+
+<h3 class="text-gradient-gold">الأقسام</h3>
+
+<div style="display:flex;gap:10px">
+
+<button class="btn-muted" id="choose-template"
+style="
+background:#1a1a1a;
+color:#d4a74a;
+border:1px solid rgba(184,134,11,.4);
+padding:8px 16px;
+border-radius:12px;
+cursor:pointer;
+font-weight:bold;
+transition:.3s">
+✨ ألبوم جاهز
+</button>
+
+<button class="btn-gold" id="add-block-btn"
+style="padding:8px 16px;font-size:0.85rem;display:flex;align-items:center;gap:6px">
+${icon('plus',16)} إضافة قسم
+</button>
+
+</div>
+</div>
       </div>
       <div id="block-picker" class="${showPicker ? 'block-picker' : 'hidden'}"></div>
     `;
@@ -978,8 +1072,7 @@ el.querySelector('#logout-btn').addEventListener('click',()=>{
     bindInput('f-hint', v => album.passwordHint = v);
     bindInput('f-date', v => album.relationshipStartDate = v);
 
-    // Add block button
-    document.getElementById('add-block-btn').addEventListener('click', () => { showPicker = !showPicker; render(); });
+    document.getElementById("choose-template").onclick = openTemplatePicker;
 
     // Block picker
     if (showPicker) {
@@ -990,7 +1083,20 @@ el.querySelector('#logout-btn').addEventListener('click',()=>{
       picker.querySelectorAll('button').forEach(btn => {
         btn.addEventListener('click', () => {
           const type = btn.dataset.type;
-          album.blocks.push({ id: 'block_' + Date.now(), type, content: '', title: '', color: '#0d0d0d', textColor: '#e6d5b8', order: album.blocks.length });
+         if(type === "music" && album.blocks.some(b=>b.type==="music")){
+  alert("مسموح بموسيقى واحدة فقط في الألبوم");
+  return;
+}
+
+album.blocks.push({
+  id: 'block_' + Date.now(),
+  type,
+  content:'',
+  title:'',
+  color:'#0d0d0d',
+  textColor:'#e6d5b8',
+  order: album.blocks.length
+});
           showPicker = false; render();
         });
       });
@@ -1052,7 +1158,7 @@ el.querySelector('#logout-btn').addEventListener('click',()=>{
     ).join('');
 
     return `
-      <div class="block-item">
+      <div class="block-item" draggable="true" data-id="${block.id}">
         <div class="block-item-header">
           <div style="display:flex;align-items:center;gap:12px">
             <span style="color:var(--muted-fg);cursor:grab">${icon('grip',16)}</span>
@@ -1121,6 +1227,41 @@ el.querySelector('#logout-btn').addEventListener('click',()=>{
         if (block) { block.color = swatch.dataset.color; render(); }
       });
     });
+
+    // DRAG & DROP
+let draggedId = null;
+
+document.querySelectorAll('.block-item').forEach(item => {
+
+  item.addEventListener('dragstart', () => {
+    draggedId = item.dataset.id;
+    item.style.opacity = "0.5";
+  });
+
+  item.addEventListener('dragend', () => {
+    item.style.opacity = "1";
+  });
+
+  item.addEventListener('dragover', (e) => {
+    e.preventDefault();
+  });
+
+  item.addEventListener('drop', () => {
+
+    const targetId = item.dataset.id;
+
+    if(draggedId === targetId) return;
+
+    const draggedIndex = album.blocks.findIndex(b=>b.id===draggedId);
+    const targetIndex = album.blocks.findIndex(b=>b.id===targetId);
+
+    const temp = album.blocks[draggedIndex];
+    album.blocks.splice(draggedIndex,1);
+    album.blocks.splice(targetIndex,0,temp);
+
+    render();
+  });
+});
   }
 
   function renderDesignTab() {
@@ -1130,14 +1271,35 @@ el.querySelector('#logout-btn').addEventListener('click',()=>{
       { label: 'لون الخلفية', key: 'backgroundColor' },
       { label: 'لون النص', key: 'textColor' },
       { label: 'لون الإطار', key: 'borderColor' },
-    ].forEach(item => {
+    ]
+    
+    .forEach(item => {
       html += `<div class="color-row"><label>${item.label}</label><div class="colors-flex">
         <div class="color-preview" style="background:${album[item.key]}"></div>
         ${ROMANTIC_COLORS.map(c => `<div class="color-swatch album-color ${album[item.key]===c.value?'active':''}" data-key="${item.key}" data-color="${c.value}" style="background:${c.value}" title="${c.name}">${album[item.key]===c.value ? icon('check',12) : ''}</div>`).join('')}
       </div></div>`;
     });
+    // اختيار الخط
+html += `
+<div style="margin-top:30px">
+<label style="display:block;margin-bottom:8px;font-size:0.9rem">
+نوع الخط
+</label>
+
+<select id="font-style" class="input-field">
+  <option value="amiri" ${album.fontStyle==="amiri"?'selected':''}>رومانسي</option>
+  <option value="tajawal" ${album.fontStyle==="tajawal"?'selected':''}>عادي</option>
+  <option value="playfair" ${album.fontStyle==="playfair"?'selected':''}>كلاسيك</option>
+</select>
+</div>
+`;
     html += '</div>';
     container.innerHTML = html;
+
+    // تغيير الخط
+document.getElementById("font-style")?.addEventListener("change",(e)=>{
+  album.fontStyle = e.target.value;
+});
 
     container.querySelectorAll('.album-color').forEach(swatch => {
       swatch.addEventListener('click', () => {
@@ -1147,30 +1309,80 @@ el.querySelector('#logout-btn').addEventListener('click',()=>{
     });
   }
 
-  function renderSettingsTab() {
-    const container = document.getElementById('tab-content');
-    container.innerHTML = `
-      <div class="card animate-fadeIn">
-        <h3 class="text-gradient-gold" style="margin-bottom:24px">التأثيرات</h3>
-        <div class="toggle-row"><span>القلوب الطائرة</span>
-          <button class="toggle-switch ${album.enableHearts?'on':'off'}" id="t-hearts"><div class="toggle-knob"></div></button></div>
-        <div class="toggle-row"><span>الإضاءة والتوهج</span>
-          <button class="toggle-switch ${album.enableLights?'on':'off'}" id="t-lights"><div class="toggle-knob"></div></button></div>
-        <div style="margin-top:16px"><label style="font-size:0.9rem;display:block;margin-bottom:8px">سرعة الأنيميشن</label>
-          <div class="speed-buttons">
-            <button class="speed-btn ${album.animationSpeed==='slow'?'active':''}" data-speed="slow">بطيء</button>
-            <button class="speed-btn ${album.animationSpeed==='normal'?'active':''}" data-speed="normal">عادي</button>
-            <button class="speed-btn ${album.animationSpeed==='fast'?'active':''}" data-speed="fast">سريع</button>
-          </div>
+ function renderSettingsTab() {
+
+  const container = document.getElementById('tab-content');
+
+  container.innerHTML = `
+    <div class="card animate-fadeIn">
+      <h3 class="text-gradient-gold" style="margin-bottom:24px">التأثيرات</h3>
+
+      <div class="toggle-row">
+        <span>القلوب الطائرة</span>
+        <button class="toggle-switch ${album.enableHearts?'on':'off'}" id="t-hearts">
+          <div class="toggle-knob"></div>
+        </button>
+      </div>
+
+      <div class="toggle-row">
+        <span>الإضاءة والتوهج</span>
+        <button class="toggle-switch ${album.enableLights?'on':'off'}" id="t-lights">
+          <div class="toggle-knob"></div>
+        </button>
+      </div>
+
+      <div style="margin-top:16px">
+        <label style="font-size:0.9rem;display:block;margin-bottom:8px">
+          سرعة الأنيميشن
+        </label>
+        <div class="speed-buttons">
+          <button class="speed-btn ${album.animationSpeed==='slow'?'active':''}" data-speed="slow">بطيء</button>
+          <button class="speed-btn ${album.animationSpeed==='normal'?'active':''}" data-speed="normal">عادي</button>
+          <button class="speed-btn ${album.animationSpeed==='fast'?'active':''}" data-speed="fast">سريع</button>
         </div>
       </div>
-    `;
-    document.getElementById('t-hearts').addEventListener('click', () => { album.enableHearts = !album.enableHearts; render(); });
-    document.getElementById('t-lights').addEventListener('click', () => { album.enableLights = !album.enableLights; render(); });
-    container.querySelectorAll('.speed-btn').forEach(btn => {
-      btn.addEventListener('click', () => { album.animationSpeed = btn.dataset.speed; render(); });
+
+      <div style="margin-top:20px">
+        <label style="font-size:0.9rem;display:block;margin-bottom:8px">
+          سرعة ظهور النص
+        </label>
+        <div class="speed-buttons">
+          <button class="speed-btn ${album.textSpeed==='slow'?'active':''}" data-textspeed="slow">بطيء</button>
+          <button class="speed-btn ${album.textSpeed==='normal'?'active':''}" data-textspeed="normal">عادي</button>
+          <button class="speed-btn ${album.textSpeed==='fast'?'active':''}" data-textspeed="fast">سريع</button>
+        </div>
+      </div>
+
+    </div>
+  `;
+
+  // Toggles
+  document.getElementById('t-hearts').addEventListener('click', () => {
+    album.enableHearts = !album.enableHearts;
+    render();
+  });
+
+  document.getElementById('t-lights').addEventListener('click', () => {
+    album.enableLights = !album.enableLights;
+    render();
+  });
+
+  // سرعة الأنيميشن
+  container.querySelectorAll('[data-speed]').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      album.animationSpeed = btn.dataset.speed;
+      render();
     });
-  }
+  });
+
+  // سرعة النص
+  container.querySelectorAll('[data-textspeed]').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      album.textSpeed = btn.dataset.textspeed;
+      render();
+    });
+  });
+}
 
   function showPublished(code) {
     const overlay = document.getElementById('published-overlay');
@@ -1207,6 +1419,8 @@ el.querySelector('#logout-btn').addEventListener('click',()=>{
 
   render();
   showPage('page-builder');
+  // زر اختيار تمبلت
+document.getElementById("choose-template")?.addEventListener("click",openTemplatePicker);
 
   // AUTOSAVE كل 5 ثواني بدون إعادة رندر
 if(window.autoSaveInterval) clearInterval(window.autoSaveInterval);
@@ -1294,6 +1508,11 @@ function showEntranceScreen(album, code, el) {
 
 function showAlbumContent(album, el) {
   const animDelay = album.animationSpeed === 'slow' ? 0.4 : album.animationSpeed === 'fast' ? 0.1 : 0.2;
+  let textSpeedValue = 1;
+
+if(album.textSpeed==="slow") textSpeedValue = 0.05;
+if(album.textSpeed==="normal") textSpeedValue = 0.02;
+if(album.textSpeed==="fast") textSpeedValue = 0.005;
 
  let blocksHTML = (album.blocks || []).map((block, i) => {
     const delay = (i * animDelay + 0.5).toFixed(1);
@@ -1301,7 +1520,7 @@ function showAlbumContent(album, el) {
 
     if (block.type === 'text') {
       inner = `${block.title ? `<h3 class="text-gradient-gold">${esc(block.title)}</h3>` : ''}
-        <p>${esc(block.content)}</p>`;
+        <p style="animation: fadeInText ${textSpeedValue}s linear">${esc(block.content)}</p>`;
     } else if (block.type === 'image' && block.content) {
       inner = `${block.title ? `<h3 class="text-gradient-gold">${esc(block.title)}</h3>` : ''}
         <img src="${block.content}" alt="صورة الألبوم">`;
@@ -1330,7 +1549,14 @@ function showAlbumContent(album, el) {
   const footerDelay = (album.blocks.length * animDelay + 1).toFixed(1);
 
   el.innerHTML = `
-    <div style="min-height:100vh;position:relative;overflow:hidden;background-color:${album.backgroundColor};color:${album.textColor}">
+    <div style="
+min-height:100vh;
+position:relative;
+overflow:hidden;
+background-color:${album.backgroundColor};
+color:${album.textColor};
+font-family:${getFont(album.fontStyle)}
+">
       <div id="v-hearts" style="position:fixed;inset:0;pointer-events:none;z-index:0"></div>
       <div id="v-particles" style="position:fixed;inset:0;pointer-events:none;z-index:0"></div>
       <div class="viewer-glow"></div>
@@ -1402,6 +1628,12 @@ function esc(str) {
   const div = document.createElement('div');
   div.textContent = str;
   return div.innerHTML;
+}
+
+function getFont(type){
+  if(type==="amiri") return "var(--font-amiri)";
+  if(type==="playfair") return "var(--font-heading)";
+  return "var(--font-body)";
 }
 
 // ============================================================
@@ -1488,17 +1720,237 @@ function showBlockedScreen(msg){
   `;
 }
 
-function forceLogout(){
-  localStorage.removeItem("album_code");
-  localStorage.removeItem("album_login_time");
-  location.href = location.pathname;
-}
+
 
 // تسجيل خروج كامل
 function forceLogout(){
   localStorage.removeItem("album_code");
   localStorage.removeItem("album_login_time");
   location.href = location.pathname; // يرجع للبداية
+}
+
+async function openTemplatePicker(){
+
+const code = localStorage.getItem("album_code");
+if(!code){
+alert("افتح بالأول بالكود");
+return;
+}
+
+// هات التمبلت المختار حاليا
+let selected = "";
+const snap = await db.ref("albums/"+code+"/settings/template").once("value");
+if(snap.exists()) selected = snap.val();
+
+const overlay = document.createElement("div");
+
+overlay.style = `
+position:fixed;
+inset:0;
+background:rgba(0,0,0,.75);
+backdrop-filter:blur(8px);
+z-index:99999;
+display:flex;
+align-items:center;
+justify-content:center;
+`;
+
+overlay.innerHTML = `
+
+<div id="templateBox" style="
+background:#111;
+border:1px solid rgba(184,134,11,.3);
+border-radius:22px;
+padding:30px;
+width:92%;
+max-width:600px;
+box-shadow:0 0 60px rgba(184,134,11,.15);
+position:relative">
+
+<h2 style="
+color:#d4a74a;
+margin-bottom:25px;
+font-size:22px;
+text-align:center">
+اختر تصميم الألبوم
+</h2>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:15px">
+
+${templateCard("classic","ألبوم حب كلاسيكي راقي","✨",selected)}
+${templateCard("royal","ألبوم رومانسي فاخر","🌹",selected)}
+${templateCard("dark","ألبوم حب دارك مميز","🖤",selected)}
+${templateCard("story","ألبوم قصة حب تفاعلي","🎬",selected)}
+
+</div>
+
+<div style="text-align:center;margin-top:25px">
+<button id="closeTemp" style="
+background:#222;
+color:#aaa;
+border:none;
+padding:12px 26px;
+border-radius:12px;
+cursor:pointer">
+إغلاق
+</button>
+</div>
+
+</div>
+`;
+
+document.body.appendChild(overlay);
+
+//////////////////////////////////////////////////
+// منع قفل لما تدوس داخل الكارت
+//////////////////////////////////////////////////
+document.getElementById("templateBox").onclick = (e)=>{
+e.stopPropagation();
+};
+
+//////////////////////////////////////////////////
+// قفل لما تدوس برا
+//////////////////////////////////////////////////
+overlay.onclick = ()=>{
+overlay.remove();
+};
+
+//////////////////////////////////////////////////
+// زر الإغلاق
+//////////////////////////////////////////////////
+document.getElementById("closeTemp").onclick = ()=>{
+overlay.remove();
+};
+
+//////////////////////////////////////////////////
+// اختيار التمبلت
+//////////////////////////////////////////////////
+overlay.querySelectorAll("[data-select]").forEach(btn=>{
+btn.onclick = async (e)=>{
+e.stopPropagation();
+
+const id = btn.dataset.select;
+
+// حفظ فوري
+await db.ref("albums/"+code+"/settings/template").set(id);
+
+// تحديث الشكل
+overlay.querySelectorAll(".tempBtn").forEach(b=>{
+b.classList.remove("selectedTemp");
+b.innerHTML="اختيار";
+});
+
+btn.classList.add("selectedTemp");
+btn.innerHTML="✔ تم الاختيار";
+
+// يقفل بعد نص ثانية
+setTimeout(()=>overlay.remove(),400);
+};
+});
+
+}
+
+function templateCard(id,title,emoji,selected){
+
+const is = selected===id;
+
+return `
+<div style="
+background:linear-gradient(145deg,#141414,#0f0f0f);
+border:1px solid rgba(184,134,11,.3);
+padding:22px;
+border-radius:18px;
+text-align:center">
+
+<div style="font-size:40px;margin-bottom:10px">${emoji}</div>
+
+<div style="color:#e6d5b8;font-weight:bold;font-size:17px">
+${title}
+</div>
+
+<div style="display:flex;gap:8px;margin-top:15px;justify-content:center">
+
+<button class="tempBtn ${is?'selectedTemp':''}"
+data-select="${id}"
+style="
+background:${is?'#00c853':'linear-gradient(135deg,#d4a74a,#b8860b)'};
+border:none;
+color:#000;
+padding:8px 18px;
+border-radius:12px;
+cursor:pointer;
+font-weight:bold">
+${is?'✔ تم الاختيار':'اختيار'}
+</button>
+
+<button onclick="previewTemplate('${id}')"
+style="
+background:#222;
+border:1px solid rgba(184,134,11,.5);
+color:#d4a74a;
+padding:8px 14px;
+border-radius:10px;
+cursor:pointer;
+font-size:13px">
+👁 معاينة
+</button>
+
+</div>
+</div>
+`;
+}
+
+function previewTemplate(id){
+
+const code = localStorage.getItem("album_code");
+if(!code){
+alert("افتح بالأول بالكود");
+return;
+}
+
+// حفظ التمبلت مؤقت
+localStorage.setItem("preview_template",id);
+
+// فتح الألبوم الحقيقي
+window.open("index.html?preview="+code,"_blank");
+}
+
+async function selectTemplate(id){
+
+const code = localStorage.getItem("album_code");
+if(!code) return;
+
+//////////////////////////////////////////////////
+// احفظ في فايربيز
+//////////////////////////////////////////////////
+await db.ref("albums/"+code+"/settings/template").set(id);
+
+//////////////////////////////////////////////////
+// احفظ محلي (ده الأهم)
+//////////////////////////////////////////////////
+localStorage.setItem("selected_template",id);
+
+//////////////////////////////////////////////////
+// علّم فوراً
+//////////////////////////////////////////////////
+document.querySelectorAll(".tempBtn").forEach(b=>{
+b.style.background="linear-gradient(135deg,#d4a74a,#b8860b)";
+b.innerHTML="اختيار";
+});
+
+const btn = document.querySelector(`[data-select="${id}"]`);
+if(btn){
+btn.style.background="#00c853";
+btn.innerHTML="✔ تم الاختيار";
+}
+
+//////////////////////////////////////////////////
+// اقفل البوكس فقط بدون renderBuilder
+//////////////////////////////////////////////////
+setTimeout(()=>{
+document.querySelector(".template-wrap")?.remove();
+},300);
+
 }
 
 initRouter();
