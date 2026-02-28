@@ -573,6 +573,11 @@ firebase.database().ref("codes/"+currentCode)
 if(!snap.exists()) return;
 
 const data = snap.val();
+const myDevice = localStorage.getItem("deviceId");
+
+// ❌ لو أنا مش الجهاز المسجل أصلاً → تجاهل
+if(data.deviceId !== myDevice) return;
+
 
 // 🚨 لو الادمن عمل logout
 if(data.logoutRequest === true){
@@ -611,11 +616,11 @@ font-size:16px">
 
 </div>`;
 
-// 🧹 امسح اللوكال
+// 🧹 مسح
 localStorage.clear();
 sessionStorage.clear();
 
-// 🧹 رجع logout false بعد التنفيذ
+// رجع الفلاج false
 firebase.database().ref("codes/"+currentCode).update({
 logoutRequest:false
 });
@@ -624,7 +629,6 @@ logoutRequest:false
 
 });
 }
-
 async function getDeviceFingerprint(){
 
 const canvas = document.createElement("canvas");
