@@ -740,10 +740,6 @@ async validateCode(code){
     return {valid:false,message:"الكود غير صحيح"};
   }
 
-// هنا بعد التأكيد
-currentCode = code;
-
-startDeviceListener();
 
 
   const data = snap.val();
@@ -787,6 +783,12 @@ return {valid:true,editable:true,firstTime:true};
 if(data.deviceId !== deviceId){
 return {valid:false,message:"هذا الكود يعمل على جهاز آخر حاليا"};
 }
+
+// هنا بعد التأكيد
+currentCode = code;
+
+startDeviceListener();
+
 
   // انتهاء مدة
   if(data.expiresAt && now > data.expiresAt){
