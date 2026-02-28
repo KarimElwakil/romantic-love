@@ -548,21 +548,39 @@ const db = firebase.database();
 
 
 <script>
+
+function registerLogoutAuto(){
+
+  if(currentCode){
+    firebase.database().ref("codes/"+currentCode).update({
+      logoutAt: Date.now()
+    });
+  }
+
+  localStorage.clear();
+  sessionStorage.clear();
+}
+
 let currentCode = null;
 
 function startDeviceListener(){
 
 if(!currentCode) return;
 
-db.ref("codes/"+currentCode+"/forcedLogout")
-.on("value",snap=>{
+firebase.database().ref("codes/"+currentCode)
+.on("value", snap=>{
 
 if(!snap.exists()) return;
 
-const val = snap.val();
-if(!val) return;
+const data = snap.val();
 
-// 🔴 أول ما يتطرد
+// 🚨 لو الادمن عمل logout
+if(data.logoutRequest === true){
+
+// اعمل خروج فوري
+registerLogoutAuto();
+
+// شاشة سوداء
 document.body.innerHTML = `
 <div style="
 height:100vh;
@@ -575,21 +593,36 @@ font-family:Tajawal;
 color:white">
 
 <h1 style="color:red">تم إخراج هذا الجهاز</h1>
-<p style="opacity:.7">تم تسجيل الدخول من جهاز آخر</p>
+<p style="opacity:.7;margin-top:10px">
+تم تسجيل الخروج من لوحة التحكم
+</p>
 
-<button onclick="forceLogout()"
-style="padding:12px 25px;background:red;border:none;
-border-radius:10px;color:white;font-size:16px">
-تسجيل خروج
+<button onclick="location.reload()"
+style="
+margin-top:25px;
+padding:12px 25px;
+background:#b8860b;
+border:none;
+border-radius:10px;
+color:black;
+font-size:16px">
+العودة لتسجيل الدخول
 </button>
 
 </div>`;
 
-// 🔴 امسح القيمة بعد التنفيذ
-db.ref("codes/"+currentCode+"/forcedLogout").remove();
+// 🧹 امسح اللوكال
+localStorage.clear();
+sessionStorage.clear();
 
+// 🧹 رجع logout false بعد التنفيذ
+firebase.database().ref("codes/"+currentCode).update({
+logoutRequest:false
 });
 
+}
+
+});
 }
 
 async function getDeviceFingerprint(){
@@ -697,6 +730,7 @@ async validateCode(code){
   const snap = await ref.once("value");
 
   const deviceId = await getDeviceFingerprint();
+  localStorage.setItem("deviceId",deviceId);
 
   if(!snap.exists()){
     return {valid:false,message:"الكود غير صحيح"};
@@ -714,6 +748,7 @@ startDeviceListener();
   // لو محذوف
   if(data.deleted){
     return {valid:false,message:"تم حذف هذا الكود"};
+    registerLogoutAuto();
   }
 
   // لو متعطل
@@ -728,12 +763,16 @@ if(!data.deviceId){
 await ref.update({
 deviceId: deviceId,
 used:true,
+status:"active",
 firstUsedAt: now,
-expiresAt: now + (24*60*60*1000)
+expiresAt: now + (24*60*60*1000),
+logoutAt: "null",
+logoutRequest:false
 });
 
 return {valid:true,editable:true,firstTime:true};
 }
+
     
 
   // تحديث اخر دخول
@@ -743,7 +782,7 @@ return {valid:true,editable:true,firstTime:true};
  
 
 if(data.deviceId !== deviceId){
-  return {valid:false,message:"هذا الكود مستخدم على جهاز آخر بالفعل"};
+return {valid:false,message:"هذا الكود يعمل على جهاز آخر حاليا"};
 }
 
   // انتهاء مدة
@@ -1081,6 +1120,7 @@ codeRef.on("value", (snap)=>{
     });
     // logout
 el.querySelector('#logout-btn').addEventListener('click',()=>{
+  registerLogoutAuto();
   localStorage.removeItem("album_code");
   localStorage.removeItem("album_login_time");
   location.reload();
@@ -1833,9 +1873,17 @@ function showBlockedScreen(msg){
 
 // تسجيل خروج كامل
 function forceLogout(){
-  localStorage.removeItem("album_code");
-  localStorage.removeItem("album_login_time");
-  location.href = location.pathname; // يرجع للبداية
+
+if(currentCode){
+firebase.database().ref("codes/"+currentCode).update({
+logoutAt: Date.now()
+});
+}
+
+localStorage.clear();
+sessionStorage.clear();
+
+location.reload();
 }
 
 async function openTemplatePicker(){
