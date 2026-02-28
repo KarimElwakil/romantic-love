@@ -766,8 +766,9 @@ used:true,
 status:"active",
 firstUsedAt: now,
 expiresAt: now + (24*60*60*1000),
-logoutAt: "null",
-logoutRequest:false
+logoutAt:0,
+logoutRequest:false,
+lastEnter: now
 });
 
 return {valid:true,editable:true,firstTime:true};
@@ -775,9 +776,7 @@ return {valid:true,editable:true,firstTime:true};
 
     
 
-  // تحديث اخر دخول
-  await ref.update({lastEnter: now});
-
+  
  
  
 
